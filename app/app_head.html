@@ -250,16 +250,6 @@ svg.col rect.hit{fill:transparent}
 .gw tr.sub thead th{position:static}
 .more{display:flex;justify-content:space-between;align-items:center;padding:8px 2px;color:var(--mut);font-size:12px}
 /* equipos */
-.eq{display:grid;grid-template-columns:330px minmax(0,1fr);gap:12px;align-items:start}
-@media(max-width:900px){.eq{grid-template-columns:1fr}}
-.eq .lst{max-height:68vh;overflow:auto;border:1px solid var(--bd);border-radius:8px;background:var(--card)}
-.eqi{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--bd);border-radius:0;background:var(--card);padding:8px 10px}
-.eqi:hover{background:color-mix(in srgb,var(--ac) 7%,var(--card))}
-.eqi[aria-current="true"]{background:color-mix(in srgb,var(--ac) 14%,var(--card));box-shadow:inset 3px 0 0 var(--ac)}
-.eqi b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
-.eqi small{grid-column:1/-1;color:var(--mut);font-size:11.5px}
-.eqh{border-top:3px solid var(--ac)}
-.eqh .lh2{font-family:Manrope,"IBM Plex Sans",system-ui,sans-serif;font-weight:800;font-size:20px;letter-spacing:-.02em;margin:2px 0}
 /* ficha de material */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:40}
 .sheet{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);z-index:41;border-left:1px solid var(--bd);overflow-y:auto;padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(20px + env(safe-area-inset-bottom,0px))}
@@ -287,16 +277,12 @@ svg.col rect.hit{fill:transparent}
     <button role="tab" data-tab="stock" id="tab-stock">Stock vs mínimo<span class="n" id="n-stock"></span></button>
     <button role="tab" data-tab="solped" id="tab-solped">Seguimiento SOLPED<span class="n" id="n-solped"></span></button>
     <button role="tab" data-tab="mov" id="tab-mov">Consumo y gasto<span class="n" id="n-mov"></span></button>
-    <button role="tab" data-tab="eq" id="tab-eq">Equipos<span class="n" id="n-eq"></span></button>
-    <button role="tab" data-tab="res" id="tab-res">Reservas OT<span class="n" id="n-res"></span></button>
   </nav>
   <div class="status" id="status" role="status"></div>
   <div class="card wk" id="wkcard"></div>
   <section class="view" id="v-stock"></section>
   <section class="view" id="v-solped" hidden></section>
   <section class="view" id="v-mov" hidden></section>
-  <section class="view" id="v-eq" hidden></section>
-  <section class="view" id="v-res" hidden></section>
 </main>
 <div id="tip" hidden></div>
 <div class="scrim" id="scrim" hidden></div>

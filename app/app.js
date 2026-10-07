@@ -10,7 +10,7 @@ $('#app').appendChild(SHELL.content.cloneNode(true));
 let RAW=JSON.parse(document.getElementById('data').textContent);
 function decode(T){if(!T)return [];const d=T.dict||{};return T.rows.map(r=>{const o={};T.cols.forEach((c,j)=>{let v=r[j];if(d[j]!==undefined&&v!==null&&v!==undefined)v=d[j][v];o[c]=v===undefined?null:v;});return o;});}
 let D={};
-function load(raw){D={meta:raw.meta,tab:decode(raw.tab),sp:decode(raw.sp),mv:decode(raw.mv),res:decode(raw.res),ot:decode(raw.ot)};
+function load(raw){D={meta:raw.meta,tab:decode(raw.tab),sp:decode(raw.sp),mv:decode(raw.mv),res:decode(raw.res)};
   D.byMat={};D.tab.forEach(t=>D.byMat[t.Material]=t);
   D.price=m=>{const t=D.byMat[m];return t&&t.Precio_unit>0?t.Precio_unit:0;};}
 load(RAW);
@@ -89,8 +89,6 @@ function header(){$('#tSrc').textContent=`${D.meta.fuente||''} · temporada ${D.
   $('#n-stock').textContent=nf0.format(D.tab.filter(t=>t.Estado==='Quiebre'||t.Estado==='Pedir').length);
   $('#n-solped').textContent=nf0.format(D.sp.filter(s=>s.Material&&/^[123]/.test(s.Estado)).length);
   $('#n-mov').textContent=penC.format(D.mv.reduce((a,m)=>a+z(m.Costo_consumo),0));
-  $('#n-eq').textContent=nf0.format(new Set(D.ot.filter(o=>o.Equipo_riego==='Sí').map(o=>o.Equipo)).size);
-  $('#n-res').textContent=nf0.format(new Set(D.res.map(r=>r.Orden).filter(Boolean)).size);
   wkCard();}
 
 /* ================= tabla ================= */
@@ -290,72 +288,6 @@ function mvTable(){const q=MF.q.trim().toLowerCase();const r=weekRange(WK);
       {k:'Impte.mon.local',h:'Importe (S/)',num:1,f:o=>money(o['Impte.mon.local'])},
       {k:'Almacén',h:'Alm.',cls:'code'},{k:'Dest.mercancía',h:'Receptor'},{k:'Referencia',h:'Referencia'},{k:'Pedido',h:'Pedido',cls:'code'},{k:'Clase_OT',h:'Clase OT',f:o=>o.Clase_OT?clsPill(o.Clase_OT):''}],rows,{sort:{k:'Fe.contabilización',d:'desc'},onRow:o=>D.byMat[o.Material]&&openSheet(o.Material),unit:'movimientos',fix:2});}
 
-/* ================= EQUIPOS ================= */
-const EF={sel:store.eq||null,q:'',riego:'Sí',per:'temp'};
-function otsScope(){return D.ot.filter(o=>EF.per==='all'||(o['Fecha de creación']||'')>=D.meta.inicio_temporada);}
-function vEq(){const v=$('#v-eq');const ots=otsScope();
-  const eqs={};ots.forEach(o=>{if(EF.riego&&o.Equipo_riego!==EF.riego)return;const e=eqs[o.Equipo]||(eqs[o.Equipo]={id:o.Equipo,n:o['Denominación de objeto técnico']||o.Equipo,u:o['Denominación de la ubicación técnica']||'',ots:0,c:0,om01:0,om03:0});
-    e.ots++;e.c+=z(o['Costes tot.reales']);if(o['Clase de orden']==='OM01')e.om01++;if(o['Clase de orden']==='OM03')e.om03++;});
-  const list=Object.values(eqs).sort((a,b)=>b.c-a.c);if(!EF.sel||!eqs[EF.sel])EF.sel=list[0]?.id||null;
-  const tot=list.reduce((a,e)=>a+e.c,0),tOT=list.reduce((a,e)=>a+e.ots,0),t1=list.reduce((a,e)=>a+e.om01,0),t3=list.reduce((a,e)=>a+e.om03,0);
-  v.innerHTML=SEC(EF.per==='temp'?`EQUIPOS · TEMPORADA ${esc(D.meta.temporada)}`:'EQUIPOS · TODO EL EXPORT IW39',EF.riego==='Sí'?'solo equipos de la lista IH08':'todos los equipos','',`<div class="kp">
-      ${K('Equipos con OT',nf0.format(list.length),'con al menos una orden','--ac')}
-      ${K('Órdenes',nf0.format(tOT),`${t1} OM01 · ${t3} OM03`,'--fp')}
-      ${K('Correctivas OM01',tOT?Math.round(t1/tOT*100)+' %':'—',`${t1} de ${tOT} órdenes`,'--bad')}
-      ${K('Costo real',penC.format(tot),'IW39 · costes totales reales','--ac')}</div>`)+
-    `<div class="card"><div class="pc" style="grid-template-columns:repeat(3,1fr)">
-      <label>Periodo<span class="seg"><button type="button" data-p="temp" class="${EF.per==='temp'?'on':''}">Temporada</button><button type="button" data-p="all" class="${EF.per==='all'?'on':''}">Todo el export</button></span></label>
-      <label>Equipos<span class="seg"><button type="button" data-r="Sí" class="${EF.riego==='Sí'?'on':''}">Riego (IH08)</button><button type="button" data-r="" class="${EF.riego===''?'on':''}">Todos</button></span></label>
-      <label>Buscar equipo<input type="search" id="eqq" placeholder="Nombre, código o ubicación…" value="${esc(EF.q)}"></label></div></div>
-    <div class="eq"><div><div class="lst" id="eqitems"></div><div class="more"><span>${nf0.format(list.length)} equipos · ordenados por costo real</span></div></div><div id="eqdet"></div></div>`;
-  const drawList=()=>{const q=EF.q.trim().toLowerCase();$('#eqitems').innerHTML=list.filter(e=>!q||(e.n+' '+e.id+' '+e.u).toLowerCase().includes(q)).map(e=>`<button type="button" class="eqi" data-id="${esc(e.id)}" aria-current="${e.id===EF.sel}"><b title="${esc(e.n)}">${esc(e.n)}</b><span>${money(e.c)||'S/ 0'}</span><small>${esc(e.id)} · ${e.ots} OT · <span class="ch r">${e.om01}</span> OM01 · <span class="ch g">${e.om03}</span> OM03</small></button>`).join('')||'<div class="mut" style="padding:12px">Sin equipos.</div>';
-    $('#eqitems').querySelectorAll('.eqi').forEach(b=>b.onclick=()=>{EF.sel=b.dataset.id;remember('eq',EF.sel);drawList();eqDetail(ots);});};
-  v.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{EF.per=b.dataset.p;vEq();});v.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{EF.riego=b.dataset.r;vEq();});
-  $('#eqq').oninput=e=>{EF.q=e.target.value;drawList();};drawList();eqDetail(ots);}
-function eqDetail(ots){const host=$('#eqdet');const os=ots.filter(o=>o.Equipo===EF.sel);
-  if(!os.length){host.innerHTML='<div class="card mut">Elige un equipo de la lista.</div>';return;}
-  const o0=os[0];const cost=os.reduce((a,o)=>a+z(o['Costes tot.reales']),0);const c=k=>os.filter(o=>o['Clase de orden']===k).length;
-  const ordSet=new Set(os.map(o=>o.Orden));const mats=D.res.filter(r=>ordSet.has(r.Orden));
-  const mg=sumBy(mats,r=>r.Material,r=>z(r.Reservado)).map(([m,q])=>({m,q,d:(D.byMat[m]?.Descripcion)||(mats.find(x=>x.Material===m)||{})['Texto breve de material']||'',um:(mats.find(x=>x.Material===m)||{}).UM||'',p:D.price(m),c:q*D.price(m)})).sort((a,b)=>b.c-a.c);
-  const months={};os.forEach(o=>{const k=(o['Fecha de creación']||'').slice(0,7);if(k)months[k]=(months[k]||0)+z(o['Costes tot.reales']);});
-  const mk=Object.keys(months).sort();const MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-  host.innerHTML=`<div class="card eqh"><div class="mut" style="font-size:12px">Equipo ${esc(o0.Equipo)} · ${esc(o0['Ubicación técnica']||'')}</div><div class="lh2">${esc(o0['Denominación de objeto técnico']||o0.Equipo)}</div><div class="mut">${esc(o0['Denominación de la ubicación técnica']||'')}</div></div>
-    <div class="kp">${K('Órdenes creadas',os.length,EF.per==='temp'?'esta temporada':'todo el export','--fp')}${K('Correctivas OM01',c('OM01'),'mantenimiento correctivo','--bad')}${K('Preventivas OM03',c('OM03'),'mantenimiento preventivo','--ok')}${K('Costo real',penC.format(cost),'IW39 · costes totales reales','--ac')}</div>
-    <div class="card"><h2>Costo real por mes <small>según fecha de creación de la OT</small></h2>${columns(mk.map(k=>({lab:MES[+k.slice(5,7)-1]+' '+k.slice(2,4),v:months[k],tip:`${MES[+k.slice(5,7)-1]} ${k.slice(0,4)}<br>${pen.format(months[k])} · ${os.filter(o=>(o['Fecha de creación']||'').startsWith(k)).length} OT`})),{label:'Costo por mes',W:960})}</div>
-    <div class="card"><h2>Materiales en las OT del equipo <small>reservas IW13 · costo estimado con precio del stock</small></h2><div id="eqmat"></div></div>
-    <div class="card"><h2>Órdenes</h2><div id="eqot"></div></div>`;
-  makeTable($('#eqmat'),[{k:'m',h:'Material',cls:'code'},{k:'d',h:'Descripción',cls:'w'},{k:'q',h:'Cantidad',num:1,f:o=>num(o.q)+' '+esc(o.um)},{k:'c',h:'Costo est. (S/)',num:1,f:o=>o.p?money(o.c):SINP}],mg,{sort:{k:'c',d:'desc'},onRow:o=>D.byMat[o.m]&&openSheet(o.m),unit:'materiales',limit:15});
-  makeTable($('#eqot'),[{k:'Orden',h:'Orden',cls:'code'},{k:'Clase de orden',h:'Clase',f:o=>clsPill(o['Clase de orden'])},{k:'Texto breve',h:'Descripción',cls:'w'},{k:'Fecha de creación',h:'Creada',f:o=>fdate(o['Fecha de creación'])},{k:'Status de usuario',h:'Status'},{k:'Costes tot.reales',h:'Costo real (S/)',num:1,f:o=>money(o['Costes tot.reales'])}],os,{sort:{k:'Fecha de creación',d:'desc'},unit:'órdenes',limit:20});}
-
-/* ================= RESERVAS OT ================= */
-const RF={clase:'',riego:'',q:''};
-function vRes(){const v=$('#v-res');
-  const g={};D.res.forEach(r=>{const k=r.Orden||'(sin orden)';const o=g[k]||(g[k]={Orden:r.Orden,Clase_OT:r.Clase_OT,Texto_OT:r.Texto_OT,Fecha:r.Fecha_creacion_OT,Status:r.Status_usuario_OT,Equipo:r.Equipo,EqN:r.Equipo_denominacion,Riego:r.Equipo_riego,items:[],Pend:0,Costo:0,SinP:0});
-    o.items.push(r);if(D.price(r.Material))o.Costo+=z(r.Pendiente_retirar)*D.price(r.Material);else if(z(r.Pendiente_retirar)>0)o.SinP++;if(z(r.Pendiente_retirar)>0)o.Pend++;});
-  const ords=Object.values(g);const cnt={};ords.forEach(o=>cnt[o.Clase_OT||'Sin OT']=(cnt[o.Clase_OT||'Sin OT']||0)+1);
-  v.innerHTML=SEC('ÓRDENES CON MATERIAL RESERVADO','IW13 · toca una clase para filtrar','',`<div class="kp">
-      ${K('OM01 · Correctivas',nf0.format(cnt.OM01||0),'órdenes con reservas','--bad','data-c="OM01"')}
-      ${K('OM03 · Preventivas',nf0.format(cnt.OM03||0),'órdenes con reservas','--ok','data-c="OM03"')}
-      ${K('OM02',nf0.format(cnt.OM02||0),'órdenes con reservas','--fp','data-c="OM02"')}
-      ${K('OM04',nf0.format(cnt.OM04||0),'órdenes con reservas','--ad','data-c="OM04"')}</div>`)+
-    `<div class="card"><div class="pc" style="grid-template-columns:2fr 1fr 1fr">
-      <label class="sq">Buscar<input type="search" id="rq" placeholder="Orden, material o equipo…" value="${esc(RF.q)}"></label>
-      <label>Equipos<select id="rr">${opts([['Sí','Solo riego (IH08)'],['No','Fuera de IH08']],RF.riego,'Todos')}</select></label>
-      ${clearBtn}</div>
-      <div class="mut" style="margin-top:8px">Una fila por orden; tócala para ver sus materiales. La clase sale de IW39 o del prefijo del número: 600 = OM01, 630 = OM03, 640 = OM04, 620 = OM02.</div></div>
-    <div id="rtbl"></div>`;
-  const sync=()=>v.querySelectorAll('[data-c]').forEach(k=>k.setAttribute('aria-pressed',String(k.dataset.c===RF.clase)));
-  v.querySelectorAll('[data-c]').forEach(k=>k.onclick=()=>{RF.clase=RF.clase===k.dataset.c?'':k.dataset.c;sync();draw();});
-  $('#rq').oninput=e=>{RF.q=e.target.value;draw();};$('#rr').onchange=e=>{RF.riego=e.target.value;draw();};
-  v.querySelector('[data-clear]').onclick=()=>{Object.assign(RF,{clase:'',riego:'',q:''});vRes();};
-  function draw(){const q=RF.q.trim().toLowerCase();
-    const rows=ords.filter(o=>(!RF.clase||o.Clase_OT===RF.clase)&&(!RF.riego||o.Riego===RF.riego)&&(!q||[o.Orden,o.Texto_OT,o.Equipo,o.EqN].some(x=>String(x??'').toLowerCase().includes(q))||o.items.some(r=>[r.Material,r['Texto breve de material']].some(x=>String(x??'').toLowerCase().includes(q)))));
-    makeTable($('#rtbl'),[{k:'Orden',h:'Orden',cls:'code',f:o=>esc(o.Orden||'(sin orden)')},{k:'Clase_OT',h:'Clase',f:o=>clsPill(o.Clase_OT)},{k:'Texto_OT',h:'Descripción OT',cls:'w'},
-      {k:'Fecha',h:'Creada',f:o=>fdate(o.Fecha)},{k:'EqN',h:'Equipo',cls:'w',f:o=>esc(o.EqN||o.Equipo||'')},{k:'Riego',h:'Riego'},
-      {k:'n',h:'Materiales',num:1,v:o=>o.items.length,f:o=>o.items.length},{k:'Pend',h:'Con pendiente',num:1},{k:'Costo',h:'Costo est. (S/)',num:1,f:o=>money(o.Costo)+(o.SinP?' '+SINP:'')},{k:'Status',h:'Status'}],
-      rows,{sort:{k:'Orden',d:'desc'},unit:'órdenes',fix:1,sub:o=>`<table><thead><tr><th>Material</th><th>Descripción</th><th class="n">Reservado</th><th class="n">Tomado</th><th class="n">Pendiente</th><th class="n">Stock hoy</th><th class="n">Costo est.</th></tr></thead><tbody>${o.items.map(r=>`<tr><td class="code">${esc(r.Material||'')}</td><td>${esc(r['Texto breve de material']||'')}</td><td class="n">${num(r.Reservado)} ${esc(r.UM||'')}</td><td class="n">${num(r.Tomados)}</td><td class="n">${num(r.Pendiente_retirar)}</td><td class="n">${num(D.byMat[r.Material]?.Stock)}</td><td class="n">${D.price(r.Material)?money(z(r.Pendiente_retirar)*D.price(r.Material)):(z(r.Pendiente_retirar)>0?SINP:'')}</td></tr>`).join('')}</tbody></table>`});}
-  sync();draw();}
-
 /* ================= ficha de material ================= */
 function openSheet(mat){const t=D.byMat[mat];if(!t)return;const sh=$('#sheet');
   const seasons=[['Temporada 23/24',t.Cons_2023_2024],['Temporada 24/25',t.Cons_2024_2025],['Temporada 25/26',t.Cons_2025_2026],['Temporada '+D.meta.temporada.replace(/20(\d\d)\/20(\d\d)/,'$1/$2')+' (en curso)',t.Cons_temporada_actual]];
@@ -380,7 +312,7 @@ function closeSheet(){$('#sheet').hidden=true;$('#scrim').hidden=true;}
 $('#scrim').onclick=closeSheet;document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
 
 /* ================= pestañas ================= */
-const VIEWS={stock:vStock,solped:vSolped,mov:vMov,eq:vEq,res:vRes};let CURTAB='stock';
+const VIEWS={stock:vStock,solped:vSolped,mov:vMov};let CURTAB='stock';
 function show(tab){if(!VIEWS[tab])tab='stock';CURTAB=tab;document.querySelectorAll('.tabs button').forEach(b=>{b.classList.toggle('on',b.dataset.tab===tab);b.setAttribute('aria-selected',String(b.dataset.tab===tab));});
   Object.keys(VIEWS).forEach(k=>$('#v-'+k).hidden=k!==tab);VIEWS[tab]();remember('tab',tab);}
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.tab));
@@ -388,8 +320,8 @@ function renderAll(){WK=null;header();show((location.hash||'').slice(1)||store.t
 renderAll();
 
 /* ================= upload ================= */
-const NEED={tab:['Material','Estado','Minimo','Cant_sugerida_pedir'],sp:['Solicitud de pedido','Pendiente_llegar','Estado'],mv:['Tipo_movimiento','Consumo_neto'],res:['Pendiente_retirar','Clase_OT','Orden'],ot:['Orden','Clase de orden','Costes tot.reales','Equipo_riego']};
-const SHEETN={tab:'TABLERO',sp:'SOLPED_SEGUIMIENTO',mv:'MOV_TEMPORADA',res:'RESERVAS_OT',ot:'OTS'};
+const NEED={tab:['Material','Estado','Minimo','Cant_sugerida_pedir'],sp:['Solicitud de pedido','Pendiente_llegar','Estado'],mv:['Tipo_movimiento','Consumo_neto'],res:['Pendiente_retirar','Clase_OT','Orden']};
+const SHEETN={tab:'TABLERO',sp:'SOLPED_SEGUIMIENTO',mv:'MOV_TEMPORADA',res:'RESERVAS_OT'};
 const iso=v=>v instanceof Date?new Date(v.getTime()-v.getTimezoneOffset()*6e4).toISOString().slice(0,10):v;
 function encode(cols,objs){const rows=objs.map(o=>cols.map(c=>{let v=o[c];if(v===undefined||v==='')v=null;v=iso(v);if(typeof v==='number')v=Math.round(v*1000)/1000;return v;}));const dict={};
   cols.forEach((c,j)=>{const nn=rows.map(r=>r[j]).filter(v=>v!==null);if(!nn.length||!nn.every(v=>typeof v==='string'))return;const u=[...new Set(nn)];if(u.length<0.6*rows.length){const ix=new Map(u.map((v,i)=>[v,i]));dict[j]=u;rows.forEach(r=>{if(r[j]!==null)r[j]=ix.get(r[j]);});}});
@@ -408,12 +340,12 @@ async function ingest(buf,label){
   const mvDates=found.mv.map(m=>iso(m['Fe.contabilización'])).filter(Boolean).sort();
   const ini=(()=>{const n=new Date(),y=n.getFullYear();const s=y=>{const j=new Date(y,0,4);const d=(j.getDay()+6)%7;return new Date(y,0,4-d+182);};const a=n>=s(y)?y:y-1;return {d:iso(s(a)),t:a+'/'+(a+1)};})();
   const raw={meta:{generado:iso(new Date()),inicio_temporada:ini.d,temporada:ini.t,fuente:label+(mvDates.length?' · MB51 hasta '+fdate(mvDates[mvDates.length-1]):''),params:D.meta.params},
-    tab:encode(RAW.tab.cols,t),sp:encode(RAW.sp.cols,found.sp),mv:encode(RAW.mv.cols,found.mv),res:encode(RAW.res.cols,found.res),ot:found.ot?encode(RAW.ot.cols,found.ot):RAW.ot};
+    tab:encode(RAW.tab.cols,t),sp:encode(RAW.sp.cols,found.sp),mv:encode(RAW.mv.cols,found.mv),res:encode(RAW.res.cols,found.res)};
   RAW=raw;load(raw);renderAll();return {raw,found};}
 $('#fileIn').onchange=async e=>{const f=e.target.files[0];if(!f)return;status('Leyendo '+f.name+' …');
   try{const {raw,found}=await ingest(await f.arrayBuffer(),'Excel cargado el '+fdate(iso(new Date())));pendingRaw=raw;
     const art=await window.claude?.use?.('artifact');$('#btnSave').hidden=!art;
-    status(`Datos cargados: ${nf0.format(D.tab.length)} materiales, ${nf0.format(D.sp.length)} posiciones SOLPED${found.ot?'':' (sin hoja OTS: Equipos mantiene los datos anteriores)'}. ${art?'Pulsa «Guardar para el equipo» para que todos vean esta versión.':'Solo los ves tú en esta sesión; los datos publicados se actualizan con ACTUALIZAR_APP.'}`);
+    status(`Datos cargados: ${nf0.format(D.tab.length)} materiales, ${nf0.format(D.sp.length)} posiciones SOLPED. ${art?'Pulsa «Guardar para el equipo» para que todos vean esta versión.':'Solo los ves tú en esta sesión; los datos publicados se actualizan con ACTUALIZAR_APP.'}`);
   }catch(err){status(err.message||String(err),true);}finally{e.target.value='';}};
 /* datos publicados: window.FUENTE_DATOS (app/fuente.js) o data-remote (data/APP_STOCK_MATERIALES.xlsx) */
 (async()=>{
