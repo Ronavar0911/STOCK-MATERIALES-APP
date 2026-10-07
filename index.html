@@ -724,7 +724,7 @@ $('#fileIn').onchange=async e=>{const f=e.target.files[0];if(!f)return;status('L
       await ingest(buf,'Datos actualizados'+(when?' el '+when.toLocaleDateString('es-PE')+' '+when.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}):''));status('');}
     catch(err){status('No pude leer datos.js: '+(err.message||err),true);}
     return;}
-  const src=(window.FUENTE_DATOS||'').trim()||document.getElementById('data').dataset.remote;if(!src||!/^https?:/.test(location.protocol))return;
+  const src=(window.FUENTE_DATOS||'').trim()||((location.pathname.includes('/app/')?'../':'')+'data/APP_STOCK_MATERIALES.xlsx');if(!src||!/^https?:/.test(location.protocol))return;
   status('Cargando los datos publicados…');
   try{const url=src+(src.includes('?')?'&':'?')+'v='+Date.now();
     const r=await fetch(url,{cache:'no-store',redirect:'follow'});if(!r.ok)throw new Error('No pude leer la fuente de datos (código '+r.status+').');
