@@ -298,6 +298,21 @@ table.cmp tr[aria-current="true"] td{background:color-mix(in srgb,var(--ac) 14%,
 .wkn{display:inline-flex;gap:4px;margin-left:8px;vertical-align:middle}
 .wkn button{width:26px;height:26px;padding:0;border-radius:50%;line-height:1;font-size:16px;background:var(--card)}
 svg.col g.click{cursor:pointer}
+/* v0.10 · distribución Stock vs mínimo */
+:root{--d-reg:#1fa36b;--d-int:#1d5fa8;--d-esp:#f0c419;--d-pun:#e8772e;--d-ina:#8a63d2;--d-sin:#2b3442}
+.g2{display:grid;grid-template-columns:1.25fr 1fr;gap:12px;margin-bottom:12px;align-items:stretch}
+.g2>.card,.g2>.ksec{margin-bottom:0}
+@media(max-width:1000px){.g2{grid-template-columns:1fr}}
+.kcol{display:grid;gap:10px}
+.kcol .k b{font-size:28px;letter-spacing:-.01em}
+.stl{display:grid;gap:8px}
+.stl .st{grid-template-columns:1fr auto auto;align-items:center;gap:4px 14px;border-top:1px solid var(--bd);border-left:5px solid var(--sc);padding:8px 12px}
+.stl .st .nm{grid-column:auto;display:flex;flex-direction:column}
+.stl .st .nm small{font-weight:400;color:var(--mut);font-size:11.5px;margin-top:1px}
+.stl .st b{font-size:22px;text-align:right;min-width:56px}
+.stl .st .pc2{min-width:42px;text-align:right}
+.dleg>div{display:flex;gap:8px;align-items:flex-start;padding:6px 8px}
+.lnk{background:none;border:0;padding:0;color:var(--ac);text-decoration:underline;cursor:pointer;font:inherit}
 .sheet{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);z-index:41;border-left:1px solid var(--bd);overflow-y:auto;padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(20px + env(safe-area-inset-bottom,0px))}
 .sheet .card{margin-bottom:10px}
 .sheet .top{display:grid;grid-template-columns:1fr auto;gap:10px;border-top:3px solid var(--ac)}
@@ -387,7 +402,7 @@ const SINP='<span class="og fal" title="Material sin precio en MB52 ni en MB51">
 const STDEF={Quiebre:'Stock 0 y nada pedido (sin SOLPED ni OC abierta).',Pedir:'Bajo el mínimo, aun contando lo pedido.','En camino':'Bajo el mínimo hoy, pero lo pedido lo cubre.',OK:'Entre el mínimo y 1,5 veces el máximo.',Sobrestock:'Más de 1,5 veces el máximo (más de unos 6 meses de consumo).'};
 const EST=[['Quiebre','Sin stock y nada pedido','q','--bad'],['Pedir','Bajo mínimo, falta pedir','pd','--bad'],['En camino','Bajo mínimo, ya pedido','ec','--pen'],['OK','Entre mínimo y máximo','ok','--ok'],['Sobrestock','Más de 1,5 × máximo','sob','--fp']];
 const ESTC={Quiebre:'var(--bad)',Pedir:'color-mix(in srgb,var(--bad) 60%,var(--pen))','En camino':'var(--pen)',OK:'var(--ok)',Sobrestock:'var(--fp)','Sin mínimo':'var(--gr)'};
-const DEM=[['Regular','Consumo en 18 meses o más de los últimos 36. Recibe mínimo automático.','--te'],['Intermitente','Consumo en 6 a 17 meses de los últimos 36. Recibe mínimo automático.','--fp'],['Esporádico','Consumo en menos de 6 meses, repartido en 2 o más temporadas. Sin mínimo automático.','--pen'],['Puntual','Todo su consumo cayó en una sola temporada (típico de proyectos). Sin mínimo automático.','--ad'],['Inactivo','Tuvo consumo, pero ninguno en los últimos 12 meses. Sin mínimo automático.','--mut'],['Sin consumo','Ningún consumo en 36 meses (solo stock o pedidos). Sin mínimo automático.','--bd']];
+const DEM=[['Regular','Consumo en 18 meses o más de los últimos 36. Recibe mínimo automático.','--d-reg'],['Intermitente','Consumo en 6 a 17 meses de los últimos 36. Recibe mínimo automático.','--d-int'],['Esporádico','Consumo en menos de 6 meses, repartido en 2 o más temporadas. Sin mínimo automático.','--d-esp'],['Puntual','Todo su consumo cayó en una sola temporada (típico de proyectos). Sin mínimo automático.','--d-pun'],['Inactivo','Tuvo consumo, pero ninguno en los últimos 12 meses. Sin mínimo automático.','--d-ina'],['Sin consumo','Ningún consumo en 36 meses (solo stock o pedidos). Sin mínimo automático.','--d-sin']];
 const DEMC=Object.fromEntries(DEM.map(d=>[d[0],d[2]]));
 const pill=e=>{const m={Quiebre:'q',Pedir:'pd','En camino':'ec',OK:'ok',Sobrestock:'sob'};return `<span class="og ${m[e]||'nod'}">${esc(e)}</span>`;};
 const SPC={'0':'nod','6':'nod','1':'fal','2':'cam','3':'adel','4':'ok','5':'nod'};
@@ -490,21 +505,24 @@ function vStock(){const v=$('#v-stock');const A=almIndex();if(SF.alm&&!A.mats[SF
   const conMin=EST.reduce((a,e)=>a+(cnt[e[0]]||0),0);
   const almOpts=opts(A.names.map(n=>[n,n+(A.hasVal?` · ${pen.format(z(A.val[n]))}`:'')]),SF.alm,'Todos los almacenes (salvo 1030)');
   const valRows=A.hasVal?Object.entries(A.val).filter(([,x])=>x>0).sort((a,b)=>b[1]-a[1]):[];
-  v.innerHTML=`<div class="ksec wkk"><div class="kh"><b>ESTADO ACTUAL DEL STOCK</b><label class="almsel">Almacén<select id="salm">${almOpts}</select></label></div>
-    <div class="hero">
+  v.innerHTML=`<div class="g2">
+    <div class="card"><h2>Valor del stock por almacén <small>${A.hasVal?'MB52 · toca un almacén para filtrar':'falta la consulta STOCK_ALMACEN'}</small></h2>
+      ${A.hasVal?hbars(valRows.map(([n,x])=>({n,v:x,key:n,tip:`${esc(n)}<br>${pen.format(x)} · ${nf0.format((A.mats[n]||new Set()).size)} materiales`})),{click:1,fmt:x=>pen.format(x)}):'<div class="mut">Agrega la consulta STOCK_ALMACEN al maestro para ver el valor por almacén.</div>'}
+      ${SF.alm?`<div class="mut" style="margin-top:10px">Filtrando por <b>${esc(SF.alm)}</b>: materiales con stock en ese almacén o consumidos desde él esta temporada (${nf0.format(T.length)}). Un material puede estar en más de un almacén. <button type="button" class="lnk" id="almx">Quitar filtro</button></div>`:''}</div>
+    <div class="ksec wkk"><div class="kh"><b>ESTADO ACTUAL DEL STOCK</b><label class="almsel">Almacén<select id="salm">${almOpts}</select></label></div>
+      <div class="kcol">
+      ${K('Valor del stock libre',pen.format(val),SF.alm?(A.hasVal?`almacén ${SF.alm} (MB52)`:'materiales del almacén'):'todos los almacenes salvo 1030 (MB52)','--ac')}
       ${K('Requieren pedido',nf0.format(need),`${nf0.format(cnt.Quiebre||0)} en quiebre · ${nf0.format(cnt.Pedir||0)} por pedir`,'--bad','data-e="_atencion"')}
-      ${K('Inversión para reponer',pen.format(inv),sinP?`cantidad sugerida × precio · ${sinP} sin precio no suman`:'cantidad sugerida × precio',sinP?'--bad':'--ac')}
-      ${K('Valor del stock libre',pen.format(val),SF.alm?(A.hasVal?`almacén ${SF.alm} (MB52)`:'materiales del almacén, valor total en todos los almacenes'):'todos los almacenes salvo 1030 (MB52)','--ac')}
-    </div>${SF.alm?`<div class="mut" style="margin-top:8px">Filtrando por <b>${esc(SF.alm)}</b>: materiales con stock en ese almacén o consumidos desde él esta temporada (${nf0.format(T.length)} materiales). Un material puede pertenecer a más de un almacén.</div>`:''}</div>
-    <div class="card"><h2>Estado de los materiales con mínimo <small>${nf0.format(conMin)} materiales · stock de hoy frente al mínimo y máximo sugeridos · toca un estado para filtrar</small></h2>
-      ${dist(EST.map(e=>({n:e[0],v:cnt[e[0]]||0,c:ESTC[e[0]]})),p=>`data-e="${p.n}"`).replace('class="dist"','class="dist tall"')}
-      <div class="st5">${EST.map(e=>{const n=cnt[e[0]]||0;return `<button type="button" class="st" data-e="${e[0]}" style="--sc:${ESTC[e[0]]}"><span class="nm">${e[0]}</span><b>${nf0.format(n)}</b><span class="pc2">${conMin?Math.round(n/conMin*100):0} %</span><small>${STDEF[e[0]]}</small></button>`;}).join('')}</div></div>
-    <div class="half"><div class="card"><h2>Tipo de demanda <small>${nf0.format(T.length)} materiales · base de 36 meses</small></h2>
-      ${dist(DEM.map(d=>({n:d[0],v:dc[d[0]]||0,c:`var(${d[2]})`})),p=>`data-t="${p.n}"`).replace('class="dist"','class="dist tall"')}
-      <div class="dleg">${DEM.map(d=>`<button type="button" data-t="${d[0]}"><i class="dot" style="background:var(${d[2]})"></i><span><b>${d[0]}</b> <em>${nf0.format(dc[d[0]]||0)}</em><small>${d[1]}</small></span></button>`).join('')}</div>
+      ${K('Inversión para reponer',pen.format(inv),sinP?`cantidad sugerida × precio · ${sinP} sin precio no suman`:'cantidad sugerida × precio',sinP?'--bad':'--pen')}
+      </div></div></div>
+    <div class="g2">
+    <div class="card"><h2>Tipo de demanda <small>${nf0.format(T.length)} materiales · base de 36 meses</small></h2>
+      <div class="dist tall">${DEM.filter(d=>dc[d[0]]).map(d=>`<i style="flex:${dc[d[0]]};background:var(${d[2]});cursor:default" data-tip="${esc(d[0])}: ${nf0.format(dc[d[0]])} (${Math.round(dc[d[0]]/T.length*100)}%)"></i>`).join('')}</div>
+      <div class="dleg">${DEM.map(d=>`<div><i class="dot" style="background:var(${d[2]})"></i><span><b>${d[0]}</b> <em>${nf0.format(dc[d[0]]||0)}</em><small>${d[1]}</small></span></div>`).join('')}</div>
       <div class="mut" style="margin-top:8px">Solo <b>Regular</b> e <b>Intermitente</b> (${nf0.format((dc.Regular||0)+(dc.Intermitente||0))}) reciben mínimo automático; los demás (${nf0.format(cnt['Sin mínimo']||0)} «Sin mínimo») solo tienen mínimo si se cargan en CRITICOS.</div></div>
-    <div class="card"><h2>Valor del stock por almacén <small>${A.hasVal?'MB52 · toca un almacén para filtrar':'falta la hoja STOCK_ALMACEN'}</small></h2>
-      ${A.hasVal?hbars(valRows.map(([n,x])=>({n,v:x,key:n,tip:`${esc(n)}<br>${pen.format(x)} · ${nf0.format((A.mats[n]||new Set()).size)} materiales`})),{click:1,fmt:x=>pen.format(x)}):'<div class="mut">Agrega la consulta STOCK_ALMACEN al maestro para ver el valor por almacén.</div>'}</div></div>
+    <div class="card"><h2>Estado de los materiales con mínimo <small>${nf0.format(conMin)} materiales · toca un estado para filtrar la tabla</small></h2>
+      <div class="stl">${EST.map(e=>{const n=cnt[e[0]]||0;return `<button type="button" class="st" data-e="${e[0]}" style="--sc:${ESTC[e[0]]}"><span class="nm">${e[0]}<small>${STDEF[e[0]]}</small></span><b>${nf0.format(n)}</b><span class="pc2">${conMin?Math.round(n/conMin*100):0} %</span></button>`;}).join('')}</div></div>
+    </div>
     <div class="card"><div class="pc">
       <label class="sq">Buscar<input type="search" id="sq" placeholder="Código o descripción…" value="${esc(SF.q)}"></label>
       <label>Estado<select id="sest">${opts([['_atencion','Requieren pedido'],...EST.map(e=>e[0]),'Sin mínimo'],SF.estado,'Todos')}</select></label>
@@ -512,11 +530,10 @@ function vStock(){const v=$('#v-stock');const A=almIndex();if(SF.alm&&!A.mats[SF
       <label>Reserva en OT<select id="sot">${opts([['OM01','Correctiva OM01'],['OM03','Preventiva OM03']],SF.ot,'Con o sin reserva')}</select></label></div>
       <div class="mut" style="margin-top:8px">Mínimo = promedio mensual ajustado × ${D.meta.params?.MesesMin??2} meses (solo demanda Regular e Intermitente) o el mínimo manual de críticos, el mayor. Toca un material para ver su ficha.</div></div>
     <div id="stbl"></div>`;
-  const sync=()=>{v.querySelectorAll('[data-e]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.e===SF.estado)));v.querySelectorAll('[data-t]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.t===SF.tipo)));$('#sest').value=SF.estado;$('#stipo').value=SF.tipo;};
+  const sync=()=>{v.querySelectorAll('[data-e]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.e===SF.estado)));$('#sest').value=SF.estado;$('#stipo').value=SF.tipo;};
   v.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{SF.estado=SF.estado===b.dataset.e?'':b.dataset.e;remember('estado',SF.estado);sync();stockTable();});
-  v.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{SF.tipo=SF.tipo===b.dataset.t?'':b.dataset.t;sync();stockTable();});
   v.querySelectorAll('.hb .r[data-key]').forEach(r=>r.onclick=()=>{SF.alm=SF.alm===r.dataset.key?'':r.dataset.key;vStock();});
-  $('#salm').onchange=e=>{SF.alm=e.target.value;vStock();};
+  $('#salm').onchange=e=>{SF.alm=e.target.value;vStock();};if($('#almx'))$('#almx').onclick=()=>{SF.alm='';vStock();};
   $('#sq').oninput=e=>{SF.q=e.target.value;stockTable();};$('#sot').onchange=e=>{SF.ot=e.target.value;stockTable();};
   $('#sest').onchange=e=>{SF.estado=e.target.value;remember('estado',SF.estado);sync();stockTable();};$('#stipo').onchange=e=>{SF.tipo=e.target.value;sync();stockTable();};
   sync();stockTable();}
