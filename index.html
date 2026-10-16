@@ -267,6 +267,9 @@ table.cart td{vertical-align:top}
 .cnew label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--mut)}
 .cnew input{width:100%;color:var(--fg)}
 @media(max-width:560px){.cnew{grid-template-columns:1fr 1fr}.cnew .w2{grid-column:1/-1}.cnew button{grid-column:1/-1}}
+table.cmp tr.row{cursor:pointer}
+table.cmp tr.row:hover td{background:color-mix(in srgb,var(--ac) 6%,var(--card))}
+table.cmp tr[aria-current="true"] td{background:color-mix(in srgb,var(--ac) 14%,var(--card));font-weight:600}
 .sheet{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);z-index:41;border-left:1px solid var(--bd);overflow-y:auto;padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(20px + env(safe-area-inset-bottom,0px))}
 .sheet .card{margin-bottom:10px}
 .sheet .top{display:grid;grid-template-columns:1fr auto;gap:10px;border-top:3px solid var(--ac)}
@@ -358,7 +361,7 @@ const ESTC={Quiebre:'var(--bad)',Pedir:'color-mix(in srgb,var(--bad) 60%,var(--p
 const DEM=[['Regular','18 meses o más con consumo','--te'],['Intermitente','6 a 17 meses con consumo','--fp'],['Esporádico','menos de 6 meses','--pen'],['Puntual','consumo en una sola temporada','--ad'],['Inactivo','más de 12 meses sin consumo','--mut'],['Sin consumo','sin historial','--bd']];
 const DEMC=Object.fromEntries(DEM.map(d=>[d[0],d[2]]));
 const pill=e=>{const m={Quiebre:'q',Pedir:'pd','En camino':'ec',OK:'ok',Sobrestock:'sob'};return `<span class="og ${m[e]||'nod'}">${esc(e)}</span>`;};
-const SPC={'1':'fal','2':'cam','3':'adel','4':'ok','5':'nod'};
+const SPC={'0':'nod','6':'nod','1':'fal','2':'cam','3':'adel','4':'ok','5':'nod'};
 const spill=e=>`<span class="og ${SPC[String(e)[0]]||'nod'}">${esc(String(e).slice(2))}</span>`;
 const dem=d=>`<span class="dem" style="--dc:var(${DEMC[d]||'--mut'})">${esc(d)}</span>`;
 const clsPill=c=>c?`<span class="og ${({OM01:'om1',OM03:'om3',OM02:'om2',OM04:'om4'})[c]||'nod'}">${esc(c)}</span>`:'<span class="og nod">Sin OT</span>';
@@ -502,8 +505,13 @@ function stockTable(){const q=SF.q.trim().toLowerCase();
   const h=$('#stbl');if(!h.dataset.cart){h.dataset.cart=1;h.addEventListener('click',e=>{const b=e.target.closest('[data-add]');if(!b)return;e.stopPropagation();cartToggle(b.dataset.add);},true);}}
 
 /* ================= SOLPED ================= */
-const PF={estado:'_abiertas',q:'',sol:'',dias:'',tipo:'mat'};
-const spScope=()=>D.sp.filter(s=>PF.tipo==='mat'?!!s.Material:PF.tipo==='srv'?!s.Material:true);
+const PF={estado:'_abiertas',q:'',sol:'',dias:'',tipo:'mat',cmp:'',cre:'',per:'cre'};
+const BORR='0 Borrada';
+const spBase=()=>D.sp.filter(s=>PF.tipo==='mat'?!!s.Material:PF.tipo==='srv'?!s.Material:true);
+const SINR='6 Sin dato de recepción';
+const spScope=()=>spBase().filter(s=>PF.estado===BORR?s.Estado===BORR:s.Estado!==BORR);
+const median=a=>{if(!a.length)return null;const b=a.slice().sort((x,y)=>x-y),m=b.length>>1;return b.length%2?b[m]:(b[m-1]+b[m])/2;};
+const dOC=s=>s.Dias_hasta_OC!=null?z(s.Dias_hasta_OC):(s['Fecha orden compra']&&s['Fecha de solicitud']?days(s['Fecha de solicitud'],s['Fecha orden compra']):null);
 const isOpen=s=>/^[123]/.test(s.Estado);
 const ageCls=d=>d>60?'a3':d>30?'a2':'a1';
 function vSolped(){const v=$('#v-solped');const SP=spScope();const cnt={};SP.forEach(s=>cnt[s.Estado]=(cnt[s.Estado]||0)+1);
@@ -512,7 +520,17 @@ function vSolped(){const v=$('#v-solped');const SP=spScope();const cnt={};SP.for
   const avgRec=rec.length?rec.reduce((a,b)=>a+b,0)/rec.length:null;const old=open.filter(s=>z(s.Dias_desde_solicitud)>60).length;
   const sols=[...new Set(SP.map(s=>s.Solicitante).filter(Boolean))].sort();
   const buckets=[['0–15 días',0,15],['16–30',16,30],['31–60',31,60],['61–90',61,90],['Más de 90',91,1e9]].map(b=>({lab:b[0],v:open.filter(s=>z(s.Dias_desde_solicitud)>=b[1]&&z(s.Dias_desde_solicitud)<=b[2]).length}));
-  const topSol=sumBy(SP,s=>s.Solicitante,()=>1).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const nBorr=spBase().filter(s=>s.Estado===BORR).length;
+  const dO=SP.map(dOC).filter(d=>d!=null&&d>=0);const medOC=median(dO);
+  const hasCmp=D.sp.some(s=>s['Grupo de compras']),hasCre=D.sp.some(s=>s['Creado por']);
+  const cmps=[...new Set(SP.map(s=>s.Comprador||s['Grupo de compras']).filter(Boolean))].sort();
+  const cres=[...new Set(SP.map(s=>s['Creado por']).filter(Boolean))].sort();
+  const perK=PF.per==='sol'||!hasCre?'Solicitante':'Creado por';
+  const topSol=sumBy(SP,s=>s[perK],()=>1).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const cg={};SP.forEach(s=>{const k=s.Comprador||s['Grupo de compras'];if(!k)return;const o=cg[k]||(cg[k]={k,n:0,s1:0,s2:0,s4:0,s6:0,val:0,d:[]});o.n++;
+    if(s.Estado[0]==='1')o.s1++;else if(s.Estado[0]==='2'||s.Estado[0]==='3')o.s2++;else if(s.Estado[0]==='4'||s.Estado[0]==='5')o.s4++;else if(s.Estado[0]==='6')o.s6++;
+    if(isOpen(s))o.val+=z(s['Valor total']);const d=dOC(s);if(d!=null&&d>=0)o.d.push(d);});
+  const cgl=Object.values(cg).map(o=>({...o,med:median(o.d)})).sort((a,b)=>b.n-a.n);
   const tl=PF.tipo==='mat'?'solo materiales':PF.tipo==='srv'?'solo servicios':'materiales y servicios';
   v.innerHTML=SEC('FLUJO DE LAS SOLPED',`${tl} · export ME5A`,'wkk',`<div class="kp k6">
       ${K('Abiertas',nf0.format(open.length),'pasos 1 a 3','--pen','data-e="_abiertas"')}
@@ -521,29 +539,41 @@ function vSolped(){const v=$('#v-solped');const SP=spScope();const cnt={};SP.for
       ${K('3 · Recibido parcial',nf0.format(cnt['3 Recibido parcial']||0),'llegó una parte','--fp','data-e="3 Recibido parcial"')}
       ${K('4 · Recibido',nf0.format(cnt['4 Recibido']||0),'entrada 101 completa','--ok','data-e="4 Recibido"')}
       ${K('Servicios con OC',nf0.format(D.sp.filter(x=>x.Estado==='5 Servicio con OC').length),'no pasan por MB51','--mut','data-e="5 Servicio con OC"')}</div>`)+
-    SEC('TIEMPOS Y VALOR','todo el export','',`<div class="kp">
+    SEC('TIEMPOS Y VALOR','todo el export','',`<div class="kp k6">
       ${K('Valor de lo abierto',penC.format(valOpen),'valor total de pasos 1 a 3','--ac')}
       ${K('Tiempo hasta recibir',avgRec===null?'—':nf0.format(avgRec)+' días','promedio SOLPED → entrada 101','--fp')}
       ${K('Abiertas > 60 días',nf0.format(old),'requieren seguimiento',old?'--bad':'--ok')}
-      ${K('Posiciones',nf0.format(SP.length),tl,'--mut')}</div>`)+
+      ${K('Días hasta la OC',medOC===null?'—':nf0.format(medOC)+' días','mediana SOLPED → orden de compra','--ac')}
+      ${K('Sin dato de recepción',nf0.format(SP.filter(s=>s.Estado===SINR).length),'OC anterior al export MB51 · no suma en tránsito','--mut','data-e="'+SINR+'"')}
+      ${K('Borradas en SAP',nf0.format(nBorr),nBorr?'no cuentan en stock ni pedidos · toca para verlas':'indicador de borrado','--mut','data-e="0 Borrada"')}</div>`)+
     `<div class="half"><div class="card"><h2>Antigüedad de lo abierto <small>posiciones por días desde la SOLPED</small></h2>${columns(buckets.map(b=>({lab:b.lab,v:b.v,tip:`${b.lab}: ${nf0.format(b.v)} posiciones`})),{axis:v=>nf0.format(v),label:'Antigüedad'})}</div>
-    <div class="card"><h2>Solicitantes más frecuentes <small>posiciones, top 10 · toca para filtrar</small></h2>${hbars(topSol.map(([n,c])=>({n,v:c,key:n,tip:`${esc(n)}: ${nf0.format(c)} posiciones · ${nf0.format(open.filter(s=>s.Solicitante===n).length)} abiertas`})),{click:1,fmt:v=>nf0.format(v)})}</div></div>
+    <div class="card"><h2>${perK==='Creado por'?'Quién crea las SOLPED':'Solicitantes más frecuentes'} <small>posiciones, top 10 · toca para filtrar</small></h2>
+      ${hasCre?`<span class="seg" style="margin-bottom:8px"><button type="button" data-per="cre" class="${perK==='Creado por'?'on':''}">Creado por (usuario SAP)</button><button type="button" data-per="sol" class="${perK==='Solicitante'?'on':''}">Solicitante</button></span>`:''}
+      ${hbars(topSol.map(([n,c])=>({n,v:c,key:n,tip:`${esc(n)}: ${nf0.format(c)} posiciones · ${nf0.format(open.filter(s=>s[perK]===n).length)} abiertas`})),{click:1,fmt:v=>nf0.format(v)})}</div></div>
+    ${hasCmp?`<div class="card"><h2>Por comprador <small>grupo de compras · toca una fila para filtrar</small></h2><div class="gw" style="max-height:none"><table class="mini cmp"><thead><tr><th>Comprador</th><th class="n">Posiciones</th><th class="n">Sin OC</th><th class="n">OC en tránsito</th><th class="n">Recibidas / servicio</th><th class="n" title="OC anterior al export MB51: no se puede saber si llegó">Sin dato recepción</th><th class="n">Días hasta OC (mediana)</th><th class="n">Valor abierto</th></tr></thead><tbody>
+      ${cgl.map(o=>`<tr class="row" data-cmp="${esc(o.k)}" aria-current="${o.k===PF.cmp}"><td class="code">${esc(o.k)}</td><td class="n">${nf0.format(o.n)}</td><td class="n">${o.s1?`<b style="color:var(--bad)">${nf0.format(o.s1)}</b>`:'–'}</td><td class="n">${o.s2?nf0.format(o.s2):'–'}</td><td class="n">${o.s4?nf0.format(o.s4):'–'}</td><td class="n mut">${o.s6?nf0.format(o.s6):'–'}</td><td class="n">${o.med===null?'–':nf0.format(o.med)}</td><td class="n">${money(o.val)}</td></tr>`).join('')}</tbody></table></div>
+      <div class="mut" style="margin-top:6px">El nombre de cada comprador se puede agregar en la tabla <b>tblCompradores</b> del maestro (Grupo de compras | Nombre).</div></div>`:''}
     <div class="card"><div class="pc">
       <label class="sq">Buscar<input type="search" id="pq" placeholder="Material, texto, SOLPED o pedido…" value="${esc(PF.q)}"></label>
       <label>Tipo de posición<select id="ptipo">${opts([['mat','Solo materiales'],['srv','Solo servicios']],PF.tipo,'Materiales y servicios')}</select></label>
       <label>Solicitante<select id="psol">${opts(sols,PF.sol,'Todos')}</select></label>
+      ${hasCmp?`<label>Comprador<select id="pcmp">${opts(cmps,PF.cmp,'Todos')}</select></label>`:''}
+      ${hasCre?`<label>Creado por<select id="pcre">${opts(cres,PF.cre,'Todos')}</select></label>`:''}
       <label>Antigüedad<select id="pdias">${opts([15,30,60,90].map(d=>[String(d),'Abiertas hace más de '+d+' días']),PF.dias,'Cualquiera')}</select></label>
       ${clearBtn}</div>
       <div class="mut" style="margin-top:8px"><b>Días abierta</b>: días desde la SOLPED hasta hoy, solo para lo pendiente (verde hasta 30, ámbar hasta 60, rojo después). <b>Días a recepción</b>: lo que tardó en llegar lo ya recibido.</div></div>
     <div id="ptbl"></div>`;
   const sync=()=>v.querySelectorAll('[data-e]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.e===PF.estado)));
-  v.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{PF.estado=PF.estado===b.dataset.e?'':b.dataset.e;if(b.dataset.e==='5 Servicio con OC'&&PF.tipo==='mat'){PF.tipo='';vSolped();return;}sync();spTable();});
-  v.querySelectorAll('.hb .r[data-key]').forEach(r=>r.onclick=()=>{PF.sol=r.dataset.key;$('#psol').value=PF.sol;spTable();});
+  v.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{const was=PF.estado;PF.estado=PF.estado===b.dataset.e?'':b.dataset.e;if(b.dataset.e==='5 Servicio con OC'&&PF.tipo==='mat'){PF.tipo='';vSolped();return;}if(was===BORR||PF.estado===BORR){vSolped();return;}sync();spTable();});
+  v.querySelectorAll('.hb .r[data-key]').forEach(r=>r.onclick=()=>{if(perK==='Creado por'){PF.cre=r.dataset.key;if($('#pcre'))$('#pcre').value=PF.cre;}else{PF.sol=r.dataset.key;$('#psol').value=PF.sol;}spTable();});
+  v.querySelectorAll('[data-per]').forEach(b=>b.onclick=()=>{PF.per=b.dataset.per;vSolped();});
+  v.querySelectorAll('[data-cmp]').forEach(r=>r.onclick=()=>{PF.cmp=PF.cmp===r.dataset.cmp?'':r.dataset.cmp;vSolped();});
+  if($('#pcmp'))$('#pcmp').onchange=e=>{PF.cmp=e.target.value;vSolped();};if($('#pcre'))$('#pcre').onchange=e=>{PF.cre=e.target.value;spTable();};
   $('#ptipo').onchange=e=>{PF.tipo=e.target.value;vSolped();};$('#pq').oninput=e=>{PF.q=e.target.value;spTable();};$('#psol').onchange=e=>{PF.sol=e.target.value;spTable();};$('#pdias').onchange=e=>{PF.dias=e.target.value;spTable();};
-  v.querySelector('[data-clear]').onclick=()=>{Object.assign(PF,{estado:'',q:'',sol:'',dias:'',tipo:''});vSolped();};
+  v.querySelector('[data-clear]').onclick=()=>{Object.assign(PF,{estado:'',q:'',sol:'',dias:'',tipo:'',cmp:'',cre:''});vSolped();};
   sync();spTable();}
 function spTable(){const q=PF.q.trim().toLowerCase();
-  const rows=spScope().filter(s=>(!PF.estado||(PF.estado==='_abiertas'?isOpen(s):s.Estado===PF.estado))&&(!PF.sol||s.Solicitante===PF.sol)&&(!PF.dias||(isOpen(s)&&z(s.Dias_desde_solicitud)>+PF.dias))
+  const rows=spScope().filter(s=>(!PF.estado||(PF.estado==='_abiertas'?isOpen(s):s.Estado===PF.estado))&&(!PF.sol||s.Solicitante===PF.sol)&&(!PF.cmp||(s.Comprador||s['Grupo de compras'])===PF.cmp)&&(!PF.cre||s['Creado por']===PF.cre)&&(!PF.dias||(isOpen(s)&&z(s.Dias_desde_solicitud)>+PF.dias))
     &&(!q||[s.Material,s['Texto breve'],s['Solicitud de pedido'],s.Pedido].some(x=>String(x??'').toLowerCase().includes(q))));
   makeTable($('#ptbl'),[
     {k:'Solicitud de pedido',h:'SOLPED',cls:'code',f:o=>esc(o['Solicitud de pedido'])+'<span class="mut">/'+esc(o['Pos.solicitud pedido'])+'</span>'},
@@ -558,6 +588,9 @@ function spTable(){const q=PF.q.trim().toLowerCase();
     {k:'Cant_recibida',h:'Recibido',num:1,f:o=>num(o.Cant_recibida||null)},
     {k:'Pendiente_llegar',h:'Pendiente',num:1,f:o=>num(o.Pendiente_llegar||null)},
     {k:'Valor total',h:'Valor (S/)',num:1,f:o=>money(o['Valor total'])},
+    {k:'Dias_hasta_OC',h:'Días hasta OC',num:1,tip:'Días entre la SOLPED y la orden de compra',v:o=>dOC(o),f:o=>{const d=dOC(o);return d==null?'':d;}},
+    {k:'Comprador',h:'Comprador',cls:'code',v:o=>o.Comprador||o['Grupo de compras'],f:o=>esc(o.Comprador||o['Grupo de compras']||'')},
+    {k:'Creado por',h:'Creado por'},
     {k:'Nombre de proveedor',h:'Proveedor',cls:'w'},{k:'Solicitante',h:'Solicitante'},
   ],rows,{sort:{k:'Dias_abierta',d:'desc'},onRow:o=>o.Material&&D.byMat[o.Material]?openSheet(o.Material):null,unit:'posiciones',fix:2});}
 
@@ -706,6 +739,7 @@ function encode(cols,objs){const rows=objs.map(o=>cols.map(c=>{let v=o[c];if(v==
   cols.forEach((c,j)=>{const nn=rows.map(r=>r[j]).filter(v=>v!==null);if(!nn.length||!nn.every(v=>typeof v==='string'))return;const u=[...new Set(nn)];if(u.length<0.6*rows.length){const ix=new Map(u.map((v,i)=>[v,i]));dict[j]=u;rows.forEach(r=>{if(r[j]!==null)r[j]=ix.get(r[j]);});}});
   return {cols,dict,rows};}
 let pendingRaw=null;
+const cu=(cols,objs)=>{const s=new Set(cols);objs.slice(0,50).forEach(o=>Object.keys(o).forEach(k=>s.add(k)));return [...s];};
 $('#btnLoad').onclick=()=>$('#fileIn').click();
 async function ingest(buf,label){
   if(!window.XLSX)throw new Error('No cargó el lector de Excel. Revisa tu conexión y vuelve a intentar.');
@@ -719,7 +753,7 @@ async function ingest(buf,label){
   const mvDates=found.mv.map(m=>iso(m['Fe.contabilización'])).filter(Boolean).sort();
   const ini=(()=>{const n=new Date(),y=n.getFullYear();const s=y=>{const j=new Date(y,0,4);const d=(j.getDay()+6)%7;return new Date(y,0,4-d+182);};const a=n>=s(y)?y:y-1;return {d:iso(s(a)),t:a+'/'+(a+1)};})();
   const raw={meta:{generado:iso(new Date()),inicio_temporada:ini.d,temporada:ini.t,fuente:label+(mvDates.length?' · MB51 hasta '+fdate(mvDates[mvDates.length-1]):''),params:D.meta.params},
-    tab:encode(RAW.tab.cols,t),sp:encode(RAW.sp.cols,found.sp),mv:encode(RAW.mv.cols,found.mv),res:encode(RAW.res.cols,found.res)};
+    tab:encode(cu(RAW.tab.cols,t),t),sp:encode(cu(RAW.sp.cols,found.sp),found.sp),mv:encode(cu(RAW.mv.cols,found.mv),found.mv),res:encode(cu(RAW.res.cols,found.res),found.res)};
   RAW=raw;load(raw);renderAll();return {raw,found};}
 $('#fileIn').onchange=async e=>{const f=e.target.files[0];if(!f)return;status('Leyendo '+f.name+' …');
   try{const {raw,found}=await ingest(await f.arrayBuffer(),'Excel cargado el '+fdate(iso(new Date())));pendingRaw=raw;
