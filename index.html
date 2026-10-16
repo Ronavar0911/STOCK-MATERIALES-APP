@@ -340,6 +340,18 @@ svg.col g.click{cursor:pointer}
 .stl .st{grid-template-columns:1fr auto;padding:6px 12px}
 .stl .st .nv b{font-size:20px;min-width:48px;text-align:right}
 .stl .st .nm{font-size:13px}
+/* v0.16 · tarjetas de igual alto y KPI con color de marca */
+.g2{align-items:stretch}
+.g2>.card,.g2>.ksec{display:flex;flex-direction:column}
+.g2>.card>.hb{flex:1;display:flex;flex-direction:column;justify-content:space-between}
+.g2>.card>.dleg{flex:1;align-content:space-around}
+.g2>.card>.stl{flex:1;grid-auto-rows:1fr}
+.kcol{flex:1;grid-auto-rows:1fr}
+.kcol .k{background:var(--grad);border:0!important;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:var(--sh-card)}
+.kcol .k small,.kcol .k span{color:rgba(255,255,255,.85)}
+.kcol .k b{color:#fff}
+.kcol button.k:hover{filter:brightness(1.08)}
+.kcol .k[aria-pressed="true"]{background:var(--grad);outline:3px solid color-mix(in srgb,var(--ac) 35%,transparent);outline-offset:2px}
 .sheet{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);z-index:41;border-left:1px solid var(--bd);overflow-y:auto;padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(20px + env(safe-area-inset-bottom,0px))}
 .sheet .card{margin-bottom:10px}
 .sheet .top{display:grid;grid-template-columns:1fr auto;gap:10px;border-top:3px solid var(--ac)}
