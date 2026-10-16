@@ -313,6 +313,27 @@ svg.col g.click{cursor:pointer}
 .stl .st .pc2{min-width:42px;text-align:right}
 .dleg>div{display:flex;gap:8px;align-items:flex-start;padding:6px 8px}
 .lnk{background:none;border:0;padding:0;color:var(--ac);text-decoration:underline;cursor:pointer;font:inherit}
+/* v0.12 · cifras centradas y % con barra */
+.kcol .k{text-align:center;padding:12px 14px}
+.kcol .k small,.kcol .k span{text-align:center}
+.kcol .k b,.st .nv b{font-variant-numeric:tabular-nums}
+.stl .st{grid-template-columns:1fr 168px}
+.stl .st .nv{display:flex;flex-direction:column;align-items:stretch;gap:4px}
+.stl .st .nv b{font-size:24px;text-align:center;line-height:1.1;min-width:0}
+.st .stm{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px}
+.st .stm .stb{height:6px;border-radius:99px;background:color-mix(in srgb,var(--sc) 16%,var(--card));overflow:hidden}
+.st .stm .stb i{display:block;height:100%;background:var(--sc);border-radius:99px}
+.st .stm .pc2{min-width:36px;text-align:right;font-weight:600;color:var(--fg);font-size:12.5px;font-variant-numeric:tabular-nums}
+.st .stm .pc2 small{font-weight:400;color:var(--mut);margin-left:1px;font-size:11px;display:inline}
+/* v0.14 · códigos antiguos */
+.antes{font-size:10.5px;color:var(--mut);font-family:inherit;white-space:nowrap}
+.oldcall{background:var(--warn-bg);border:1px solid color-mix(in srgb,var(--pen) 45%,var(--bd));border-left:5px solid var(--pen);border-radius:var(--r);padding:10px 12px;margin-bottom:10px;color:var(--warn-tx);font-size:13px;display:grid;gap:4px}
+.oldcall b{color:var(--fg)}.oldcall small{color:var(--warn-tx);font-size:11.5px}
+.oldmini{margin-top:3px;font-size:11px;color:var(--warn-tx);background:var(--warn-bg);border-radius:6px;padding:2px 6px;display:inline-block}
+.osteps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.osteps>div{display:grid;gap:4px;padding:6px 10px;border-left:3px solid var(--ac)}
+.osteps span{color:var(--mut);font-size:12.5px;line-height:1.4}
+@media(max-width:900px){.osteps{grid-template-columns:1fr}}
 .sheet{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);z-index:41;border-left:1px solid var(--bd);overflow-y:auto;padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(20px + env(safe-area-inset-bottom,0px))}
 .sheet .card{margin-bottom:10px}
 .sheet .top{display:grid;grid-template-columns:1fr auto;gap:10px;border-top:3px solid var(--ac)}
@@ -353,12 +374,14 @@ svg.col g.click{cursor:pointer}
     <button role="tab" data-tab="stock" id="tab-stock">Stock vs mínimo<span class="n" id="n-stock"></span></button>
     <button role="tab" data-tab="solped" id="tab-solped">Seguimiento SOLPED<span class="n" id="n-solped"></span></button>
     <button role="tab" data-tab="mov" id="tab-mov">Consumo y gasto<span class="n" id="n-mov"></span></button>
+    <button role="tab" data-tab="old" id="tab-old" hidden>Códigos antiguos<span class="n" id="n-old"></span></button>
   </nav>
   <div class="status" id="status" role="status"></div>
   <div id="wkcard" hidden></div>
   <section class="view" id="v-stock"></section>
   <section class="view" id="v-solped" hidden></section>
   <section class="view" id="v-mov" hidden></section>
+  <section class="view" id="v-old" hidden></section>
 </main>
 <div id="tip" hidden></div>
 <div class="scrim" id="scrim" hidden></div>
@@ -382,7 +405,7 @@ $('#app').appendChild(SHELL.content.cloneNode(true));
 let RAW=JSON.parse(document.getElementById('data').textContent);
 function decode(T){if(!T)return [];const d=T.dict||{};return T.rows.map(r=>{const o={};T.cols.forEach((c,j)=>{let v=r[j];if(d[j]!==undefined&&v!==null&&v!==undefined)v=d[j][v];o[c]=v===undefined?null:v;});return o;});}
 let D={};
-function load(raw){D={meta:raw.meta,tab:decode(raw.tab),sp:decode(raw.sp),mv:decode(raw.mv),res:decode(raw.res),alm:decode(raw.alm)};
+function load(raw){D={meta:raw.meta,tab:decode(raw.tab),sp:decode(raw.sp),mv:decode(raw.mv),res:decode(raw.res),alm:decode(raw.alm),eq:decode(raw.eq)};
   D.byMat={};D.tab.forEach(t=>D.byMat[t.Material]=t);
   D.price=m=>{const t=D.byMat[m];return t&&t.Precio_unit>0?t.Precio_unit:0;};}
 load(RAW);
@@ -462,6 +485,7 @@ function header(){$('#tSrc').textContent=`${D.meta.fuente||''} · temporada ${D.
   $('#n-stock').textContent=nf0.format(D.tab.filter(t=>t.Estado==='Quiebre'||t.Estado==='Pedir').length);
   $('#n-solped').textContent=nf0.format(D.sp.filter(s=>s.Material&&/^[123]/.test(s.Estado)).length);
   $('#n-mov').textContent=pen.format(D.mv.reduce((a,m)=>a+z(m.Costo_consumo),0));
+  OLDX=null;const ol=oldIndex().list;$('#n-old').textContent=nf0.format(ol.filter(o=>o.act!=='listo').length);$('#tab-old').hidden=!ol.length;
 }
 
 /* ================= tabla ================= */
@@ -521,29 +545,31 @@ function vStock(){const v=$('#v-stock');const A=almIndex();if(SF.alm&&!A.mats[SF
       <div class="dleg">${DEM.map(d=>`<div><i class="dot" style="background:var(${d[2]})"></i><span><b>${d[0]}</b> <em>${nf0.format(dc[d[0]]||0)}</em><small>${d[1]}</small></span></div>`).join('')}</div>
       <div class="mut" style="margin-top:8px">Solo <b>Regular</b> e <b>Intermitente</b> (${nf0.format((dc.Regular||0)+(dc.Intermitente||0))}) reciben mínimo automático; los demás (${nf0.format(cnt['Sin mínimo']||0)} «Sin mínimo») solo tienen mínimo si se cargan en CRITICOS.</div></div>
     <div class="card"><h2>Estado de los materiales con mínimo <small>${nf0.format(conMin)} materiales · toca un estado para filtrar la tabla</small></h2>
-      <div class="stl">${EST.map(e=>{const n=cnt[e[0]]||0;return `<button type="button" class="st" data-e="${e[0]}" style="--sc:${ESTC[e[0]]}"><span class="nm">${e[0]}<small>${STDEF[e[0]]}</small></span><b>${nf0.format(n)}</b><span class="pc2">${conMin?Math.round(n/conMin*100):0} %</span></button>`;}).join('')}</div></div>
+      <div class="stl">${EST.map(e=>{const n=cnt[e[0]]||0;return `<button type="button" class="st" data-e="${e[0]}" style="--sc:${ESTC[e[0]]}"><span class="nm">${e[0]}<small>${STDEF[e[0]]}</small></span><span class="nv"><b>${nf0.format(n)}</b><span class="stm"><span class="stb"><i style="width:${conMin?n/conMin*100:0}%"></i></span><span class="pc2">${conMin?Math.round(n/conMin*100):0}<small>%</small></span></span></span></button>`;}).join('')}</div></div>
     </div>
     <div class="card"><div class="pc">
       <label class="sq">Buscar<input type="search" id="sq" placeholder="Código o descripción…" value="${esc(SF.q)}"></label>
       <label>Estado<select id="sest">${opts([['_atencion','Requieren pedido'],...EST.map(e=>e[0]),'Sin mínimo'],SF.estado,'Todos')}</select></label>
       <label>Tipo de demanda<select id="stipo">${opts(DEM.map(d=>d[0]),SF.tipo,'Todos')}</select></label>
-      <label>Reserva en OT<select id="sot">${opts([['OM01','Correctiva OM01'],['OM03','Preventiva OM03']],SF.ot,'Con o sin reserva')}</select></label></div>
+      <label>Reserva en OT<select id="sot">${opts([['OM01','Correctiva OM01'],['OM03','Preventiva OM03']],SF.ot,'Con o sin reserva')}</select></label>
+      <div class="act"><button class="btn2 pri" type="button" id="sclr">Limpiar filtros</button></div></div>
       <div class="mut" style="margin-top:8px">Mínimo = promedio mensual ajustado × ${D.meta.params?.MesesMin??2} meses (solo demanda Regular e Intermitente) o el mínimo manual de críticos, el mayor. Toca un material para ver su ficha.</div></div>
     <div id="stbl"></div>`;
   const sync=()=>{v.querySelectorAll('[data-e]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.e===SF.estado)));$('#sest').value=SF.estado;$('#stipo').value=SF.tipo;};
   v.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{SF.estado=SF.estado===b.dataset.e?'':b.dataset.e;remember('estado',SF.estado);sync();stockTable();});
   v.querySelectorAll('.hb .r[data-key]').forEach(r=>r.onclick=()=>{SF.alm=SF.alm===r.dataset.key?'':r.dataset.key;vStock();});
-  $('#salm').onchange=e=>{SF.alm=e.target.value;vStock();};if($('#almx'))$('#almx').onclick=()=>{SF.alm='';vStock();};
+  $('#salm').onchange=e=>{SF.alm=e.target.value;vStock();};
+  $('#sclr').onclick=()=>{Object.assign(SF,{estado:'',tipo:'',q:'',ot:'',alm:''});remember('estado','');vStock();};if($('#almx'))$('#almx').onclick=()=>{SF.alm='';vStock();};
   $('#sq').oninput=e=>{SF.q=e.target.value;stockTable();};$('#sot').onchange=e=>{SF.ot=e.target.value;stockTable();};
   $('#sest').onchange=e=>{SF.estado=e.target.value;remember('estado',SF.estado);sync();stockTable();};$('#stipo').onchange=e=>{SF.tipo=e.target.value;sync();stockTable();};
   sync();stockTable();}
 function stockTable(){const q=SF.q.trim().toLowerCase();
   const rows=D.tab.filter(t=>(!SF.estado||(SF.estado==='_atencion'?(t.Estado==='Quiebre'||t.Estado==='Pedir'):t.Estado===SF.estado))
     &&(!SF.tipo||t.Tipo_demanda===SF.tipo)&&(!SF.ot||z(t['Reservado_'+SF.ot])>0)&&inAlm(t)
-    &&(!q||String(t.Material).toLowerCase().includes(q)||String(t.Descripcion||'').toLowerCase().includes(q)));
+    &&(!q||String(t.Material).toLowerCase().includes(q)||String(t.Descripcion||'').toLowerCase().includes(q)||String(t.Codigos_antiguos||'').toLowerCase().includes(q)));
   makeTable($('#stbl'),[
     {k:'_cart',h:'Carrito',tip:'Agregar al carrito de compras',v:o=>CART.some(c=>c.cod===o.Material)?1:0,f:o=>cartBtn(o.Material)},
-    {k:'Material',h:'Material',cls:'code'},{k:'Descripcion',h:'Descripción',cls:'w',f:o=>`<span title="${esc(o.Descripcion)}">${esc(o.Descripcion)}</span>`},
+    {k:'Material',h:'Material',cls:'code',f:o=>esc(o.Material)+(o.Codigos_antiguos?`<div class="antes">antes: ${esc(o.Codigos_antiguos)}</div>`:'')+(oldHint(o.Material,1)?`<div>${oldHint(o.Material,1)}</div>`:'')},{k:'Descripcion',h:'Descripción',cls:'w',f:o=>`<span title="${esc(o.Descripcion)}">${esc(o.Descripcion)}</span>`},
     {k:'Estado',h:'Estado',f:o=>pill(o.Estado),v:o=>RANK[o.Estado]},{k:'UM',h:'UM'},
     {k:'Stock',h:'Stock',num:1,f:o=>num(o.Stock)},
     {k:'Minimo',h:'Mínimo',num:1,f:o=>num(o.Minimo)+(z(o.Minimo_manual)>0?' <span class="og man" title="Mínimo manual de críticos">manual</span>':'')},
@@ -714,7 +740,8 @@ function openSheet(mat){const t=D.byMat[mat];if(!t)return;const sh=$('#sheet');
   const sps=D.sp.filter(s=>s.Material===mat).sort((a,b)=>(b['Fecha de solicitud']||'').localeCompare(a['Fecha de solicitud']||'')).slice(0,8);
   const mvs=D.mv.filter(m=>m.Material===mat).slice(0,10);const rs=D.res.filter(r=>r.Material===mat&&z(r.Pendiente_retirar)>0).slice(0,8);
   const gasto=D.mv.filter(m=>m.Material===mat).reduce((a,m)=>a+z(m.Costo_consumo),0);
-  sh.innerHTML=`<div class="card top"><div><div class="mut" style="font-size:12px">${esc(mat)} · ${esc(t.UM||'')} · ${t.Precio_unit?pen.format(t.Precio_unit)+' c/u':SINP}</div><div class="lh2">${esc(t.Descripcion||'')}</div><div class="bar">${pill(t.Estado)}${dem(t.Tipo_demanda)}</div></div><div><span class="shb"><button class="btn2" id="shcart" type="button" data-add="${esc(mat)}">${CART.some(c=>c.cod===mat)?'En el carrito ✓':'Agregar al carrito'}</button><button class="btn2" id="shx" type="button">Cerrar</button></span></div></div>
+  sh.innerHTML=`<div class="card top"><div><div class="mut" style="font-size:12px">${esc(mat)}${t.Codigos_antiguos?` <span class="og nod" title="Su stock, consumo y pedidos incluyen los del código antiguo (hoja EQUIVALENCIAS)">incluye ${esc(t.Codigos_antiguos)}</span>`:''} · ${esc(t.UM||'')} · ${t.Precio_unit?pen.format(t.Precio_unit)+' c/u':SINP}</div><div class="lh2">${esc(t.Descripcion||'')}</div><div class="bar">${pill(t.Estado)}${dem(t.Tipo_demanda)}</div></div><div><span class="shb"><button class="btn2" id="shcart" type="button" data-add="${esc(mat)}">${CART.some(c=>c.cod===mat)?'En el carrito ✓':'Agregar al carrito'}</button><button class="btn2" id="shx" type="button">Cerrar</button></span></div></div>
+  ${oldHint(mat)}
   <div class="card"><h2>Stock frente a mínimo y máximo</h2><div class="gauge"><div class="fill" style="width:${Math.min(100,z(t.Stock)/scale*100)}%"></div>
     ${z(t.Minimo)>0?`<div class="mk" style="left:${z(t.Minimo)/scale*100}%" title="Mínimo"></div><div class="mk" style="left:${Math.min(99.5,z(t.Maximo)/scale*100)}%;opacity:.45" title="Máximo"></div>`:''}</div>
     <div class="gl"><span>Stock ${num(t.Stock)}</span><span>Mín ${num(t.Minimo)}${z(t.Minimo_manual)>0?' (manual)':''}</span><span>Máx ${num(t.Maximo)}</span></div></div>
@@ -760,7 +787,7 @@ function openCart(){const sh=$('#sheet');sh.setAttribute('aria-label','Carrito d
         <button class="btn2" type="submit">Agregar</button></form></div>`;
   const list=()=>{const h=$('#cartList');if(!CART.length){h.innerHTML='<div class="mut">Sin materiales todavía.</div>';return;}
     h.innerHTML=`<div class="gw" style="max-height:none"><table class="mini cart"><thead><tr><th>Material</th><th>Código SAP</th><th>UM</th><th class="n">Cantidad</th><th></th></tr></thead><tbody>${CART.map((c,i)=>{const t=c.cod&&D.byMat[c.cod];
-      return `<tr><td>${esc(c.desc)}${t?`<div class="mut" style="font-size:11px">${pill(t.Estado)} stock ${num(t.Stock)||0} · sugerido ${num(t.Cant_sugerida_pedir)||0}</div>`:''}</td><td class="code">${c.cod?esc(c.cod):`<span class="og fal">${NUEVO}</span>`}</td><td>${esc(c.um)}</td>
+      return `<tr><td>${esc(c.desc)}${t?`<div class="mut" style="font-size:11px">${pill(t.Estado)} stock ${num(t.Stock)||0} · sugerido ${num(t.Cant_sugerida_pedir)||0}</div>`:''}${c.cod&&oldStockOf(c.cod).length?`<div class="oldmini">Hay ${esc(num(oldStockOf(c.cod).reduce((a,o)=>a+o.stock,0)))} en el código antiguo ${esc(oldStockOf(c.cod).map(o=>o.old).join(', '))}: retíralo antes de comprar.</div>`:''}</td><td class="code">${c.cod?esc(c.cod):`<span class="og fal">${NUEVO}</span>`}</td><td>${esc(c.um)}</td>
       <td class="n"><input type="number" min="0" step="any" value="${c.qty}" data-q="${i}" aria-label="Cantidad"></td><td><button type="button" class="cx" data-x="${i}" aria-label="Quitar" title="Quitar">×</button></td></tr>`;}).join('')}</tbody></table></div>`;
     h.querySelectorAll('[data-q]').forEach(inp=>inp.onchange=()=>{CART[+inp.dataset.q].qty=Math.max(0,+inp.value||0);cartSave();});
     h.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{CART.splice(+b.dataset.x,1);cartSave();openCart();});};
@@ -780,8 +807,65 @@ function openCart(){const sh=$('#sheet');sh.setAttribute('aria-label','Carrito d
   $('#cClr').onclick=()=>{if(!CART.length)return;CART=[];cartSave();openCart();if(CURTAB==='stock')stockTable();};
   sh.hidden=false;$('#scrim').hidden=false;$('#shx').onclick=closeSheet;}
 
+
+/* ================= CÓDIGOS ANTIGUOS ================= */
+let OLDX=null;
+function oldIndex(){if(OLDX&&OLDX.src===D)return OLDX;const by={};
+  const add=(o,n)=>by[o]||(by[o]={old:o,neu:n,desc:'',um:'',f:1,stock:0,val:0,alm:{},sp:0,res:0,last:'',hasDet:false});
+  (D.eq||[]).forEach(e=>{const o=add(String(e.Codigo_antiguo).trim(),String(e.Codigo_nuevo).trim());o.desc=e.Descripcion_antigua||'';o.um=e.UM_antigua||'';o.f=+e.Factor||1;});
+  D.tab.forEach(t=>String(t.Codigos_antiguos||'').split(',').map(s=>s.trim()).filter(Boolean).forEach(c=>add(c,t.Material)));
+  const det=(D.alm||[]).some(r=>r.Material_original!=null);
+  if(det)(D.alm||[]).forEach(r=>{const o=by[r.Material_original];if(!o||r.Material_original===r.Material)return;o.hasDet=true;o.stock+=z(r.Stock);o.val+=z(r.Valor_stock);const n=r['Denominación-almacén']||String(r['Almacén']);o.alm[n]=(o.alm[n]||0)+z(r.Stock);});
+  else{const g={};Object.values(by).forEach(o=>(g[o.neu]||(g[o.neu]=[])).push(o));Object.entries(g).forEach(([n,l])=>{const t=D.byMat[n];if(t&&z(t.Stock_cod_antiguo)>0&&l.length===1)l[0].stock=z(t.Stock_cod_antiguo);});}
+  D.sp.forEach(s=>{const o=by[s.Material_original];if(o&&isOpen(s))o.sp++;});
+  D.res.forEach(r=>{const o=by[r.Material_original];if(o&&z(r.Pendiente_retirar)>0)o.res++;});
+  D.mv.forEach(m=>{const o=by[m.Material_original];if(o&&(m['Fe.contabilización']||'')>o.last)o.last=m['Fe.contabilización'];});
+  Object.values(by).forEach(o=>{o.act=o.stock>0?'usar':(o.sp||o.res)?'cerrar':'listo';if(!o.desc)o.desc=(D.mv.find(m=>m.Material_original===o.old)||{})['Texto breve de material']||'';});
+  const byNew={};Object.values(by).forEach(o=>(byNew[o.neu]||(byNew[o.neu]=[])).push(o));
+  OLDX={src:D,by,byNew,list:Object.values(by)};return OLDX;}
+const OACT={usar:['Usar stock antiguo','Tiene stock con el código antiguo: retíralo primero (o traspásalo con mov. 309).','--pen'],cerrar:['Cerrar SOLPED / reservas','Sin stock, pero aún tiene SOLPED o reservas abiertas con el código antiguo.','--fp'],listo:['Listo para bloquear','Sin stock, SOLPED ni reservas: se puede bloquear en SAP.','--ok']};
+const oldStockOf=mat=>((oldIndex().byNew[mat])||[]).filter(o=>o.stock>0);
+function oldHint(mat,short){const l=oldStockOf(mat);if(!l.length)return '';const t=D.byMat[mat]||{};
+  return short?`<span class="og ec" title="Hay stock con el código antiguo ${esc(l.map(o=>o.old).join(', '))}: retíralo primero">usar antiguo ${esc(num(l.reduce((a,o)=>a+o.stock,0)))}</span>`
+   :`<div class="oldcall"><b>Antes de pedir o retirar con ${esc(mat)}, usa el stock del código antiguo.</b>${l.map(o=>`<div><span class="code">${esc(o.old)}</span>: <b>${esc(num(o.stock))} ${esc(t.UM||'')}</b>${o.f!==1&&o.um?` (${esc(num(o.stock/o.f))} ${esc(o.um)})`:''}${Object.keys(o.alm).length?' en '+Object.entries(o.alm).filter(([,q])=>q>0).map(([n,q])=>`${esc(n)} (${esc(num(q))})`).join(', '):''}</div>`).join('')}<small>En SAP, el retiro (reserva / salida) debe hacerse con el código antiguo mientras tenga stock. Cuando llegue a 0, el código antiguo se puede bloquear.</small></div>`;}
+const OF={q:'',act:'',alm:''};
+function vOld(){const v=$('#v-old');const X=oldIndex();const L=X.list;
+  if(!L.length){v.innerHTML='<div class="card"><h2>Códigos antiguos</h2><div class="mut">Aún no hay equivalencias cargadas. Agrega la hoja EQUIVALENCIAS (tabla tblEquivalencias) al maestro y actualiza.</div></div>';return;}
+  const c={usar:0,cerrar:0,listo:0};let val=0;L.forEach(o=>{c[o.act]++;val+=o.val;});
+  const alms=[...new Set(L.flatMap(o=>Object.keys(o.alm)))].sort();const det=L.some(o=>o.hasDet);
+  v.innerHTML=SEC('CÓDIGOS ANTIGUOS → CÓDIGO ACTUAL',`${nf0.format(L.length)} equivalencias cargadas · objetivo: llegar a 0 códigos antiguos activos`,'wkk',`<div class="kp">
+      ${K('Con stock en el código antiguo',nf0.format(c.usar),det?`valor ${pen.format(val)} · retirar primero o traspasar (309)`:'retirar primero o traspasar (309)','--pen','data-a="usar"')}
+      ${K('Con SOLPED o reservas abiertas',nf0.format(c.cerrar),'sin stock; cerrar o cambiar al código actual','--fp','data-a="cerrar"')}
+      ${K('Listos para bloquear',nf0.format(c.listo),'sin stock, SOLPED ni reservas','--ok','data-a="listo"')}
+      ${K('Avance',L.length?Math.round(c.listo/L.length*100)+' %':'—',`${nf0.format(c.listo)} de ${nf0.format(L.length)} ya pueden bloquearse`,'--ac')}</div>`)+
+    `<div class="card"><div class="osteps"><div><b>1 · Usar el stock antiguo</b><span>Al atender un pedido, retira primero del código antiguo. La app ya suma ese stock al código actual, así que no pedirá comprar lo que aún queda.</span></div><div><b>2 · Traspasar o cerrar</b><span>Si no se consumirá pronto, Almacén lo traspasa al código actual con el movimiento 309. Las SOLPED y reservas abiertas con el código antiguo se cierran o se rehacen con el actual.</span></div><div><b>3 · Bloquear en SAP</b><span>Con stock, SOLPED y reservas en 0, se pide el bloqueo o la marca de borrado del código antiguo.</span></div></div></div>
+    <div class="card"><div class="pc">
+      <label class="sq">Buscar<input type="search" id="oq" placeholder="Código antiguo, actual o descripción…" value="${esc(OF.q)}"></label>
+      <label>Acción<select id="oact">${opts(Object.entries(OACT).map(([k,a])=>[k,a[0]]),OF.act,'Todas')}</select></label>
+      <label>Almacén<select id="oalm" ${alms.length?'':'disabled'}>${opts(alms,OF.alm,alms.length?'Todos':'Requiere STOCK_ALMACEN actualizada')}</select></label>
+      <div class="act"><button class="btn2" type="button" id="odl">Descargar Excel</button></div>
+      <div class="act"><button class="btn2 pri" type="button" id="oclr">Limpiar filtros</button></div></div></div>
+    <div id="otbl"></div>`;
+  const sync=()=>v.querySelectorAll('[data-a]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.a===OF.act)));
+  v.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{OF.act=OF.act===b.dataset.a?'':b.dataset.a;$('#oact').value=OF.act;sync();oTable();});
+  $('#oq').oninput=e=>{OF.q=e.target.value;oTable();};$('#oact').onchange=e=>{OF.act=e.target.value;sync();oTable();};$('#oalm').onchange=e=>{OF.alm=e.target.value;oTable();};
+  $('#oclr').onclick=()=>{Object.assign(OF,{q:'',act:'',alm:''});vOld();};
+  $('#odl').onclick=()=>{if(!window.XLSX)return;const rows=oRows().map(o=>[o.old,o.desc,o.um,o.neu,(D.byMat[o.neu]||{}).Descripcion||'',(D.byMat[o.neu]||{}).UM||'',o.f,o.stock,Object.entries(o.alm).filter(([,q])=>q>0).map(([n,q])=>n+' ('+num(q)+')').join(', '),o.val,o.sp,o.res,o.last,OACT[o.act][0]]);
+    const ws=XLSX.utils.aoa_to_sheet([['Código antiguo','Descripción antigua','UM antigua','Código actual','Descripción actual','UM actual','Factor','Stock antiguo (UM actual)','Almacenes','Valor (S/)','SOLPED abiertas','Reservas abiertas','Último movimiento','Acción'],...rows]);ws['!cols']=[14,40,8,14,40,8,7,12,30,12,10,10,12,22].map(w=>({wch:w}));
+    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Codigos antiguos');XLSX.writeFile(wb,`Codigos_antiguos_${isoD(new Date())}.xlsx`);};
+  sync();oTable();}
+function oRows(){const q=OF.q.trim().toLowerCase();return oldIndex().list.filter(o=>(!OF.act||o.act===OF.act)&&(!OF.alm||z(o.alm[OF.alm])>0)&&(!q||[o.old,o.neu,o.desc,(D.byMat[o.neu]||{}).Descripcion].some(x=>String(x||'').toLowerCase().includes(q))));}
+function oTable(){makeTable($('#otbl'),[
+    {k:'old',h:'Código antiguo',cls:'code'},{k:'desc',h:'Descripción antigua',cls:'w'},
+    {k:'neu',h:'Código actual',cls:'code',f:o=>`<b>${esc(o.neu)}</b>`},{k:'nd',h:'Descripción actual',cls:'w',v:o=>(D.byMat[o.neu]||{}).Descripcion||'',f:o=>esc((D.byMat[o.neu]||{}).Descripcion||'')},
+    {k:'stock',h:'Stock antiguo',num:1,tip:'Stock que sigue en SAP con el código antiguo, en la UM del código actual',f:o=>o.stock?`<b>${num(o.stock)}</b> ${esc((D.byMat[o.neu]||{}).UM||'')}`:''},
+    {k:'almx',h:'Almacenes',cls:'w',v:o=>Object.keys(o.alm).join(),f:o=>esc(Object.entries(o.alm).filter(([,q])=>q>0).map(([n,q])=>`${n} (${num(q)})`).join(', '))},
+    {k:'val',h:'Valor (S/)',num:1,f:o=>money(o.val)},{k:'sp',h:'SOLPED abiertas',num:1,f:o=>o.sp||''},{k:'res',h:'Reservas',num:1,f:o=>o.res||''},
+    {k:'last',h:'Último mov.',f:o=>fdate(o.last)},{k:'act',h:'Acción',v:o=>({usar:0,cerrar:1,listo:2})[o.act],f:o=>`<span class="og" style="background:var(${OACT[o.act][2]});color:${o.act==='usar'?'var(--fg)':'#fff'}" title="${esc(OACT[o.act][1])}">${OACT[o.act][0]}</span>`}],
+    oRows(),{sort:{k:'act',d:'asc'},onRow:o=>D.byMat[o.neu]&&openSheet(o.neu),unit:'códigos antiguos',fix:1});}
+
 /* ================= pestañas ================= */
-const VIEWS={stock:vStock,solped:vSolped,mov:vMov};let CURTAB='stock';
+const VIEWS={stock:vStock,solped:vSolped,mov:vMov,old:vOld};let CURTAB='stock';
 function show(tab){if(!VIEWS[tab])tab='stock';CURTAB=tab;document.querySelectorAll('.tabs button').forEach(b=>{b.classList.toggle('on',b.dataset.tab===tab);b.setAttribute('aria-selected',String(b.dataset.tab===tab));});
   Object.keys(VIEWS).forEach(k=>$('#v-'+k).hidden=k!==tab);VIEWS[tab]();remember('tab',tab);}
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.tab));
@@ -790,8 +874,8 @@ $('#btnCart').onclick=openCart;
 renderAll();
 
 /* ================= upload ================= */
-const NEED={tab:['Material','Estado','Minimo','Cant_sugerida_pedir'],sp:['Solicitud de pedido','Pendiente_llegar','Estado'],mv:['Tipo_movimiento','Consumo_neto'],res:['Pendiente_retirar','Clase_OT','Orden'],alm:['Material','Almacén','Stock','Valor_stock']};
-const SHEETN={tab:'TABLERO',sp:'SOLPED_SEGUIMIENTO',mv:'MOV_TEMPORADA',res:'RESERVAS_OT',alm:'STOCK_ALMACEN'};
+const NEED={tab:['Material','Estado','Minimo','Cant_sugerida_pedir'],sp:['Solicitud de pedido','Pendiente_llegar','Estado'],mv:['Tipo_movimiento','Consumo_neto'],res:['Pendiente_retirar','Clase_OT','Orden'],alm:['Material','Almacén','Stock','Valor_stock'],eq:['Codigo_antiguo','Codigo_nuevo','Factor']};
+const SHEETN={tab:'TABLERO',sp:'SOLPED_SEGUIMIENTO',mv:'MOV_TEMPORADA',res:'RESERVAS_OT',alm:'STOCK_ALMACEN',eq:'EQUIVALENCIAS'};
 const iso=v=>v instanceof Date?new Date(v.getTime()-v.getTimezoneOffset()*6e4).toISOString().slice(0,10):v;
 function encode(cols,objs){const rows=objs.map(o=>cols.map(c=>{let v=o[c];if(v===undefined||v==='')v=null;v=iso(v);if(typeof v==='number')v=Math.round(v*1000)/1000;return v;}));const dict={};
   cols.forEach((c,j)=>{const nn=rows.map(r=>r[j]).filter(v=>v!==null);if(!nn.length||!nn.every(v=>typeof v==='string'))return;const u=[...new Set(nn)];if(u.length<0.6*rows.length){const ix=new Map(u.map((v,i)=>[v,i]));dict[j]=u;rows.forEach(r=>{if(r[j]!==null)r[j]=ix.get(r[j]);});}});
@@ -802,8 +886,8 @@ $('#btnLoad').onclick=()=>$('#fileIn').click();
 async function ingest(buf,label){
   if(!window.XLSX)throw new Error('No cargó el lector de Excel. Revisa tu conexión y vuelve a intentar.');
   const wb=XLSX.read(buf,{type:'array',cellDates:true});const found={};
-  for(const name of wb.SheetNames){const rows=XLSX.utils.sheet_to_json(wb.Sheets[name],{defval:null,raw:true});if(!rows.length)continue;const keys=Object.keys(rows[0]);
-    for(const k in NEED)if(!found[k]&&NEED[k].every(c=>keys.includes(c))){found[k]=rows;break;}}
+  for(const name of wb.SheetNames){let ok=false;for(const hr of [0,1,2,3]){const rows=XLSX.utils.sheet_to_json(wb.Sheets[name],{defval:null,raw:true,range:hr});if(!rows.length)continue;const keys=Object.keys(rows[0]);
+    for(const k in NEED)if(!found[k]&&NEED[k].every(c=>keys.includes(c))){found[k]=rows;ok=true;break;}if(ok)break;}}
   const miss=['tab','sp','mv','res'].filter(k=>!found[k]);
   if(miss.length)throw new Error('No encontré las hojas '+miss.map(k=>SHEETN[k]).join(', ')+'. Usa el libro APP_STOCK_MATERIALES después de «Actualizar todo».');
   found.mv.forEach(m=>{if(m.Costo_consumo==null&&m.Grupo==='Consumo')m.Costo_consumo=-z(m['Impte.mon.local']);});
@@ -811,7 +895,7 @@ async function ingest(buf,label){
   const mvDates=found.mv.map(m=>iso(m['Fe.contabilización'])).filter(Boolean).sort();
   const ini=(()=>{const n=new Date(),y=n.getFullYear();const s=y=>{const j=new Date(y,0,4);const d=(j.getDay()+6)%7;return new Date(y,0,4-d+182);};const a=n>=s(y)?y:y-1;return {d:iso(s(a)),t:a+'/'+(a+1)};})();
   const raw={meta:{generado:iso(new Date()),inicio_temporada:ini.d,temporada:ini.t,fuente:label+(mvDates.length?' · MB51 hasta '+fdate(mvDates[mvDates.length-1]):''),params:D.meta.params},
-    tab:encode(cu(RAW.tab.cols,t),t),sp:encode(cu(RAW.sp.cols,found.sp),found.sp),mv:encode(cu(RAW.mv.cols,found.mv),found.mv),res:encode(cu(RAW.res.cols,found.res),found.res),alm:found.alm?encode(cu([],found.alm),found.alm):(RAW.alm||null)};
+    tab:encode(cu(RAW.tab.cols,t),t),sp:encode(cu(RAW.sp.cols,found.sp),found.sp),mv:encode(cu(RAW.mv.cols,found.mv),found.mv),res:encode(cu(RAW.res.cols,found.res),found.res),alm:found.alm?encode(cu([],found.alm),found.alm):(RAW.alm||null),eq:found.eq?encode(cu([],found.eq),found.eq.filter(r=>r.Codigo_antiguo&&r.Codigo_nuevo)):(RAW.eq||null)};
   RAW=raw;load(raw);renderAll();return {raw,found};}
 $('#fileIn').onchange=async e=>{const f=e.target.files[0];if(!f)return;status('Leyendo '+f.name+' …');
   try{const {raw,found}=await ingest(await f.arrayBuffer(),'Excel cargado el '+fdate(iso(new Date())));pendingRaw=raw;
