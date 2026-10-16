@@ -352,6 +352,60 @@ svg.col g.click{cursor:pointer}
 .kcol .k b{color:#fff}
 .kcol button.k:hover{filter:brightness(1.08)}
 .kcol .k[aria-pressed="true"]{background:var(--grad);outline:3px solid color-mix(in srgb,var(--ac) 35%,transparent);outline-offset:2px}
+/* v0.17 · filtro global */
+.gbar{display:flex;flex-wrap:wrap;align-items:end;gap:10px 14px;background:var(--card);border:1px solid var(--bd);border-radius:var(--r);box-shadow:var(--sh-panel);padding:10px 14px;margin:0 0 12px}
+.gbar label{min-width:200px}
+.gbar label.gd{min-width:150px}
+.gbar select,.gbar input{background:var(--bg);height:34px}
+.gbar .gnote{flex:1;min-width:240px;display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--mut);padding-bottom:2px}
+.gbar .gnote b{color:var(--hfe-navy);font-size:13px}
+.gbar .btn2{height:34px}
+/* v0.18 · Seguimiento SOLPED rediseñado */
+.kh2{margin-bottom:10px}.kh2 b{display:block;font-size:12px;letter-spacing:.08em;color:var(--mut)}.kh2 span{display:block;font-size:12px;color:var(--mut);margin-top:2px}
+.h2s{margin-bottom:10px}.h2s h2{margin:0}.h2s>span{display:block;font-size:12px;color:var(--mut);margin-top:2px}
+.flow{display:grid;grid-template-columns:1fr 92px 1fr 92px 1fr 40px 1fr;align-items:stretch}
+@media(max-width:1000px){.flow{grid-template-columns:1fr}.fa{min-height:34px}}
+.fs{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:2px 10px;text-align:left;background:var(--card);border:1px solid var(--bd);border-top:4px solid var(--sc);border-radius:var(--r);padding:10px 14px;font:inherit;color:inherit;cursor:pointer;box-shadow:var(--sh-panel)}
+.fs:hover{border-color:var(--sc)}.fs[aria-pressed="true"]{background:color-mix(in srgb,var(--sc) 9%,var(--card));border-color:var(--sc)}
+.fs .fn{grid-row:span 2;width:28px;height:28px;border-radius:50%;background:var(--sc);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.fs .ft{font-weight:600;font-size:13px}
+.fs b{grid-column:1/-1;font-size:28px;font-weight:600;line-height:1.15;margin-top:4px;font-variant-numeric:tabular-nums}
+.fs .fv{grid-column:1/-1;font-size:13px;font-weight:600;color:var(--hfe-navy);font-variant-numeric:tabular-nums}
+.fs small{grid-column:1/-1;color:var(--mut);font-size:11.5px}
+.fa{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--mut);font-size:11px;text-align:center}
+.fa span{font-weight:700;color:var(--hfe-navy);font-size:13px}
+.fa i{display:block;width:70%;height:2px;background:var(--bd);position:relative}
+.fa i::after{content:'';position:absolute;right:-2px;top:-4px;border:5px solid transparent;border-left:7px solid var(--bd)}
+.fa.sm i{width:60%}
+.fchips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.chip{background:var(--card);border:1px solid var(--bd);border-radius:var(--hfe-radius-pill,99px);padding:5px 12px;font:inherit;font-size:12.5px;color:var(--fg);cursor:pointer}
+.chip b{font-weight:700;margin-right:2px}.chip:hover{border-color:var(--ac)}.chip[aria-pressed="true"]{background:var(--ac);border-color:var(--ac);color:#fff}
+.chipn{font-size:11.5px;color:var(--mut);margin-left:auto}
+.flist{display:grid;gap:6px}
+.fi{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:10px;text-align:left;background:var(--bg);border:1px solid transparent;border-radius:var(--r);padding:7px 10px;font:inherit;color:inherit;cursor:pointer}
+.fi:hover{border-color:var(--ac);background:var(--card)}
+.fi .age{min-width:52px;text-align:center}
+.fi .fx{min-width:0}.fi .fx b{display:block;font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fi .fx small{color:var(--mut);font-size:11.5px}
+.seg.sm2{margin-bottom:10px}.seg.sm2 button{padding:5px 14px;font-size:12.5px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.pp,.cc{text-align:left;background:var(--card);border:1px solid var(--bd);border-radius:var(--r);font:inherit;color:inherit;cursor:pointer}
+.pp{display:flex;gap:10px;align-items:center;padding:8px 10px}
+.pp:hover,.cc:hover{border-color:var(--ac);box-shadow:var(--sh-panel)}
+.pp[aria-pressed="true"],.cc[aria-pressed="true"]{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 8%,var(--card))}
+.pp i,.cc i.av,.cch i{flex:none;width:34px;height:34px;border-radius:50%;color:#fff;font-style:normal;font-weight:700;font-size:12.5px;display:flex;align-items:center;justify-content:center;letter-spacing:.02em}
+.pp span{min-width:0}.pp b{display:block;font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pp small{color:var(--mut);font-size:11.5px}.pp em{font-style:normal;color:var(--pen);font-weight:600}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.cc{display:grid;gap:10px;padding:12px 14px}
+.cch{display:flex;gap:10px;align-items:center}.cch b{display:block;font-weight:600;font-size:14px}.cch small{color:var(--mut);font-size:11.5px}
+.ccb{display:flex;height:8px;border-radius:99px;overflow:hidden;gap:2px;background:var(--bg)}.ccb i{display:block;min-width:0}
+.ccs{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:6px}
+.ccs span{display:flex;flex-direction:column;font-size:11px;color:var(--mut)}.ccs b{font-size:15px;color:var(--fg);font-weight:600;font-variant-numeric:tabular-nums}.ccs b.r{color:var(--bad)}
+.cleg{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--mut)}.cleg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.ccs{grid-template-columns:1fr 1fr;justify-content:stretch;gap:8px 12px}
+.ccs span{flex-direction:row;align-items:baseline;gap:6px}
+.pc.pc7{grid-template-columns:1.6fr repeat(5,1fr) .9fr}
+@media(max-width:1200px){.pc.pc7{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.pc.pc7{grid-template-columns:1fr 1fr}}
 .sheet{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);z-index:41;border-left:1px solid var(--bd);overflow-y:auto;padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(20px + env(safe-area-inset-bottom,0px))}
 .sheet .card{margin-bottom:10px}
 .sheet .top{display:grid;grid-template-columns:1fr auto;gap:10px;border-top:3px solid var(--ac)}
@@ -389,11 +443,12 @@ svg.col g.click{cursor:pointer}
     <div class="act"><button class="btn2" id="btnCart" type="button">Carrito<span class="n">0</span></button><button class="btn2" id="btnLoad" type="button">Cargar Excel</button><button class="btn2 pri" id="btnSave" type="button" hidden>Guardar para el equipo</button><input type="file" id="fileIn" accept=".xlsx,.xlsm" hidden></div>
   </header>
   <nav class="tabs" role="tablist">
-    <button role="tab" data-tab="stock" id="tab-stock">Stock vs mínimo<span class="n" id="n-stock"></span></button>
+    <button role="tab" data-tab="stock" id="tab-stock">Almacenes<span class="n" id="n-stock"></span></button>
     <button role="tab" data-tab="solped" id="tab-solped">Seguimiento SOLPED<span class="n" id="n-solped"></span></button>
     <button role="tab" data-tab="mov" id="tab-mov">Consumo y gasto<span class="n" id="n-mov"></span></button>
     <button role="tab" data-tab="old" id="tab-old" hidden>Códigos antiguos<span class="n" id="n-old"></span></button>
   </nav>
+  <div class="gbar" id="gbar"></div>
   <div class="status" id="status" role="status"></div>
   <div id="wkcard" hidden></div>
   <section class="view" id="v-stock"></section>
@@ -500,9 +555,9 @@ function wkCard(){const ws=seasonWeeks();if(WK===null||WK>=ws.length)WK=defIdx()
 function refreshWeekViews(){if(CURTAB==='mov')vMov();}
 
 function header(){$('#tSrc').textContent=`${D.meta.fuente||''} · temporada ${D.meta.temporada} desde ${fdate(D.meta.inicio_temporada)} · ${nf0.format(D.tab.length)} materiales`;
-  $('#n-stock').textContent=nf0.format(D.tab.filter(t=>t.Estado==='Quiebre'||t.Estado==='Pedir').length);
-  $('#n-solped').textContent=nf0.format(D.sp.filter(s=>s.Material&&/^[123]/.test(s.Estado)).length);
-  $('#n-mov').textContent=pen.format(D.mv.reduce((a,m)=>a+z(m.Costo_consumo),0));
+  SF.alm=GF.area;$('#n-stock').textContent=nf0.format(D.tab.filter(t=>inAlm(t)&&(t.Estado==='Quiebre'||t.Estado==='Pedir')).length);
+  $('#n-solped').textContent=nf0.format(D.sp.filter(s=>s.Material&&/^[123]/.test(s.Estado)&&spArea(s)&&inPer(s['Fecha de solicitud'])).length);
+  $('#n-mov').textContent=pen.format(mvScope().reduce((a,m)=>a+z(m.Costo_consumo),0));gBar();
   OLDX=null;const ol=oldIndex().list;$('#n-old').textContent=nf0.format(ol.filter(o=>o.act!=='listo').length);$('#tab-old').hidden=!ol.length;
 }
 
@@ -523,10 +578,40 @@ function makeTable(host,cols,rows,opt){opt=opt||{};let sort=opt.sort||null,limit
     host.querySelectorAll('tbody tr.row').forEach(tr=>{const i=+tr.dataset.i;const go=()=>{if(opt.sub){open.has(i)?open.delete(i):open.add(i);draw();}else if(opt.onRow)opt.onRow(rows[i]);};
       tr.onclick=go;tr.onkeydown=e=>{if(e.key==='Enter')go();};});}
   draw();}
-const clearBtn='<div class="act"><button class="btn2" type="button" data-clear>Limpiar filtros</button></div>';
+const clearBtn='<div class="act"><button class="btn2 pri" type="button" data-clear>Limpiar filtros</button></div>';
+
+
+/* ================= FILTRO GLOBAL: área y período ================= */
+const GF={area:store.gfArea||'',per:store.gfPer||'temp',d1:store.gfD1||'',d2:store.gfD2||''};
+const tISO=()=>isoD(new Date());
+function seasonStartOf(y){const j=new Date(y,0,4);const d=(j.getDay()+6)%7;return isoD(new Date(y,0,4-d+182));}
+function gRange(){const ini=D.meta.inicio_temporada;const y=+ini.slice(0,4);
+  if(GF.per==='temp')return [ini,tISO()];
+  if(GF.per==='prev'){const a=seasonStartOf(y-1);return [a,isoD(new Date(new Date(ini+'T00:00:00').getTime()-864e5))];}
+  if(GF.per==='12m'){const d=new Date();d.setFullYear(d.getFullYear()-1);return [isoD(d),tISO()];}
+  if(GF.per==='cus')return [GF.d1||'0000-01-01',GF.d2||'9999-12-31'];
+  return ['0000-01-01','9999-12-31'];}
+const inPer=d=>{if(!d)return GF.per==='all';const [a,b]=gRange();return d>=a&&d<=b;};
+const PERL={temp:'Temporada actual',prev:'Temporada anterior','12m':'Últimos 12 meses',all:'Todo lo exportado',cus:'Rango personalizado'};
+function almName(code){if(code==null)return null;const A=almIndex();return A.code2n[String(code)]||String(code);}
+const mvScope=()=>D.mv.filter(m=>(!GF.area||almName(m['Almacén'])===GF.area)&&inPer(m['Fe.contabilización']));
+function spArea(s){if(!GF.area)return true;if(s['Almacén']!=null&&s['Almacén']!=='')return almName(s['Almacén'])===GF.area;return !!s.Material&&(almIndex().mats[GF.area]||new Set()).has(s.Material);}
+function gBar(){const A=almIndex();const rng=k=>{const ds=k.map(x=>x).filter(Boolean).sort();return ds.length?fdate(ds[0])+' – '+fdate(ds[ds.length-1]):'—';};
+  const spD=D.sp.map(s=>s['Fecha de solicitud']),mvD=D.mv.map(m=>m['Fe.contabilización']);const [a,b]=gRange();
+  const spHasAlm=D.sp.some(s=>s['Almacén']!=null&&s['Almacén']!=='');
+  $('#gbar').innerHTML=`<label>Área / almacén<select id="garea">${opts(A.names,GF.area,'Todas las áreas (salvo 1030)')}</select></label>
+    <label>Período<select id="gper">${opts(Object.entries(PERL),GF.per,null)}</select></label>
+    <label class="gd" ${GF.per==='cus'?'':'hidden'}>Desde<input type="date" id="gd1" value="${esc(GF.d1)}"></label>
+    <label class="gd" ${GF.per==='cus'?'':'hidden'}>Hasta<input type="date" id="gd2" value="${esc(GF.d2)}"></label>
+    <div class="gnote"><b>${GF.per==='all'?'Sin límite de fechas':fdate(a)+' – '+(b>'9000'?'hoy':fdate(b))}</b><span>Datos disponibles · SOLPED ${rng(spD)} · movimientos ${rng(mvD)}${GF.area&&!spHasAlm?' · SOLPED por área: según el almacén del material':''}</span></div>
+    ${GF.area||GF.per!=='temp'?'<button type="button" class="btn2" id="gclr">Restablecer</button>':''}`;
+  const go=()=>{remember('gfArea',GF.area);remember('gfPer',GF.per);remember('gfD1',GF.d1);remember('gfD2',GF.d2);SF.alm=GF.area;header();show(CURTAB);};
+  $('#garea').onchange=e=>{GF.area=e.target.value;go();};$('#gper').onchange=e=>{GF.per=e.target.value;go();};
+  if($('#gd1'))$('#gd1').onchange=e=>{GF.d1=e.target.value;go();};if($('#gd2'))$('#gd2').onchange=e=>{GF.d2=e.target.value;go();};
+  if($('#gclr'))$('#gclr').onclick=()=>{Object.assign(GF,{area:'',per:'temp',d1:'',d2:''});go();};}
 
 /* ================= STOCK ================= */
-const SF={estado:store.estado??'_atencion',tipo:'',q:'',ot:'',alm:''};
+const SF={estado:store.estado??'_atencion',tipo:'',q:'',ot:'',alm:store.gfArea||''};
 const RANK={'Quiebre':0,'Pedir':1,'En camino':2,'OK':3,'Sobrestock':4,'Sin mínimo':5};
 /* almacenes: valor por almacén (hoja STOCK_ALMACEN) y asociación material ↔ almacén (stock o consumo de la temporada) */
 let ALM=null;
@@ -535,7 +620,7 @@ function almIndex(){if(ALM&&ALM.src===D)return ALM;const code2n={},val={},mats={
     val[n]=(val[n]||0)+z(r.Valor_stock);if(z(r.Stock)>0)(mats[n]||(mats[n]=new Set())).add(r.Material);});
   D.tab.forEach(t=>(t.Almacenes_con_stock||'').split(' / ').filter(Boolean).forEach(n=>(mats[n]||(mats[n]=new Set())).add(t.Material)));
   D.mv.forEach(m=>{if(m.Grupo!=='Consumo'||m['Almacén']==null)return;const n=code2n[String(m['Almacén'])]||String(m['Almacén']);(mats[n]||(mats[n]=new Set())).add(m.Material);});
-  ALM={src:D,val,mats,hasVal:!!(D.alm&&D.alm.length),names:Object.keys(mats).sort()};return ALM;}
+  ALM={src:D,code2n,val,mats,hasVal:!!(D.alm&&D.alm.length),names:Object.keys(mats).sort()};return ALM;}
 const inAlm=t=>!SF.alm||(almIndex().mats[SF.alm]||new Set()).has(t.Material);
 function vStock(){const v=$('#v-stock');const A=almIndex();if(SF.alm&&!A.mats[SF.alm])SF.alm='';
   const T=D.tab.filter(inAlm);
@@ -551,7 +636,7 @@ function vStock(){const v=$('#v-stock');const A=almIndex();if(SF.alm&&!A.mats[SF
     <div class="card"><h2>Valor del stock por almacén <small>${A.hasVal?'MB52 · toca un almacén para filtrar':'falta la consulta STOCK_ALMACEN'}</small></h2>
       ${A.hasVal?hbars(valRows.map(([n,x])=>({n,v:x,key:n,tip:`${esc(n)}<br>${pen.format(x)} · ${nf0.format((A.mats[n]||new Set()).size)} materiales`})),{click:1,fmt:x=>pen.format(x)}):'<div class="mut">Agrega la consulta STOCK_ALMACEN al maestro para ver el valor por almacén.</div>'}
       ${SF.alm?`<div class="mut" style="margin-top:10px">Filtrando por <b>${esc(SF.alm)}</b>: materiales con stock en ese almacén o consumidos desde él esta temporada (${nf0.format(T.length)}). Un material puede estar en más de un almacén. <button type="button" class="lnk" id="almx">Quitar filtro</button></div>`:''}</div>
-    <div class="ksec wkk"><div class="kh"><b>ESTADO ACTUAL DEL STOCK</b><label class="almsel">Almacén<select id="salm">${almOpts}</select></label></div>
+    <div class="ksec wkk"><div class="kh"><b>ESTADO ACTUAL DEL STOCK</b><span>${SF.alm?esc(SF.alm):'todas las áreas'} · foto del día (MB52)</span></div>
       <div class="kcol">
       ${K('Valor del stock libre',pen.format(val),SF.alm?(A.hasVal?`almacén ${SF.alm} (MB52)`:'materiales del almacén'):'todos los almacenes salvo 1030 (MB52)','--ac')}
       ${K('Requieren pedido',nf0.format(need),`${nf0.format(cnt.Quiebre||0)} en quiebre · ${nf0.format(cnt.Pedir||0)} por pedir`,'--bad','data-e="_atencion"')}
@@ -575,9 +660,8 @@ function vStock(){const v=$('#v-stock');const A=almIndex();if(SF.alm&&!A.mats[SF
     <div id="stbl"></div>`;
   const sync=()=>{v.querySelectorAll('[data-e]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.e===SF.estado)));$('#sest').value=SF.estado;$('#stipo').value=SF.tipo;};
   v.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{SF.estado=SF.estado===b.dataset.e?'':b.dataset.e;remember('estado',SF.estado);sync();stockTable();});
-  v.querySelectorAll('.hb .r[data-key]').forEach(r=>r.onclick=()=>{SF.alm=SF.alm===r.dataset.key?'':r.dataset.key;vStock();});
-  $('#salm').onchange=e=>{SF.alm=e.target.value;vStock();};
-  $('#sclr').onclick=()=>{Object.assign(SF,{estado:'',tipo:'',q:'',ot:'',alm:''});remember('estado','');vStock();};if($('#almx'))$('#almx').onclick=()=>{SF.alm='';vStock();};
+  v.querySelectorAll('.hb .r[data-key]').forEach(r=>r.onclick=()=>{GF.area=GF.area===r.dataset.key?'':r.dataset.key;SF.alm=GF.area;remember('gfArea',GF.area);header();vStock();});
+  $('#sclr').onclick=()=>{Object.assign(SF,{estado:'',tipo:'',q:'',ot:''});remember('estado','');vStock();};if($('#almx'))$('#almx').onclick=()=>{GF.area='';SF.alm='';remember('gfArea','');header();vStock();};
   $('#sq').oninput=e=>{SF.q=e.target.value;stockTable();};$('#sot').onchange=e=>{SF.ot=e.target.value;stockTable();};
   $('#sest').onchange=e=>{SF.estado=e.target.value;remember('estado',SF.estado);sync();stockTable();};$('#stipo').onchange=e=>{SF.tipo=e.target.value;sync();stockTable();};
   sync();stockTable();}
@@ -606,7 +690,7 @@ function stockTable(){const q=SF.q.trim().toLowerCase();
 /* ================= SOLPED ================= */
 const PF={estado:'_abiertas',q:'',sol:'',dias:'',tipo:'mat',cmp:'',cre:'',per:'cre'};
 const BORR='0 Borrada';
-const spBase=()=>D.sp.filter(s=>PF.tipo==='mat'?!!s.Material:PF.tipo==='srv'?!s.Material:true);
+const spBase=()=>D.sp.filter(s=>(PF.tipo==='mat'?!!s.Material:PF.tipo==='srv'?!s.Material:true)&&spArea(s)&&inPer(s['Fecha de solicitud']));
 const SINR='6 Sin dato de recepción';
 const spScope=()=>spBase().filter(s=>PF.estado===BORR?s.Estado===BORR:s.Estado!==BORR);
 const median=a=>{if(!a.length)return null;const b=a.slice().sort((x,y)=>x-y),m=b.length>>1;return b.length%2?b[m]:(b[m-1]+b[m])/2;};
@@ -628,31 +712,47 @@ function vSolped(){const v=$('#v-solped');const SP=spScope();const cnt={};SP.for
   const topSol=sumBy(SP,s=>s[perK],()=>1).sort((a,b)=>b[1]-a[1]).slice(0,10);
   const cg={};SP.forEach(s=>{const k=s.Comprador||s['Grupo de compras'];if(!k)return;const o=cg[k]||(cg[k]={k,n:0,s1:0,s2:0,s4:0,s6:0,val:0,d:[]});o.n++;
     if(s.Estado[0]==='1')o.s1++;else if(s.Estado[0]==='2'||s.Estado[0]==='3')o.s2++;else if(s.Estado[0]==='4'||s.Estado[0]==='5')o.s4++;else if(s.Estado[0]==='6')o.s6++;
-    if(isOpen(s))o.val+=z(s['Valor total']);const d=dOC(s);if(d!=null&&d>=0)o.d.push(d);});
+    if(isOpen(s))o.val+=z(s['Valor total'])*(({USD:3.75,EUR:4.05})[s.Moneda]||1);const d=dOC(s);if(d!=null&&d>=0)o.d.push(d);});
   const cgl=Object.values(cg).map(o=>({...o,med:median(o.d)})).sort((a,b)=>b.n-a.n);
   const tl=PF.tipo==='mat'?'solo materiales':PF.tipo==='srv'?'solo servicios':'materiales y servicios';
-  v.innerHTML=SEC('FLUJO DE LAS SOLPED',`${tl} · export ME5A`,'wkk',`<div class="kp k6">
-      ${K('Abiertas',nf0.format(open.length),'pasos 1 a 3','--pen','data-e="_abiertas"')}
-      ${K('1 · Solicitado sin OC',nf0.format(cnt['1 Solicitado sin OC']||0),'falta orden de compra','--bad','data-e="1 Solicitado sin OC"')}
-      ${K('2 · OC en tránsito',nf0.format(cnt['2 OC en tránsito']||0),'con OC, sin entrada 101','--pen','data-e="2 OC en tránsito"')}
-      ${K('3 · Recibido parcial',nf0.format(cnt['3 Recibido parcial']||0),'llegó una parte','--fp','data-e="3 Recibido parcial"')}
-      ${K('4 · Recibido',nf0.format(cnt['4 Recibido']||0),'entrada 101 completa','--ok','data-e="4 Recibido"')}
-      ${K('Servicios con OC',nf0.format(D.sp.filter(x=>x.Estado==='5 Servicio con OC').length),'no pasan por MB51','--mut','data-e="5 Servicio con OC"')}</div>`)+
-    SEC('TIEMPOS Y VALOR','todo el export','',`<div class="kp k6">
-      ${K('Valor de lo abierto',pen.format(valOpen),'valor total de pasos 1 a 3','--ac')}
-      ${K('Tiempo hasta recibir',avgRec===null?'—':nf0.format(avgRec)+' días','promedio SOLPED → entrada 101','--fp')}
-      ${K('Abiertas > 60 días',nf0.format(old),'requieren seguimiento',old?'--bad':'--ok')}
-      ${K('Días hasta la OC',medOC===null?'—':nf0.format(medOC)+' días','mediana SOLPED → orden de compra','--ac')}
-      ${K('Sin dato de recepción',nf0.format(SP.filter(s=>s.Estado===SINR).length),'OC anterior al export MB51 · no suma en tránsito','--mut','data-e="'+SINR+'"')}
-      ${K('Borradas en SAP',nf0.format(nBorr),nBorr?'no cuentan en stock ni pedidos · toca para verlas':'indicador de borrado','--mut','data-e="0 Borrada"')}</div>`)+
-    `<div class="half"><div class="card"><h2>Antigüedad de lo abierto <small>posiciones por días desde la SOLPED</small></h2>${columns(buckets.map(b=>({lab:b.lab,v:b.v,tip:`${b.lab}: ${nf0.format(b.v)} posiciones`})),{axis:v=>nf0.format(v),label:'Antigüedad'})}</div>
-    <div class="card"><h2>${perK==='Creado por'?'Quién crea las SOLPED':'Solicitantes más frecuentes'} <small>posiciones, top 10 · toca para filtrar</small></h2>
-      ${hasCre?`<span class="seg" style="margin-bottom:8px"><button type="button" data-per="cre" class="${perK==='Creado por'?'on':''}">Creado por (usuario SAP)</button><button type="button" data-per="sol" class="${perK==='Solicitante'?'on':''}">Solicitante</button></span>`:''}
-      ${hbars(topSol.map(([n,c])=>({n,v:c,key:n,tip:`${esc(n)}: ${nf0.format(c)} posiciones · ${nf0.format(open.filter(s=>s[perK]===n).length)} abiertas`})),{click:1,fmt:v=>nf0.format(v)})}</div></div>
-    ${hasCmp?`<div class="card"><h2>Por comprador <small>grupo de compras · toca una fila para filtrar</small></h2><div class="gw" style="max-height:none"><table class="mini cmp"><thead><tr><th>Comprador</th><th class="n">Posiciones</th><th class="n">Sin OC</th><th class="n">OC en tránsito</th><th class="n">Recibidas / servicio</th><th class="n" title="OC anterior al export MB51: no se puede saber si llegó">Sin dato recepción</th><th class="n">Días hasta OC (mediana)</th><th class="n">Valor abierto</th></tr></thead><tbody>
-      ${cgl.map(o=>`<tr class="row" data-cmp="${esc(o.k)}" aria-current="${o.k===PF.cmp}"><td class="code">${esc(o.k)}</td><td class="n">${nf0.format(o.n)}</td><td class="n">${o.s1?`<b style="color:var(--bad)">${nf0.format(o.s1)}</b>`:'–'}</td><td class="n">${o.s2?nf0.format(o.s2):'–'}</td><td class="n">${o.s4?nf0.format(o.s4):'–'}</td><td class="n mut">${o.s6?nf0.format(o.s6):'–'}</td><td class="n">${o.med===null?'–':nf0.format(o.med)}</td><td class="n">${money(o.val)}</td></tr>`).join('')}</tbody></table></div>
-      <div class="mut" style="margin-top:6px">El nombre de cada comprador se puede agregar en la tabla <b>tblCompradores</b> del maestro (Grupo de compras | Nombre).</div></div>`:''}
-    <div class="card"><div class="pc">
+  const TC={USD:3.75,EUR:4.05};const vPEN=s=>z(s['Valor total'])*(TC[s.Moneda]||1);
+  const st=k=>SP.filter(s=>s.Estado[0]===k);const S1=st('1'),S2=st('2'),S3=st('3'),S4=st('4');
+  const sumV=l=>l.reduce((a,s)=>a+vPEN(s),0);
+  const dRec=median(S4.filter(s=>s['Fecha orden compra']&&s.Fecha_recepcion).map(s=>days(s['Fecha orden compra'],s.Fecha_recepcion)).filter(d=>d>=0));
+  const nSrv=D.sp.filter(x=>x.Estado==='5 Servicio con OC'&&spArea(x)&&inPer(x['Fecha de solicitud'])).length;const nSin=SP.filter(s=>s.Estado===SINR).length;
+  const step=(k,e,t,l,c,sub)=>`<button type="button" class="fs" data-e="${e}" style="--sc:var(${c})"><span class="fn">${k}</span><span class="ft">${t}</span><b>${nf0.format(l.length)}</b><span class="fv">${pen.format(sumV(l))}</span><small>${sub}</small></button>`;
+  const arrow=(d,t)=>`<div class="fa"><span>${d===null?'—':nf0.format(d)+' días'}</span><i></i><small>${t}</small></div>`;
+  const follow=open.filter(s=>z(s.Dias_desde_solicitud)>30).sort((a,b)=>z(b.Dias_desde_solicitud)-z(a.Dias_desde_solicitud));
+  const AV=['#1d5fa8','#0e8a7d','#c2571a','#7a4bc2','#b0306a','#4a7c1e'];
+  const avc=n=>{let h=0;for(const ch of String(n))h=(h*31+ch.charCodeAt(0))>>>0;return AV[h%AV.length];};
+  const ini=n=>{const s=String(n||'?').replace(/^[A-Z0-9]{3} · /,'');return s.slice(0,2).toUpperCase();};
+  const people=sumBy(SP,s=>s[perK],()=>1).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  const selP=perK==='Creado por'?PF.cre:PF.sol;
+  v.innerHTML=`<div class="ksec wkk"><div class="kh2"><div><b>FLUJO DE LAS SOLPED</b><span>${tl} · de la solicitud a la llegada al almacén · toca un paso para filtrar la lista</span></div></div>
+      <div class="flow">${step('1','1 Solicitado sin OC','Solicitado sin OC',S1,'--bad','falta orden de compra')}${arrow(medOC,'hasta la OC')}
+        ${step('2','2 OC en tránsito','OC en tránsito',S2,'--pen','con OC, aún no llega')}${arrow(dRec,'OC → llegada')}
+        ${step('3','3 Recibido parcial','Recibido parcial',S3,'--fp','llegó una parte')}<div class="fa sm"><i></i></div>
+        ${step('4','4 Recibido','Recibido',S4,'--ok','entrada 101 completa')}</div>
+      <div class="fchips"><button type="button" data-e="_abiertas" class="chip"><b>${nf0.format(open.length)}</b> abiertas · ${pen.format(sumV(open))}</button>
+        <button type="button" data-e="5 Servicio con OC" class="chip"><b>${nf0.format(nSrv)}</b> servicios con OC</button>
+        ${nSin?`<button type="button" data-e="${SINR}" class="chip"><b>${nf0.format(nSin)}</b> sin dato de recepción</button>`:''}
+        <button type="button" data-e="0 Borrada" class="chip"><b>${nf0.format(nBorr)}</b> borradas en SAP</button>
+        <span class="chipn">Montos en S/ · USD × ${TC.USD} y EUR × ${TC.EUR} (tipo de cambio referencial)</span></div></div>
+    <div class="g2">
+    <div class="card"><div class="h2s"><h2>Requieren seguimiento</h2><span>abiertas hace más de 30 días · ${nf0.format(follow.length)} posiciones</span></div>
+      ${follow.length?`<div class="flist">${follow.slice(0,8).map(s=>`<button type="button" class="fi" data-sp="${esc(s['Solicitud de pedido'])}"><span class="age ${ageCls(z(s.Dias_desde_solicitud))}">${s.Dias_desde_solicitud} d</span><span class="fx"><b>${esc(s['Texto breve']||'')}</b><small>SOLPED ${esc(s['Solicitud de pedido'])}/${esc(s['Pos.solicitud pedido'])} · ${esc(String(s.Estado).slice(2))}${s.Comprador||s['Grupo de compras']?' · '+esc(s.Comprador||s['Grupo de compras']):''}</small></span></button>`).join('')}</div>
+      ${follow.length>8?`<button type="button" class="lnk" id="pall" style="margin-top:8px">Ver las ${nf0.format(follow.length)} en la lista</button>`:''}`:'<div class="mut">No hay SOLPED abiertas con más de 30 días.</div>'}</div>
+    <div class="card"><div class="h2s"><h2>${perK==='Creado por'?'Quién crea las SOLPED':'Solicitantes'}</h2><span>posiciones en el período · toca una persona para filtrar</span></div>
+      ${hasCre?`<span class="seg sm2"><button type="button" data-per="cre" class="${perK==='Creado por'?'on':''}">Creado por</button><button type="button" data-per="sol" class="${perK==='Solicitante'?'on':''}">Solicitante</button></span>`:''}
+      <div class="pgrid">${people.map(([n,c])=>{const o=open.filter(s=>s[perK]===n).length;return `<button type="button" class="pp" data-pp="${esc(n)}" aria-pressed="${n===selP}"><i style="background:${avc(n)}">${esc(ini(n))}</i><span><b>${esc(n)}</b><small>${nf0.format(c)} posiciones${o?` · <em>${nf0.format(o)} ${o===1?'abierta':'abiertas'}</em>`:''}</small></span></button>`;}).join('')}</div></div>
+    </div>
+    ${hasCmp?`<div class="card"><div class="h2s"><h2>Compradores</h2><span>grupo de compras · ordenados por SOLPED sin OC · toca uno para filtrar</span></div>
+      <div class="cgrid">${cgl.slice().sort((a,b)=>b.s1-a.s1||b.n-a.n).map(o=>{const tot=o.s1+o.s2+o.s4||1;const nm=String(o.k).includes(' · ')?String(o.k).split(' · ')[1]:'';const cd=String(o.k).split(' · ')[0];
+        return `<button type="button" class="cc" data-cmp="${esc(o.k)}" aria-pressed="${o.k===PF.cmp}"><div class="cch"><i style="background:${avc(o.k)}">${esc(nm?nm.slice(0,2):cd.slice(0,2))}</i><span><b>${esc(nm||'Sin nombre')}</b><small>${esc(cd)} · ${nf0.format(o.n)} posiciones</small></span></div>
+          <div class="ccb"><i style="flex:${o.s1};background:var(--bad)"></i><i style="flex:${o.s2};background:var(--pen)"></i><i style="flex:${o.s4};background:var(--ok)"></i></div>
+          <div class="ccs"><span><b class="${o.s1?'r':''}">${nf0.format(o.s1)}</b>sin OC</span><span><b>${nf0.format(o.s2)}</b>en tránsito</span><span><b>${o.med===null?'–':nf0.format(o.med)}</b>días a OC</span><span><b>${o.val?pen.format(o.val).replace(/\.\d\d$/,''):'–'}</b>abierto</span></div></button>`;}).join('')}</div>
+      <div class="cleg"><span><i style="background:var(--bad)"></i>sin OC</span><span><i style="background:var(--pen)"></i>OC en tránsito / parcial</span><span><i style="background:var(--ok)"></i>recibido o servicio</span></div></div>`:''}
+    <div class="card"><div class="pc pc7">
       <label class="sq">Buscar<input type="search" id="pq" placeholder="Material, texto, SOLPED o pedido…" value="${esc(PF.q)}"></label>
       <label>Tipo de posición<select id="ptipo">${opts([['mat','Solo materiales'],['srv','Solo servicios']],PF.tipo,'Materiales y servicios')}</select></label>
       <label>Solicitante<select id="psol">${opts(sols,PF.sol,'Todos')}</select></label>
@@ -664,7 +764,9 @@ function vSolped(){const v=$('#v-solped');const SP=spScope();const cnt={};SP.for
     <div id="ptbl"></div>`;
   const sync=()=>v.querySelectorAll('[data-e]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.e===PF.estado)));
   v.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{const was=PF.estado;PF.estado=PF.estado===b.dataset.e?'':b.dataset.e;if(b.dataset.e==='5 Servicio con OC'&&PF.tipo==='mat'){PF.tipo='';vSolped();return;}if(was===BORR||PF.estado===BORR){vSolped();return;}sync();spTable();});
-  v.querySelectorAll('.hb .r[data-key]').forEach(r=>r.onclick=()=>{if(perK==='Creado por'){PF.cre=r.dataset.key;if($('#pcre'))$('#pcre').value=PF.cre;}else{PF.sol=r.dataset.key;$('#psol').value=PF.sol;}spTable();});
+  v.querySelectorAll('[data-pp]').forEach(r=>r.onclick=()=>{const k=r.dataset.pp;if(perK==='Creado por'){PF.cre=PF.cre===k?'':k;if($('#pcre'))$('#pcre').value=PF.cre;}else{PF.sol=PF.sol===k?'':k;$('#psol').value=PF.sol;}v.querySelectorAll('[data-pp]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.pp===(perK==='Creado por'?PF.cre:PF.sol))));spTable();});
+  v.querySelectorAll('[data-sp]').forEach(r=>r.onclick=()=>{PF.q=r.dataset.sp;$('#pq').value=PF.q;PF.estado='';sync();spTable();$('#ptbl').scrollIntoView({behavior:'smooth',block:'start'});});
+  if($('#pall'))$('#pall').onclick=()=>{PF.dias='30';PF.estado='_abiertas';$('#pdias').value='30';sync();spTable();$('#ptbl').scrollIntoView({behavior:'smooth',block:'start'});};
   v.querySelectorAll('[data-per]').forEach(b=>b.onclick=()=>{PF.per=b.dataset.per;vSolped();});
   v.querySelectorAll('[data-cmp]').forEach(r=>r.onclick=()=>{PF.cmp=PF.cmp===r.dataset.cmp?'':r.dataset.cmp;vSolped();});
   if($('#pcmp'))$('#pcmp').onchange=e=>{PF.cmp=e.target.value;vSolped();};if($('#pcre'))$('#pcre').onchange=e=>{PF.cre=e.target.value;spTable();};
@@ -695,12 +797,12 @@ function spTable(){const q=PF.q.trim().toLowerCase();
 
 /* ================= CONSUMO Y GASTO ================= */
 const MF={grupo:'Consumo',tipo:'',ot:'',q:'',vista:'mat'};
-function vMov(){const v=$('#v-mov');const tipos=[...new Set(D.mv.map(m=>m.Tipo_movimiento))].sort();const hasOT=D.mv.some(m=>m.Clase_OT);
+function vMov(){const v=$('#v-mov');const MV=mvScope();const tipos=[...new Set(MV.map(m=>m.Tipo_movimiento))].sort();const hasOT=MV.some(m=>m.Clase_OT);
   const ws=seasonWeeks();if(WK===null)WK=defIdx();const r=weekRange(WK);
-  const cons=D.mv.filter(m=>m.Grupo==='Consumo');const gasto=cons.reduce((a,m)=>a+z(m.Costo_consumo),0);
-  const ent=D.mv.filter(m=>m.Grupo==='Entrada').reduce((a,m)=>a+z(m['Impte.mon.local']),0);
+  const cons=MV.filter(m=>m.Grupo==='Consumo');const gasto=cons.reduce((a,m)=>a+z(m.Costo_consumo),0);
+  const ent=MV.filter(m=>m.Grupo==='Entrada').reduce((a,m)=>a+z(m['Impte.mon.local']),0);
   const cw=cons.filter(m=>m['Fe.contabilización']>=r.ia&&m['Fe.contabilización']<=r.ib);const gW=cw.reduce((a,m)=>a+z(m.Costo_consumo),0);
-  const eW=D.mv.filter(m=>m.Grupo==='Entrada'&&m['Fe.contabilización']>=r.ia&&m['Fe.contabilización']<=r.ib).reduce((a,m)=>a+z(m['Impte.mon.local']),0);
+  const eW=MV.filter(m=>m.Grupo==='Entrada'&&m['Fe.contabilización']>=r.ia&&m['Fe.contabilización']<=r.ib).reduce((a,m)=>a+z(m['Impte.mon.local']),0);
   const cur=curIdx();const gw=new Array(ws.length).fill(0);cons.forEach(m=>{const d=new Date(m['Fe.contabilización']+'T00:00:00');const k=Math.floor((d-ws[0].ini)/6048e5);if(k>=0&&k<ws.length)gw[k]+=z(m.Costo_consumo);});
   const nW=Math.min(cur+1,ws.length);const prom=nW?gasto/nW:0;
   const top1=sumBy(cw,m=>m.Material,m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1])[0];
@@ -708,7 +810,7 @@ function vMov(){const v=$('#v-mov');const tipos=[...new Set(D.mv.map(m=>m.Tipo_m
   const topMat=sumBy(cons,m=>m.Material,m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1]).slice(0,10);
   const topRec=sumBy(cons,m=>m['Dest.mercancía'],m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1]).slice(0,10);
   const nMat=new Set(cons.map(m=>m.Material)).size;
-  const descOf=m=>(D.byMat[m]?.Descripcion)||(D.mv.find(x=>x.Material===m)||{})['Texto breve de material']||m;
+  const descOf=m=>(D.byMat[m]?.Descripcion)||(MV.find(x=>x.Material===m)||{})['Texto breve de material']||m;
   const tagW=WK===cur?'semana actual':WK<cur?`hace ${cur-WK} sem.`:`en ${WK-cur} sem.`;
   v.innerHTML=SEC(`SEMANA ${r.iso} <span class="wkn"><button type="button" data-wk="-1" aria-label="Semana anterior">‹</button><button type="button" data-wk="1" aria-label="Semana siguiente">›</button></span>`,`${fd(r.a)} – ${fd(r.b)} · ${tagW} · elige otra semana con las flechas o tocando una barra del gráfico`,'wkk',`<div class="kp">
       ${K('Gasto en consumo',pen.format(gW),`${cw.length} movimientos de consumo`,'--ac')}
@@ -737,8 +839,8 @@ function vMov(){const v=$('#v-mov');const tipos=[...new Set(D.mv.map(m=>m.Tipo_m
   v.querySelectorAll('.hb .r[data-key]').forEach(rr=>rr.onclick=()=>{MF.q=rr.dataset.key;$('#mq').value=MF.q;mvTable();$('#mtbl').scrollIntoView({behavior:'smooth',block:'start'});});
   $('#mg').onchange=e=>{MF.grupo=e.target.value;mvTable();};$('#mt').onchange=e=>{MF.tipo=e.target.value;mvTable();};$('#mo').onchange=e=>{MF.ot=e.target.value;mvTable();};
   $('#mq').oninput=e=>{MF.q=e.target.value;mvTable();};$('#mvw').onchange=e=>{MF.vista=e.target.value;mvTable();};mvTable();}
-function mvTable(){const q=MF.q.trim().toLowerCase();const r=weekRange(WK);
-  const rows=D.mv.filter(m=>(!MF.grupo||m.Grupo===MF.grupo)&&(!MF.tipo||m.Tipo_movimiento===MF.tipo)&&(!MF.ot||m.Clase_OT===MF.ot)&&(MF.vista!=='sem'||(m['Fe.contabilización']>=r.ia&&m['Fe.contabilización']<=r.ib))
+function mvTable(){const MV=mvScope();const q=MF.q.trim().toLowerCase();const r=weekRange(WK);
+  const rows=MV.filter(m=>(!MF.grupo||m.Grupo===MF.grupo)&&(!MF.tipo||m.Tipo_movimiento===MF.tipo)&&(!MF.ot||m.Clase_OT===MF.ot)&&(MF.vista!=='sem'||(m['Fe.contabilización']>=r.ia&&m['Fe.contabilización']<=r.ib))
     &&(!q||[m.Material,m['Texto breve de material'],m['Dest.mercancía'],m.Referencia,m['Nombre del usuario']].some(x=>String(x??'').toLowerCase().includes(q))));
   if(MF.vista==='mat'){const g={};rows.forEach(m=>{const k=m.Material;const o=g[k]||(g[k]={Material:k,Descripcion:m['Texto breve de material'],UM:m['Un.medida de entrada'],Movs:0,Consumo:0,Gasto:0,Receptores:new Set(),Ultimo:''});
       o.Movs++;o.Consumo+=z(m.Consumo_neto);o.Gasto+=z(m.Costo_consumo);if(m['Dest.mercancía'])o.Receptores.add(m['Dest.mercancía']);if(m['Fe.contabilización']>o.Ultimo)o.Ultimo=m['Fe.contabilización'];});
@@ -860,19 +962,18 @@ function vOld(){const v=$('#v-old');const X=oldIndex();const L=X.list;
     <div class="card"><div class="pc">
       <label class="sq">Buscar<input type="search" id="oq" placeholder="Código antiguo, actual o descripción…" value="${esc(OF.q)}"></label>
       <label>Acción<select id="oact">${opts(Object.entries(OACT).map(([k,a])=>[k,a[0]]),OF.act,'Todas')}</select></label>
-      <label>Almacén<select id="oalm" ${alms.length?'':'disabled'}>${opts(alms,OF.alm,alms.length?'Todos':'Requiere STOCK_ALMACEN actualizada')}</select></label>
       <div class="act"><button class="btn2" type="button" id="odl">Descargar Excel</button></div>
       <div class="act"><button class="btn2 pri" type="button" id="oclr">Limpiar filtros</button></div></div></div>
     <div id="otbl"></div>`;
   const sync=()=>v.querySelectorAll('[data-a]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.a===OF.act)));
   v.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{OF.act=OF.act===b.dataset.a?'':b.dataset.a;$('#oact').value=OF.act;sync();oTable();});
-  $('#oq').oninput=e=>{OF.q=e.target.value;oTable();};$('#oact').onchange=e=>{OF.act=e.target.value;sync();oTable();};$('#oalm').onchange=e=>{OF.alm=e.target.value;oTable();};
+  $('#oq').oninput=e=>{OF.q=e.target.value;oTable();};$('#oact').onchange=e=>{OF.act=e.target.value;sync();oTable();};
   $('#oclr').onclick=()=>{Object.assign(OF,{q:'',act:'',alm:''});vOld();};
   $('#odl').onclick=()=>{if(!window.XLSX)return;const rows=oRows().map(o=>[o.old,o.desc,o.um,o.neu,(D.byMat[o.neu]||{}).Descripcion||'',(D.byMat[o.neu]||{}).UM||'',o.f,o.stock,Object.entries(o.alm).filter(([,q])=>q>0).map(([n,q])=>n+' ('+num(q)+')').join(', '),o.val,o.sp,o.res,o.last,OACT[o.act][0]]);
     const ws=XLSX.utils.aoa_to_sheet([['Código antiguo','Descripción antigua','UM antigua','Código actual','Descripción actual','UM actual','Factor','Stock antiguo (UM actual)','Almacenes','Valor (S/)','SOLPED abiertas','Reservas abiertas','Último movimiento','Acción'],...rows]);ws['!cols']=[14,40,8,14,40,8,7,12,30,12,10,10,12,22].map(w=>({wch:w}));
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Codigos antiguos');XLSX.writeFile(wb,`Codigos_antiguos_${isoD(new Date())}.xlsx`);};
   sync();oTable();}
-function oRows(){const q=OF.q.trim().toLowerCase();return oldIndex().list.filter(o=>(!OF.act||o.act===OF.act)&&(!OF.alm||z(o.alm[OF.alm])>0)&&(!q||[o.old,o.neu,o.desc,(D.byMat[o.neu]||{}).Descripcion].some(x=>String(x||'').toLowerCase().includes(q))));}
+function oRows(){const q=OF.q.trim().toLowerCase();return oldIndex().list.filter(o=>(!OF.act||o.act===OF.act)&&(!GF.area||z(o.alm[GF.area])>0)&&(!q||[o.old,o.neu,o.desc,(D.byMat[o.neu]||{}).Descripcion].some(x=>String(x||'').toLowerCase().includes(q))));}
 function oTable(){makeTable($('#otbl'),[
     {k:'old',h:'Código antiguo',cls:'code'},{k:'desc',h:'Descripción antigua',cls:'w'},
     {k:'neu',h:'Código actual',cls:'code',f:o=>`<b>${esc(o.neu)}</b>`},{k:'nd',h:'Descripción actual',cls:'w',v:o=>(D.byMat[o.neu]||{}).Descripcion||'',f:o=>esc((D.byMat[o.neu]||{}).Descripcion||'')},
