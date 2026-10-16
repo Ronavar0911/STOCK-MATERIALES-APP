@@ -334,6 +334,12 @@ svg.col g.click{cursor:pointer}
 .osteps>div{display:grid;gap:4px;padding:6px 10px;border-left:3px solid var(--ac)}
 .osteps span{color:var(--mut);font-size:12.5px;line-height:1.4}
 @media(max-width:900px){.osteps{grid-template-columns:1fr}}
+/* v0.15 · lista de estados compacta, sin % */
+.g2{align-items:start}
+.stl{gap:6px}
+.stl .st{grid-template-columns:1fr auto;padding:6px 12px}
+.stl .st .nv b{font-size:20px;min-width:48px;text-align:right}
+.stl .st .nm{font-size:13px}
 .sheet{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);z-index:41;border-left:1px solid var(--bd);overflow-y:auto;padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(20px + env(safe-area-inset-bottom,0px))}
 .sheet .card{margin-bottom:10px}
 .sheet .top{display:grid;grid-template-columns:1fr auto;gap:10px;border-top:3px solid var(--ac)}
@@ -545,7 +551,7 @@ function vStock(){const v=$('#v-stock');const A=almIndex();if(SF.alm&&!A.mats[SF
       <div class="dleg">${DEM.map(d=>`<div><i class="dot" style="background:var(${d[2]})"></i><span><b>${d[0]}</b> <em>${nf0.format(dc[d[0]]||0)}</em><small>${d[1]}</small></span></div>`).join('')}</div>
       <div class="mut" style="margin-top:8px">Solo <b>Regular</b> e <b>Intermitente</b> (${nf0.format((dc.Regular||0)+(dc.Intermitente||0))}) reciben mínimo automático; los demás (${nf0.format(cnt['Sin mínimo']||0)} «Sin mínimo») solo tienen mínimo si se cargan en CRITICOS.</div></div>
     <div class="card"><h2>Estado de los materiales con mínimo <small>${nf0.format(conMin)} materiales · toca un estado para filtrar la tabla</small></h2>
-      <div class="stl">${EST.map(e=>{const n=cnt[e[0]]||0;return `<button type="button" class="st" data-e="${e[0]}" style="--sc:${ESTC[e[0]]}"><span class="nm">${e[0]}<small>${STDEF[e[0]]}</small></span><span class="nv"><b>${nf0.format(n)}</b><span class="stm"><span class="stb"><i style="width:${conMin?n/conMin*100:0}%"></i></span><span class="pc2">${conMin?Math.round(n/conMin*100):0}<small>%</small></span></span></span></button>`;}).join('')}</div></div>
+      <div class="stl">${EST.map(e=>{const n=cnt[e[0]]||0;return `<button type="button" class="st" data-e="${e[0]}" style="--sc:${ESTC[e[0]]}"><span class="nm">${e[0]}<small>${STDEF[e[0]]}</small></span><span class="nv"><b>${nf0.format(n)}</b></span></button>`;}).join('')}</div></div>
     </div>
     <div class="card"><div class="pc">
       <label class="sq">Buscar<input type="search" id="sq" placeholder="Código o descripción…" value="${esc(SF.q)}"></label>
