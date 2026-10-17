@@ -804,7 +804,8 @@ function vMov(){const v=$('#v-mov');const MV=mvScope();const tipos=[...new Set(M
   const cw=cons.filter(m=>m['Fe.contabilización']>=r.ia&&m['Fe.contabilización']<=r.ib);const gW=cw.reduce((a,m)=>a+z(m.Costo_consumo),0);
   const eW=MV.filter(m=>m.Grupo==='Entrada'&&m['Fe.contabilización']>=r.ia&&m['Fe.contabilización']<=r.ib).reduce((a,m)=>a+z(m['Impte.mon.local']),0);
   const cur=curIdx();const gw=new Array(ws.length).fill(0);cons.forEach(m=>{const d=new Date(m['Fe.contabilización']+'T00:00:00');const k=Math.floor((d-ws[0].ini)/6048e5);if(k>=0&&k<ws.length)gw[k]+=z(m.Costo_consumo);});
-  const nW=Math.min(cur+1,ws.length);const prom=nW?gasto/nW:0;
+  const nW=Math.min(cur+1,ws.length);const prom=nW?gasto/nW:0;const typ=median(gw.slice(0,Math.max(1,cur)).filter(x=>x>0))||prom;const ratio=typ?gW/typ:null;
+  const byAlm=sumBy(MV.filter(m=>m.Grupo==='Consumo'),m=>almName(m['Almacén']),m=>z(m.Costo_consumo)).filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]);
   const top1=sumBy(cw,m=>m.Material,m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1])[0];
   const byTipo=sumBy(cons,m=>({201:'Consumo a centro de costo (201)',202:'Consumo a centro de costo (201)',261:'Consumo a OT (261)',262:'Consumo a OT (261)',221:'Consumo a proyecto (221)',222:'Consumo a proyecto (221)'})[m['Clase de movimiento']]||m.Tipo_movimiento,m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1]);
   const topMat=sumBy(cons,m=>m.Material,m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1]).slice(0,10);
@@ -814,18 +815,19 @@ function vMov(){const v=$('#v-mov');const MV=mvScope();const tipos=[...new Set(M
   const tagW=WK===cur?'semana actual':WK<cur?`hace ${cur-WK} sem.`:`en ${WK-cur} sem.`;
   v.innerHTML=SEC(`SEMANA ${r.iso} <span class="wkn"><button type="button" data-wk="-1" aria-label="Semana anterior">‹</button><button type="button" data-wk="1" aria-label="Semana siguiente">›</button></span>`,`${fd(r.a)} – ${fd(r.b)} · ${tagW} · elige otra semana con las flechas o tocando una barra del gráfico`,'wkk',`<div class="kp">
       ${K('Gasto en consumo',pen.format(gW),`${cw.length} movimientos de consumo`,'--ac')}
-      ${K('Frente al promedio',prom?Math.round(gW/prom*100)+' %':'—',`promedio semanal ${pen.format(prom)}`,gW>prom*1.25?'--bad':gW<prom*.75?'--ok':'--pen')}
+      ${K('Comparado con una semana típica',ratio===null?'—':(ratio>=1?'+':'')+Math.round((ratio-1)*100)+' %',ratio===null?'':`${nf.format(ratio)} veces lo normal · semana típica ${pen.format(typ)}`,ratio>1.25?'--bad':ratio<.75?'--ok':'--pen')}
       ${K('Entradas valorizadas',pen.format(eW),'mov. 101 − 102 en la semana','--fp')}
       ${K('Mayor gasto',top1?pen.format(top1[1]):'—',top1?descOf(top1[0]):'sin consumos','--ad')}</div>`)+
-    SEC(`TEMPORADA ${esc(D.meta.temporada)}`,`acumulado desde el ${fdate(D.meta.inicio_temporada)}`,'',`<div class="kp">
-      ${K('Gasto en consumo',pen.format(gasto),'201 + 261 + 221 menos anulaciones','--ac')}
+    SEC(GF.per==='temp'?`TEMPORADA ${esc(D.meta.temporada)}`:PERL[GF.per].toUpperCase(),`acumulado ${GF.area?'de '+esc(GF.area)+' ':''}en el período elegido arriba`,'',`<div class="kp">
+      ${K('Gasto en consumo',pen.format(gasto),`201 + 261 + 221 menos anulaciones · ${pen.format(prom)} por semana`,'--ac')}
       ${K('Entradas valorizadas',pen.format(ent),'101 − 102 y devoluciones','--fp')}
       ${K('Materiales consumidos',nf0.format(nMat),'códigos distintos','--mut')}
-      ${K('Semanas transcurridas',`${nW} de ${ws.length}`,`promedio ${pen.format(prom)} por semana`,'--mut')}</div>`)+
+      ${K('Balance entradas − consumo',(ent-gasto>=0?'+':'')+pen.format(ent-gasto),ent>=gasto?'entró más de lo que se consumió (no es el stock)':'se consumió más de lo que entró (no es el stock)',ent>=gasto?'--fp':'--pen')}</div>`)+
     `<div class="card"><h2>Gasto semanal en consumo <small>S/ por semana · la seleccionada resaltada · toca una barra para verla</small></h2>${columns(ws.slice(0,nW).map((w,i)=>({lab:'S'+w.iso,v:Math.max(0,gw[i]),cur:i===WK,key:i,tip:`Semana ${w.iso} (desde ${fd(w.ini)})<br>${pen.format(gw[i])}`})),{label:'Gasto semanal',W:1280,H:210})}</div>
     <div class="half"><div class="card"><h2>Materiales con mayor gasto <small>temporada · top 10</small></h2>${hbars(topMat.map(([m,c])=>({n:descOf(m),v:c,key:m,tip:`${esc(m)} · ${esc(descOf(m))}<br>${pen.format(c)}`})),{click:1,fmt:v=>pen.format(v)})}</div>
     <div class="card"><h2>Receptores con mayor gasto <small>destinatario de la mercancía · top 10</small></h2>${hbars(topRec.map(([n,c])=>({n,v:c,key:n})),{click:1,fmt:v=>pen.format(v)})}</div></div>
-    <div class="card"><h2>Gasto por tipo de salida <small>temporada</small></h2>${hbars(byTipo.map(([n,c])=>({n,v:c})),{fmt:v=>pen.format(v)})}</div>
+    <div class="half"><div class="card"><div class="h2s"><h2>Gasto por almacén</h2><span>${GF.area?'filtrado: '+esc(GF.area)+' · toca de nuevo para ver todas':'consumo valorizado del período · toca un almacén para filtrar toda la app'}</span></div>${hbars(byAlm.map(([n,c])=>({n,v:c,key:n,tip:`${esc(n)}<br>${pen.format(c)}`})),{click:1,fmt:v=>pen.format(v)})}</div>
+    <div class="card"><div class="h2s"><h2>Gasto por tipo de salida</h2><span>a centro de costo, a OT o a proyecto</span></div>${hbars(byTipo.map(([n,c])=>({n,v:c})),{fmt:v=>pen.format(v)})}</div></div>
     <div class="card"><div class="pc">
       <label class="sq">Buscar<input type="search" id="mq" placeholder="Material, receptor o referencia…" value="${esc(MF.q)}"></label>
       <label>Grupo<select id="mg">${opts(['Consumo','Entrada','Traslado/Otro'],MF.grupo,'Todos')}</select></label>
@@ -836,7 +838,8 @@ function vMov(){const v=$('#v-mov');const MV=mvScope();const tipos=[...new Set(M
     <div id="mtbl"></div>`;
   v.querySelectorAll('[data-wk]').forEach(b=>b.onclick=()=>{const n=WK+ +b.dataset.wk;if(n>=0&&n<ws.length){WK=n;vMov();}});
   v.querySelectorAll('svg.col g[data-key]').forEach(g=>g.onclick=()=>{WK=+g.dataset.key;vMov();});
-  v.querySelectorAll('.hb .r[data-key]').forEach(rr=>rr.onclick=()=>{MF.q=rr.dataset.key;$('#mq').value=MF.q;mvTable();$('#mtbl').scrollIntoView({behavior:'smooth',block:'start'});});
+  const almSet=new Set(byAlm.map(([n])=>n));
+  v.querySelectorAll('.hb .r[data-key]').forEach(rr=>rr.onclick=()=>{if(almSet.has(rr.dataset.key)&&rr.closest('.half')&&rr.closest('.card').querySelector('h2').textContent==='Gasto por almacén'){GF.area=GF.area===rr.dataset.key?'':rr.dataset.key;SF.alm=GF.area;remember('gfArea',GF.area);header();vMov();return;}MF.q=rr.dataset.key;$('#mq').value=MF.q;mvTable();$('#mtbl').scrollIntoView({behavior:'smooth',block:'start'});});
   $('#mg').onchange=e=>{MF.grupo=e.target.value;mvTable();};$('#mt').onchange=e=>{MF.tipo=e.target.value;mvTable();};$('#mo').onchange=e=>{MF.ot=e.target.value;mvTable();};
   $('#mq').oninput=e=>{MF.q=e.target.value;mvTable();};$('#mvw').onchange=e=>{MF.vista=e.target.value;mvTable();};mvTable();}
 function mvTable(){const MV=mvScope();const q=MF.q.trim().toLowerCase();const r=weekRange(WK);
