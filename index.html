@@ -977,7 +977,7 @@ function vMov(){const v=$('#v-mov');const ALL=mvAll();const MV=mvScope();const t
   const tw=gw.map(o=>Object.values(o).reduce((a,b)=>a+b,0));
   const showC=hasCat?CATS.filter(c=>!MF.cat||c[0]===MF.cat):[['otro','Consumo','var(--ac)']];
   const colOf=k=>hasCat?CATC[k]:'#1d5fa8';
-  const wRows=ws.slice(0,nW).map((w,i)=>({lab:'S'+w.iso,key:i,cur:i===WK,parts:CATS.map(c=>({v:Math.max(0,gw[i][c[0]]),c:colOf(c[0])})),
+  const wRows=ws.slice(0,nW).map((w,i)=>({lab:'S'+w.iso,key:i,cur:i===WK,parts:hasCat?CATS.map(c=>({v:Math.max(0,gw[i][c[0]]),c:colOf(c[0])})):[{v:Math.max(0,tw[i]),c:'#1d5fa8'}],
     tip:`Semana ${w.iso} (desde ${fd(w.ini)})<br><b>${pen.format(tw[i])}</b>`+(hasCat&&!MF.cat?CATS.filter(c=>gw[i][c[0]]).map(c=>`<br><span style="color:${c[2]}">■</span> ${esc(catName(c[0]))}: ${pen.format(gw[i][c[0]])}`).join(''):'')}));
   const cw=consF.filter(m=>m['Fe.contabilización']>=r.ia&&m['Fe.contabilización']<=r.ib);const gW=sumC(cw);
   const eW=MV.filter(m=>m.Grupo==='Entrada'&&m['Fe.contabilización']>=r.ia&&m['Fe.contabilización']<=r.ib).reduce((a,m)=>a+z(m['Impte.mon.local']),0);
@@ -985,7 +985,7 @@ function vMov(){const v=$('#v-mov');const ALL=mvAll();const MV=mvScope();const t
   const top1=sumBy(cw,m=>m.Material,m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1])[0];
   const DN=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
   const days7=[...Array(7)].map((_,i)=>{const d=new Date(r.a.getTime()+i*864e5);const iso=isoD(d);const o=Object.fromEntries(CATS.map(c=>[c[0],0]));cw.filter(m=>m['Fe.contabilización']===iso).forEach(m=>o[catOf(m)]+=z(m.Costo_consumo));
-    const t=Object.values(o).reduce((a,b)=>a+b,0);return {lab:DN[i]+' '+d.getDate(),key:iso,cur:MF.day===iso,parts:CATS.map(c=>({v:Math.max(0,o[c[0]]),c:colOf(c[0])})),
+    const t=Object.values(o).reduce((a,b)=>a+b,0);return {lab:DN[i]+' '+d.getDate(),key:iso,cur:MF.day===iso,parts:hasCat?CATS.map(c=>({v:Math.max(0,o[c[0]]),c:colOf(c[0])})):[{v:Math.max(0,t),c:'#1d5fa8'}],
       tip:`${DN[i]} ${fd(d)}<br><b>${pen.format(t)}</b>`+(hasCat&&!MF.cat?CATS.filter(c=>o[c[0]]).map(c=>`<br><span style="color:${c[2]}">■</span> ${esc(catName(c[0]))}: ${pen.format(o[c[0]])}`).join(''):'')+'<br><i>Toca para ver sus movimientos</i>'};});
   const wkTot=hasCat&&!MF.cat?CATS.map(c=>({k:c[0],v:sumC(cw.filter(m=>catOf(m)===c[0]))})).filter(x=>x.v):[];
   const tagW=WK===cur?'semana actual':WK<cur?`hace ${cur-WK} sem.`:`en ${WK-cur} sem.`;
