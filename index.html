@@ -878,10 +878,19 @@ const MF={grupo:'Consumo',tipo:'',ot:'',q:'',vista:'mat',cat:'',day:'',fam:''};
 const CATS=[['fert','Fertilizante','#0e8a7d'],['fito','Fitosanitario','#8a63d2'],['agua','Tratamiento de agua','#2b9fd6'],['otro','Otros','#9fbbe6']];
 const CATC=Object.fromEntries(CATS.map(c=>[c[0],c[2]]));
 const catName=k=>k==='otro'&&GF.zona&&GF.zona!==NOZ?'Otros de '+GF.zona.toLowerCase():((CATS.find(c=>c[0]===k)||[])[1]||k);
-function catOf(m){if(m._cat)return m._cat;const u=usr(m['Dest.mercancía']),k=+m['Clase de movimiento'],p=String(m.Material||'').slice(0,4).toUpperCase();let c='otro';
-  if(u==='BLOZADA'&&(k===221||k===222))c='fito';
-  else if(u==='JMURGA'&&(k===221||k===222)&&['FERT','AGQF','STIM'].includes(p))c='fert';
-  else if(u==='JMURGA'&&(k===201||k===202)&&['SANI','ADDI','FERT','MATQ'].includes(p))c='agua';
+/* receptor del traslado 311 de la reserva (mismo material, día y cantidad): corrige receptores mal digitados en el consumo */
+let TRX=null;const RIEGO_U=new Set(['JMURGA','BLOZADA','JBELLODAS','WVALDIVIESO','MZEGARRA']);
+const trKey=m=>m.Material+'|'+m['Fe.contabilización']+'|'+Math.abs(z(m['Ctd.en UM entrada'])).toFixed(3);
+function trIndex(){if(TRX&&TRX.src===D)return TRX;const mp=new Map();
+  D.mv.forEach(m=>{if(+m['Clase de movimiento']!==311||z(m['Ctd.en UM entrada'])<=0)return;const k=trKey(m),u=usr(m['Dest.mercancía']);if(!u)return;mp.set(k,mp.has(k)&&mp.get(k)!==u?'*':u);});
+  TRX={src:D,mp};return TRX;}
+const AGUA_FERT=new Set(['FERT-0561']); /* códigos FERT que son de tratamiento de agua (sulfato de cobre) */
+function catOf(m){if(m._cat)return m._cat;let u=usr(m['Dest.mercancía']);const k=+m['Clase de movimiento'],mat=String(m.Material||'').toUpperCase(),p=mat.slice(0,4);let c='otro';
+  const t=trIndex().mp.get(trKey(m));if(t&&t!=='*'&&RIEGO_U.has(t)&&[201,202,221,222].includes(k))u=t;
+  if(p==='PEST'&&[201,202,221,222,261,262].includes(k)&&(RIEGO_U.has(u)||u.startsWith('BLOZADA')))c='fito';
+  else if(u==='BLOZADA'&&(k===221||k===222))c='fito';
+  else if(u==='JMURGA'&&(k===201||k===202)&&(['SANI','ADDI','MATQ'].includes(p)||AGUA_FERT.has(mat)))c='agua';
+  else if(u==='JMURGA'&&[201,202,221,222].includes(k)&&['FERT','AGQF','STIM'].includes(p))c='fert';
   return m._cat=c;}
 const catOn=()=>!!GF.zona&&GF.zona!==NOZ&&String(GF.zona).trim().toUpperCase()==='RIEGO';
 /* familias de material por prefijo del código (para áreas sin categorías) */
@@ -954,7 +963,7 @@ function vMov(){const v=$('#v-mov');const ALL=mvAll();const MV=mvScope();const t
   const leftCard=hasCat?`<div class="card"><div class="h2s"><h2>Gasto por categoría</h2><span>toca una categoría para filtrar el resto de la pestaña</span></div>
       <div class="dn">${donut(byCat.map(c=>({...c})),{attr:'cat',sel:MF.cat,c1:AXIS.format(gasto),c2:'consumo',label:'Gasto por categoría'})}
       <div class="dlg">${byCat.map(c=>`<button type="button" class="dl" data-cat="${c.key}" aria-pressed="${MF.cat===c.key}"><i style="background:${c.c}"></i><span><b>${esc(c.n)}</b><small>${pen.format(c.v)}</small></span><em>${pct(c.v,gasto)}</em></button>`).join('')}</div></div>
-      <div class="mut fs12">Fertilizante: JMURGA · 221 · códigos FERT/AGQF/STIM. Fitosanitario: BLOZADA · 221. Tratamiento de agua: JMURGA · 201 · químicos (SANI, ADDI, FERT, MATQ). El resto va a «${esc(catName('otro'))}».</div></div>`
+      <div class="mut fs12">Fertilizante: JMURGA · códigos FERT/AGQF/STIM (incluye AQUAZIX). Fitosanitario: BLOZADA · 221 y todo PEST (también por OT). Tratamiento de agua: JMURGA · 201 · SANI, ADDI, MATQ y sulfato de cobre. El receptor se toma del traslado de la reserva cuando difiere. El resto va a «${esc(catName('otro'))}».</div></div>`
     :!GF.zona?(()=>{const nTop=byZona.length<=7?7:6;const top=byZona.slice(0,nTop);const rest=byZona.slice(nTop).reduce((x,[,c])=>x+c,0);
         const parts=top.map(([n,c],i)=>({key:n,n,v:c,c:n==='Sin área asignada'?'#c9d8ef':PAL[i%7]}));if(rest>0)parts.push({key:null,n:'Otras áreas',v:rest,c:'#9fbbe6'});
         return `<div class="card"><div class="h2s"><h2>Gasto por área</h2><span>toca un área para ver su detalle</span></div>
