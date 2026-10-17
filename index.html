@@ -406,6 +406,69 @@ svg.col g.click{cursor:pointer}
 .pc.pc7{grid-template-columns:1.6fr repeat(5,1fr) .9fr}
 @media(max-width:1200px){.pc.pc7{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:600px){.pc.pc7{grid-template-columns:1fr 1fr}}
+/* v0.22 Consumo y gasto: panorama, bloque de área, categorías */
+.fs12{font-size:12px;margin-top:8px}
+.ksec.pano{border-top:3px solid var(--hfe-navy);margin-bottom:12px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;align-items:stretch}
+.g3>.card,.g2e>.card{margin:0}
+.g2e{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;align-items:stretch}
+@media(max-width:1000px){.g3,.g2e{grid-template-columns:1fr}}
+.zone{border-radius:var(--r-lg);padding:14px;margin:4px 0 18px;background:color-mix(in srgb,#0e8a7d 7%,#fff);border:1px solid color-mix(in srgb,#0e8a7d 28%,var(--bd));box-shadow:var(--sh-panel)}
+.zone:not(.on){background:#f4f7fc;border-color:var(--bd)}
+.zone>.card:last-child{margin-bottom:0}
+.zone .kp{margin-bottom:12px}
+.zh{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:0 2px 12px}
+.zh>div small{display:block;font-size:11px;letter-spacing:.06em;color:var(--mut);font-weight:700}
+.zh>div b{font-size:22px;color:#0b5f56;line-height:1.15}
+.zone:not(.on) .zh>div b{color:var(--fg)}
+.zsub{color:var(--mut);font-size:13px;flex:1;min-width:200px}
+.zchips{display:flex;flex-wrap:wrap;gap:6px;width:100%}
+.zbtn{cursor:pointer;border:1px solid color-mix(in srgb,#0e8a7d 45%,var(--bd));background:#fff;color:#0b5f56;border-radius:8px;padding:6px 12px;font:inherit;font-size:13px;font-weight:600}
+.zbtn:hover{background:color-mix(in srgb,#0e8a7d 10%,#fff)}
+.dn{display:grid;grid-template-columns:minmax(150px,190px) 1fr;gap:18px;align-items:center}
+@media(max-width:520px){.dn{grid-template-columns:1fr}}
+.dnut{width:100%;max-width:190px;height:auto;display:block;margin:auto}
+.dnut path{cursor:pointer;stroke:#fff;stroke-width:1.5;transition:opacity .15s}
+.dnut path.dim{opacity:.25}
+.dnut path:hover{opacity:.85}
+.dnut .d1{font:700 17px var(--font);fill:var(--fg)}
+.dnut .d2{font:12px var(--font);fill:var(--mut)}
+.dlg,.wcat{display:flex;flex-direction:column;gap:6px}
+.dl{display:grid;grid-template-columns:12px 1fr auto;gap:10px;align-items:center;text-align:left;cursor:pointer;background:#fff;border:1px solid var(--bd);border-radius:8px;padding:7px 10px;font:inherit;color:var(--fg)}
+.dl:hover{border-color:var(--ac)}
+.dl[aria-pressed="true"]{border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
+.dl>i{width:12px;height:12px;border-radius:3px}
+.dl b{display:block;font-size:13px}
+.dl small{color:var(--mut);font-size:12px}
+.dl em{font-style:normal;font-weight:700;font-size:13px;color:var(--fg)}
+.s100{display:flex;height:22px;border-radius:6px;overflow:hidden;gap:2px;background:var(--bg)}
+.s100 i{display:block;min-width:3px}
+.s100l{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+@media(max-width:700px){.s100l{grid-template-columns:1fr}}
+.s100l>div{display:flex;gap:8px;align-items:flex-start}
+.s100l>div>i{width:12px;height:12px;border-radius:3px;margin-top:3px;flex:none}
+.s100l b{display:block;font-size:13px;font-weight:600}
+.s100l small{color:var(--mut);font-size:12px}
+.cchips{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 8px}
+.cc2{display:inline-flex;align-items:center;gap:6px;cursor:pointer;background:#fff;border:1px solid var(--bd);border-radius:99px;padding:4px 12px;font:inherit;font-size:12.5px;color:var(--fg)}
+.cc2 i{width:10px;height:10px;border-radius:3px}
+.cc2:hover{border-color:var(--ac)}
+.cc2[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:#fff}
+svg.stk rect.sel{fill:color-mix(in srgb,var(--pen) 22%,transparent)}
+svg.stk text.cl{fill:var(--fg);font-weight:700}
+svg.stk g:hover rect.sg{opacity:.85}
+.wday{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:12px;background:#fff;border:1px solid var(--bd);border-radius:var(--r);padding:12px}
+@media(max-width:900px){.wday{grid-template-columns:1fr}}
+.wdh{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;margin-bottom:6px}
+.wdh b{font-size:14px}.wdh span{color:var(--mut);font-size:12px}
+.wcat{justify-content:center}
+.catp{display:inline-block;font-size:11px;padding:1px 8px;border-radius:99px;white-space:nowrap;background:color-mix(in srgb,var(--cc) 16%,#fff);color:color-mix(in srgb,var(--cc) 75%,#000);border:1px solid color-mix(in srgb,var(--cc) 40%,#fff)}
+.dchip{display:inline-flex;align-items:center;gap:4px;background:var(--fg);color:#fff;border-radius:99px;padding:1px 4px 1px 10px;font-size:12px;font-weight:600}
+.dchip button{cursor:pointer;border:0;background:transparent;color:#fff;font-size:15px;line-height:1;padding:0 4px}
+.pc.pc6{grid-template-columns:1.6fr repeat(5,1fr)}
+@media(max-width:1100px){.pc.pc6{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.pc.pc6{grid-template-columns:repeat(2,1fr)}}
+.hbleg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--mut);margin-top:8px}.hbleg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px}
 .sheet{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);z-index:41;border-left:1px solid var(--bd);overflow-y:auto;padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(20px + env(safe-area-inset-bottom,0px))}
 .sheet .card{margin-bottom:10px}
 .sheet .top{display:grid;grid-template-columns:1fr auto;gap:10px;border-top:3px solid var(--ac)}
@@ -808,70 +871,168 @@ function spTable(){const q=PF.q.trim().toLowerCase();
     {k:'Nombre de proveedor',h:'Proveedor',cls:'w'},{k:'Solicitante',h:'Solicitante'},
   ],rows,{sort:{k:'Dias_abierta',d:'desc'},onRow:o=>o.Material&&D.byMat[o.Material]?openSheet(o.Material):null,unit:'posiciones',fix:2});}
 
-/* ================= CONSUMO Y GASTO ================= */
-const MF={grupo:'Consumo',tipo:'',ot:'',q:'',vista:'mat'};
-function vMov(){const v=$('#v-mov');const MV=mvScope();const tipos=[...new Set(MV.map(m=>m.Tipo_movimiento))].sort();const hasOT=MV.some(m=>m.Clase_OT);
-  const ws=seasonWeeks();if(WK===null)WK=defIdx();const r=weekRange(WK);
-  const cons=MV.filter(m=>m.Grupo==='Consumo');const gasto=cons.reduce((a,m)=>a+z(m.Costo_consumo),0);
-  const ent=MV.filter(m=>m.Grupo==='Entrada').reduce((a,m)=>a+z(m['Impte.mon.local']),0);
-  const cw=cons.filter(m=>m['Fe.contabilización']>=r.ia&&m['Fe.contabilización']<=r.ib);const gW=cw.reduce((a,m)=>a+z(m.Costo_consumo),0);
-  const eW=MV.filter(m=>m.Grupo==='Entrada'&&m['Fe.contabilización']>=r.ia&&m['Fe.contabilización']<=r.ib).reduce((a,m)=>a+z(m['Impte.mon.local']),0);
-  const cur=curIdx();const gw=new Array(ws.length).fill(0);cons.forEach(m=>{const d=new Date(m['Fe.contabilización']+'T00:00:00');const k=Math.floor((d-ws[0].ini)/6048e5);if(k>=0&&k<ws.length)gw[k]+=z(m.Costo_consumo);});
-  const nW=Math.min(cur+1,ws.length);const prom=nW?gasto/nW:0;const typ=median(gw.slice(0,Math.max(1,cur)).filter(x=>x>0))||prom;const ratio=typ?gW/typ:null;
-  const byAlm=sumBy(MV.filter(m=>m.Grupo==='Consumo'),m=>almName(m['Almacén']),m=>z(m.Costo_consumo)).filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]);
-  const ZI=zIndex();const byZona=ZI.has?sumBy(MV.filter(m=>m.Grupo==='Consumo'),m=>ZI.aMv(m)||'Sin área asignada',m=>z(m.Costo_consumo)).filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]):[];
-  const top1=sumBy(cw,m=>m.Material,m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1])[0];
-  const byTipo=sumBy(cons,m=>({201:'Consumo a centro de costo (201)',202:'Consumo a centro de costo (201)',261:'Consumo a OT (261)',262:'Consumo a OT (261)',221:'Consumo a proyecto (221)',222:'Consumo a proyecto (221)'})[m['Clase de movimiento']]||m.Tipo_movimiento,m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1]);
-  const topMat=sumBy(cons,m=>m.Material,m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  const topRec=sumBy(cons,m=>m['Dest.mercancía'],m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  const nMat=new Set(cons.map(m=>m.Material)).size;
+/* ================= CONSUMO Y GASTO (v0.22) ================= */
+const MF={grupo:'Consumo',tipo:'',ot:'',q:'',vista:'mat',cat:'',day:''};
+/* categorías de consumo de Riego: receptor + movimiento + prefijo del código */
+const CATS=[['fert','Fertilizante','#0e8a7d'],['fito','Fitosanitario','#8a63d2'],['agua','Tratamiento de agua','#2b9fd6'],['otro','Otros','#9fbbe6']];
+const CATC=Object.fromEntries(CATS.map(c=>[c[0],c[2]]));
+const catName=k=>k==='otro'&&GF.zona&&GF.zona!==NOZ?'Otros de '+GF.zona.toLowerCase():((CATS.find(c=>c[0]===k)||[])[1]||k);
+function catOf(m){if(m._cat)return m._cat;const u=usr(m['Dest.mercancía']),k=+m['Clase de movimiento'],p=String(m.Material||'').slice(0,4).toUpperCase();let c='otro';
+  if(u==='BLOZADA'&&(k===221||k===222))c='fito';
+  else if(u==='JMURGA'&&(k===221||k===222)&&['FERT','AGQF','STIM'].includes(p))c='fert';
+  else if(u==='JMURGA'&&(k===201||k===202)&&['SANI','ADDI','FERT','MATQ'].includes(p))c='agua';
+  return m._cat=c;}
+const catPill=k=>`<span class="catp" style="--cc:${CATC[k]}">${esc(catName(k))}</span>`;
+const TIPC=[[221,'Consumo a proyecto (221)','#1d5fa8'],[261,'Consumo a OT (261)','#f0a30a'],[201,'Consumo a centro de costo (201)','#b0306a']];
+const tipoK=m=>({201:201,202:201,261:261,262:261,221:221,222:221})[m['Clase de movimiento']]||0;
+/* movimientos del período y almacén, sin el filtro de área (panorama general) */
+const mvAll=()=>D.mv.filter(m=>(!GF.area||almName(m['Almacén'])===GF.area)&&inPer(m['Fe.contabilización']));
+const sumC=l=>l.reduce((a,m)=>a+z(m.Costo_consumo),0);
+const pct=(a,b)=>b?(a/b*100).toLocaleString('es-PE',{maximumFractionDigits:1})+' %':'—';
+
+function donut(parts,opt){opt=opt||{};const tot=parts.reduce((a,p)=>a+Math.max(0,p.v),0)||1;const R=74,r=48,C=80;let a0=-Math.PI/2;
+  const pt=(a,rr)=>[(C+rr*Math.cos(a)).toFixed(2),(C+rr*Math.sin(a)).toFixed(2)];
+  const arcs=parts.filter(p=>p.v>0).map(p=>{const f=p.v/tot;const a1=a0+2*Math.PI*Math.min(f,.99999);const big=a1-a0>Math.PI?1:0;
+    const [x0,y0]=pt(a0,R),[x1,y1]=pt(a1,R),[x2,y2]=pt(a1,r),[x3,y3]=pt(a0,r);a0=a1;
+    return `<path d="M${x0} ${y0}A${R} ${R} 0 ${big} 1 ${x1} ${y1}L${x2} ${y2}A${r} ${r} 0 ${big} 0 ${x3} ${y3}Z" fill="${p.c}" class="${opt.sel&&opt.sel!==p.key?'dim':''}" data-cat="${p.key}" data-tip="${esc(p.n)}<br>${pen.format(p.v)} · ${pct(p.v,tot)}"/>`;}).join('');
+  return `<svg class="dnut" viewBox="0 0 160 160" role="img" aria-label="${esc(opt.label||'')}">${arcs}<text x="80" y="76" text-anchor="middle" class="d1">${esc(opt.c1||'')}</text><text x="80" y="95" text-anchor="middle" class="d2">${esc(opt.c2||'')}</text></svg>`;}
+function stackCols(rows,opt){opt=opt||{};const W=opt.W||640,H=opt.H||200,pl=52,pb=22,pt=8;const n=rows.length||1;const mx=Math.max(1,...rows.map(r=>r.parts.reduce((a,p)=>a+Math.max(0,p.v),0)));
+  const nice=v=>{const p=Math.pow(10,Math.floor(Math.log10(v)));const f=v/p;return (f<=1?1:f<=2?2:f<=5?5:10)*p;};const top=nice(mx);
+  const bw=(W-pl)/n;let g='';for(let i=0;i<=4;i++){const y=pt+(H-pb-pt)*(1-i/4);g+=`<line class="g" x1="${pl}" x2="${W}" y1="${y}" y2="${y}"/><text x="${pl-6}" y="${y+4}" text-anchor="end">${AXIS.format(top*i/4)}</text>`;}
+  const every=Math.ceil(n/(opt.maxLab||16));
+  const bars=rows.map((r,i)=>{const x=pl+i*bw+bw*.15,w=Math.max(2,bw*.7);let y=H-pb;
+    const seg=r.parts.filter(p=>p.v>0).map(p=>{const h=(H-pb-pt)*p.v/top;y-=h;return `<rect class="sg" x="${x}" y="${y}" width="${w}" height="${Math.max(0,h-(h>3?1:0))}" fill="${p.c}"/>`;}).join('');
+    return `<g data-tip="${esc(r.tip)}" ${r.key!=null?`data-key="${r.key}" class="click ${r.cur?'cur':''}"`:''}><rect class="hit" x="${pl+i*bw}" y="${pt}" width="${bw}" height="${H-pb-pt}"/>${r.cur?`<rect class="sel" x="${pl+i*bw+2}" y="${pt}" width="${bw-4}" height="${H-pb-pt}" rx="6"/>`:''}${seg}</g>`+
+      (i%every===0?`<text x="${x+w/2}" y="${H-6}" text-anchor="middle" class="${r.cur?'cl':''}">${esc(r.lab)}</text>`:'');}).join('');
+  return `<svg class="col stk" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opt.label||'')}">${g}${bars}</svg>`;}
+function stack100(parts){const tot=parts.reduce((a,p)=>a+Math.max(0,p.v),0)||1;
+  return `<div class="s100">${parts.filter(p=>p.v>0).map(p=>`<i style="flex:${p.v/tot};background:${p.c}" data-tip="${esc(p.n)}<br>${pen.format(p.v)} · ${pct(p.v,tot)}"></i>`).join('')}</div>
+    <div class="s100l">${parts.map(p=>`<div><i style="background:${p.c}"></i><span><b>${esc(p.n)}</b><small>${pen.format(p.v)} · ${pct(p.v,tot)}</small></span></div>`).join('')}</div>`;}
+
+function vMov(){const v=$('#v-mov');const ALL=mvAll();const MV=mvScope();const tipos=[...new Set(MV.map(m=>m.Tipo_movimiento))].sort();const hasOT=MV.some(m=>m.Clase_OT);
+  const ws=seasonWeeks();if(WK===null)WK=defIdx();const r=weekRange(WK);const cur=curIdx();const nW=Math.min(cur+1,ws.length);
+  const isC=m=>m.Grupo==='Consumo';const ZI=zIndex();
   const descOf=m=>(D.byMat[m]?.Descripcion)||(MV.find(x=>x.Material===m)||{})['Texto breve de material']||m;
+  /* ---- 1. panorama general (todas las áreas) ---- */
+  const cA=ALL.filter(isC);const gA=sumC(cA);const eA=ALL.filter(m=>m.Grupo==='Entrada').reduce((a,m)=>a+z(m['Impte.mon.local']),0);
+  const byZona=ZI.has?sumBy(cA,m=>ZI.aMv(m)||'Sin área asignada',m=>z(m.Costo_consumo)).filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]):[];
+  const byAlm=sumBy(cA,m=>almName(m['Almacén']),m=>z(m.Costo_consumo)).filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]);
+  const topRec=sumBy(cA,m=>m['Dest.mercancía'],m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const nWa=Math.max(1,nW);
+  const perL=GF.per==='temp'?'temporada '+esc(D.meta.temporada):PERL[GF.per].toLowerCase();
+  const zSel=GF.zona?(GF.zona===NOZ?'Sin área asignada':GF.zona):'';
+  const pano=SEC('PANORAMA GENERAL',`todas las áreas · ${perL}${GF.area?' · almacén '+esc(GF.area):''}`,'pano',`<div class="kp">
+      ${K('Gasto en consumo',pen.format(gA),`201 + 261 + 221 menos anulaciones · ${pen.format(gA/nWa)} por semana`,'--ac')}
+      ${K('Entradas valorizadas',pen.format(eA),'101 − 102 y devoluciones','--fp')}
+      ${K('Materiales consumidos',nf0.format(new Set(cA.map(m=>m.Material)).size),'códigos distintos','--te')}
+      ${K('Balance entradas − consumo',(eA-gA>=0?'+':'')+pen.format(eA-gA),eA>=gA?'entró más de lo que se consumió (no es el stock)':'se consumió más de lo que entró (no es el stock)',eA>=gA?'--fp':'--pen')}</div>`)+
+    `<div class="g3">
+    <div class="card"><div class="h2s"><h2>Gasto por área</h2><span>${ZI.has?'según el receptor (tabla AREAS) · toca un área para ver su detalle':'agrega la hoja AREAS al maestro'}</span></div>${ZI.has?hbars(byZona.map(([n,c])=>({n,v:c,key:'Z:'+n,c:(n==='Sin área asignada'?NOZ:n)===GF.zona?'var(--te)':null,tip:`${esc(n)}<br>${pen.format(c)} · ${pct(c,gA)}`})),{click:1,fmt:x=>pen.format(x)})+(Object.keys(ZI.sinU).length?`<div class="mut fs12">Receptores sin área: ${Object.entries(ZI.sinU).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([u,c])=>`<b>${esc(u)}</b> ${pen.format(c).replace(/\.\d\d$/,'')}`).join(' · ')}</div>`:''):''}</div>
+    <div class="card"><div class="h2s"><h2>Gasto por almacén</h2><span>${GF.area?'filtrado: '+esc(GF.area)+' · toca de nuevo para quitar':'toca un almacén para filtrar toda la app'}</span></div>${hbars(byAlm.map(([n,c])=>({n,v:c,key:'A:'+n,tip:`${esc(n)}<br>${pen.format(c)}`})),{click:1,fmt:x=>pen.format(x)})}</div>
+    <div class="card"><div class="h2s"><h2>Receptores con mayor gasto</h2><span>destinatario de la mercancía · top 10</span></div>${hbars(topRec.map(([n,c])=>({n,v:c,key:'Q:'+n})),{click:1,fmt:x=>pen.format(x)})}</div></div>`;
+
+  /* ---- 2. bloque del área ---- */
+  const cons=MV.filter(isC);const gasto=sumC(cons);
+  const hasCat=cons.some(m=>catOf(m)!=='otro');if(!hasCat&&MF.cat)MF.cat='';
+  const consF=MF.cat?cons.filter(m=>catOf(m)===MF.cat):cons;
+  const byCat=CATS.map(([k,,c])=>({key:k,n:catName(k),c,v:sumC(cons.filter(m=>catOf(m)===k))}));
+  const domCat=mat=>{const o={};consF.forEach(m=>{if(m.Material===mat){const k=catOf(m);o[k]=(o[k]||0)+z(m.Costo_consumo);}});return Object.entries(o).sort((a,b)=>b[1]-a[1])[0]?.[0]||'otro';};
+  const topMat=sumBy(consF,m=>m.Material,m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const byTipo=TIPC.map(([k,n,c])=>({n,c,v:sumC(consF.filter(m=>tipoK(m)===k))}));
+  const recA=sumBy(consF,m=>m['Dest.mercancía'],m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const catLbl=MF.cat?` · solo ${esc(catName(MF.cat).toLowerCase())}`:'';
+  const zh=GF.zona?`<div class="zh"><div><small>ÁREA SELECCIONADA</small><b>${esc(zSel)}</b></div><span class="zsub">${pct(gasto,gA)} del gasto en consumo de todas las áreas · ${perL}</span><button type="button" class="zbtn" id="zx">Ver todas las áreas</button></div>
+      <div class="kp">${K('Gasto en consumo',pen.format(gasto),`${pen.format(gasto/nWa)} por semana en promedio`,'--te')}${K('Participación en el total',pct(gasto,gA),`de ${pen.format(gA)} en todas las áreas`,'--te')}
+      ${K('Materiales consumidos',nf0.format(new Set(cons.map(m=>m.Material)).size),'códigos distintos','--te')}${K('Receptores',nf0.format(new Set(cons.map(m=>usr(m['Dest.mercancía'])).filter(Boolean)).size),[...new Set(cons.map(m=>usr(m['Dest.mercancía'])).filter(Boolean))].slice(0,4).join(', '),'--te')}</div>`
+    :`<div class="zh"><div><small>DETALLE POR ÁREA</small><b>Todas las áreas</b></div><span class="zsub">Elige un área para ver su detalle:</span><span class="zchips">${byZona.slice(0,8).map(([n,c])=>`<button type="button" class="chip" data-z="${esc(n)}"><b>${esc(n)}</b> ${AXIS.format(c)}</button>`).join('')}</span></div>`;
+  const leftCard=hasCat?`<div class="card"><div class="h2s"><h2>Gasto por categoría</h2><span>toca una categoría para filtrar el resto de la pestaña</span></div>
+      <div class="dn">${donut(byCat.map(c=>({...c})),{sel:MF.cat,c1:AXIS.format(gasto),c2:'consumo',label:'Gasto por categoría'})}
+      <div class="dlg">${byCat.map(c=>`<button type="button" class="dl" data-cat="${c.key}" aria-pressed="${MF.cat===c.key}"><i style="background:${c.c}"></i><span><b>${esc(c.n)}</b><small>${pen.format(c.v)}</small></span><em>${pct(c.v,gasto)}</em></button>`).join('')}</div></div>
+      <div class="mut fs12">Fertilizante: JMURGA · 221 · códigos FERT/AGQF/STIM. Fitosanitario: BLOZADA · 221. Tratamiento de agua: JMURGA · 201 · químicos (SANI, ADDI, FERT, MATQ). El resto va a «${esc(catName('otro'))}».</div></div>`
+    :`<div class="card"><div class="h2s"><h2>Receptores del área</h2><span>destinatario de la mercancía · top 10</span></div>${hbars(recA.map(([n,c])=>({n,v:c,key:'Q:'+n})),{click:1,fmt:x=>pen.format(x)})}</div>`;
+  const zone=`<div class="zone ${GF.zona?'on':''}">${zh}
+    <div class="g2e">${leftCard}
+      <div class="card"><div class="h2s"><h2>Materiales con mayor gasto</h2><span>${GF.zona?esc(zSel):'todas las áreas'}${catLbl} · top 10 · toca uno para verlo en la tabla</span></div>${hbars(topMat.map(([m,c])=>({n:descOf(m),v:c,key:'Q:'+m,c:hasCat?CATC[domCat(m)]:null,tip:`${esc(m)} · ${esc(descOf(m))}<br>${pen.format(c)}`})),{click:1,fmt:x=>pen.format(x)})}${hasCat?`<div class="hbleg">${CATS.map(c=>`<span><i style="background:${c[2]}"></i>${esc(catName(c[0]))}</span>`).join('')}<span>· color según la categoría principal del material</span></div>`:''}</div></div>
+    <div class="card"><div class="h2s"><h2>Gasto por tipo de salida</h2><span>a proyecto, a OT o a centro de costo${catLbl}</span></div>${stack100(byTipo)}</div></div>`;
+
+  /* ---- 3. gasto semanal por categoría + semana seleccionada ---- */
+  const kOf=d=>Math.floor((new Date(d+'T00:00:00')-ws[0].ini)/6048e5);
+  const gw=ws.map(()=>Object.fromEntries(CATS.map(c=>[c[0],0])));consF.forEach(m=>{const k=kOf(m['Fe.contabilización']);if(k>=0&&k<ws.length)gw[k][catOf(m)]+=z(m.Costo_consumo);});
+  const tw=gw.map(o=>Object.values(o).reduce((a,b)=>a+b,0));
+  const showC=hasCat?CATS.filter(c=>!MF.cat||c[0]===MF.cat):[['otro','Consumo','var(--ac)']];
+  const colOf=k=>hasCat?CATC[k]:'#1d5fa8';
+  const wRows=ws.slice(0,nW).map((w,i)=>({lab:'S'+w.iso,key:i,cur:i===WK,parts:CATS.map(c=>({v:Math.max(0,gw[i][c[0]]),c:colOf(c[0])})),
+    tip:`Semana ${w.iso} (desde ${fd(w.ini)})<br><b>${pen.format(tw[i])}</b>`+(hasCat&&!MF.cat?CATS.filter(c=>gw[i][c[0]]).map(c=>`<br><span style="color:${c[2]}">■</span> ${esc(catName(c[0]))}: ${pen.format(gw[i][c[0]])}`).join(''):'')}));
+  const cw=consF.filter(m=>m['Fe.contabilización']>=r.ia&&m['Fe.contabilización']<=r.ib);const gW=sumC(cw);
+  const eW=MV.filter(m=>m.Grupo==='Entrada'&&m['Fe.contabilización']>=r.ia&&m['Fe.contabilización']<=r.ib).reduce((a,m)=>a+z(m['Impte.mon.local']),0);
+  const typ=median(tw.slice(0,Math.max(1,cur)).filter(x=>x>0))||(nW?sumC(consF)/nW:0);const ratio=typ?gW/typ:null;
+  const top1=sumBy(cw,m=>m.Material,m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1])[0];
+  const DN=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  const days7=[...Array(7)].map((_,i)=>{const d=new Date(r.a.getTime()+i*864e5);const iso=isoD(d);const o=Object.fromEntries(CATS.map(c=>[c[0],0]));cw.filter(m=>m['Fe.contabilización']===iso).forEach(m=>o[catOf(m)]+=z(m.Costo_consumo));
+    const t=Object.values(o).reduce((a,b)=>a+b,0);return {lab:DN[i]+' '+d.getDate(),key:iso,cur:MF.day===iso,parts:CATS.map(c=>({v:Math.max(0,o[c[0]]),c:colOf(c[0])})),
+      tip:`${DN[i]} ${fd(d)}<br><b>${pen.format(t)}</b>`+(hasCat&&!MF.cat?CATS.filter(c=>o[c[0]]).map(c=>`<br><span style="color:${c[2]}">■</span> ${esc(catName(c[0]))}: ${pen.format(o[c[0]])}`).join(''):'')+'<br><i>Toca para ver sus movimientos</i>'};});
+  const wkTot=hasCat&&!MF.cat?CATS.map(c=>({k:c[0],v:sumC(cw.filter(m=>catOf(m)===c[0]))})).filter(x=>x.v):[];
   const tagW=WK===cur?'semana actual':WK<cur?`hace ${cur-WK} sem.`:`en ${WK-cur} sem.`;
-  v.innerHTML=SEC(`SEMANA ${r.iso} <span class="wkn"><button type="button" data-wk="-1" aria-label="Semana anterior">‹</button><button type="button" data-wk="1" aria-label="Semana siguiente">›</button></span>`,`${fd(r.a)} – ${fd(r.b)} · ${tagW} · elige otra semana con las flechas o tocando una barra del gráfico`,'wkk',`<div class="kp">
+  const chips=hasCat?`<div class="cchips"><button type="button" class="cc2" data-cf="" aria-pressed="${!MF.cat}">Todas</button>${CATS.map(c=>`<button type="button" class="cc2" data-cf="${c[0]}" aria-pressed="${MF.cat===c[0]}"><i style="background:${c[2]}"></i>${esc(catName(c[0]))}</button>`).join('')}</div>`:'';
+  const weekly=`<div class="card"><div class="h2s"><h2>Gasto semanal en consumo</h2><span>${GF.zona?esc(zSel):'todas las áreas'}${catLbl} · S/ por semana · toca una barra para ver la semana día por día</span></div>${chips}
+      ${stackCols(wRows,{label:'Gasto semanal',W:1280,H:220})}</div>`+
+    SEC(`SEMANA ${r.iso} <span class="wkn"><button type="button" data-wk="-1" aria-label="Semana anterior">‹</button><button type="button" data-wk="1" aria-label="Semana siguiente">›</button></span>`,`${fd(r.a)} – ${fd(r.b)} · ${tagW}${GF.zona?' · '+esc(zSel):''}${catLbl}`,'wkk',`<div class="kp">
       ${K('Gasto en consumo',pen.format(gW),`${cw.length} movimientos de consumo`,'--ac')}
       ${K('Comparado con una semana típica',ratio===null?'—':(ratio>=1?'+':'')+Math.round((ratio-1)*100)+' %',ratio===null?'':`${nf.format(ratio)} veces lo normal · semana típica ${pen.format(typ)}`,ratio>1.25?'--bad':ratio<.75?'--ok':'--pen')}
       ${K('Entradas valorizadas',pen.format(eW),'mov. 101 − 102 en la semana','--fp')}
-      ${K('Mayor gasto',top1?pen.format(top1[1]):'—',top1?descOf(top1[0]):'sin consumos','--ad')}</div>`)+
-    SEC(GF.per==='temp'?`TEMPORADA ${esc(D.meta.temporada)}`:PERL[GF.per].toUpperCase(),`acumulado ${GF.area?'de '+esc(GF.area)+' ':''}en el período elegido arriba`,'',`<div class="kp">
-      ${K('Gasto en consumo',pen.format(gasto),`201 + 261 + 221 menos anulaciones · ${pen.format(prom)} por semana`,'--ac')}
-      ${K('Entradas valorizadas',pen.format(ent),'101 − 102 y devoluciones','--fp')}
-      ${K('Materiales consumidos',nf0.format(nMat),'códigos distintos','--mut')}
-      ${K('Balance entradas − consumo',(ent-gasto>=0?'+':'')+pen.format(ent-gasto),ent>=gasto?'entró más de lo que se consumió (no es el stock)':'se consumió más de lo que entró (no es el stock)',ent>=gasto?'--fp':'--pen')}</div>`)+
-    `<div class="card"><h2>Gasto semanal en consumo <small>S/ por semana · la seleccionada resaltada · toca una barra para verla</small></h2>${columns(ws.slice(0,nW).map((w,i)=>({lab:'S'+w.iso,v:Math.max(0,gw[i]),cur:i===WK,key:i,tip:`Semana ${w.iso} (desde ${fd(w.ini)})<br>${pen.format(gw[i])}`})),{label:'Gasto semanal',W:1280,H:210})}</div>
-    <div class="half"><div class="card"><h2>Materiales con mayor gasto <small>temporada · top 10</small></h2>${hbars(topMat.map(([m,c])=>({n:descOf(m),v:c,key:m,tip:`${esc(m)} · ${esc(descOf(m))}<br>${pen.format(c)}`})),{click:1,fmt:v=>pen.format(v)})}</div>
-    <div class="card"><h2>Receptores con mayor gasto <small>destinatario de la mercancía · top 10</small></h2>${hbars(topRec.map(([n,c])=>({n,v:c,key:n})),{click:1,fmt:v=>pen.format(v)})}</div></div>
-    <div class="half"><div class="card"><div class="h2s"><h2>Gasto por almacén</h2><span>${GF.area?'filtrado: '+esc(GF.area)+' · toca de nuevo para ver todas':'consumo valorizado del período · toca un almacén para filtrar toda la app'}</span></div>${hbars(byAlm.map(([n,c])=>({n,v:c,key:n,tip:`${esc(n)}<br>${pen.format(c)}`})),{click:1,fmt:v=>pen.format(v)})}</div>
-    <div class="card"><div class="h2s"><h2>Gasto por área</h2><span>${ZI.has?'según el receptor de cada salida (tabla AREAS) · toca un área para filtrar toda la app':'agrega la hoja AREAS al maestro para ver el gasto por área'}</span></div>${ZI.has?hbars(byZona.map(([n,c])=>({n,v:c,key:'Z:'+n,tip:`${esc(n)}<br>${pen.format(c)}`})),{click:1,fmt:v=>pen.format(v)})+(Object.keys(ZI.sinU).length?`<div class="mut" style="margin-top:8px;font-size:12px">Receptores sin área (agrégalos a la tabla de áreas): ${Object.entries(ZI.sinU).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([u,c])=>`<b>${esc(u)}</b> ${pen.format(c).replace(/\.\d\d$/,'')}`).join(' · ')}</div>`:''):''}</div></div>
-    <div class="card"><div class="h2s"><h2>Gasto por tipo de salida</h2><span>a centro de costo, a OT o a proyecto</span></div>${hbars(byTipo.map(([n,c])=>({n,v:c})),{fmt:v=>pen.format(v)})}</div>
-    <div class="card"><div class="pc">
+      ${K('Mayor gasto',top1?pen.format(top1[1]):'—',top1?descOf(top1[0]):'sin consumos','--ad')}</div>
+      <div class="wday"><div><div class="wdh"><b>Gasto por día</b><span>toca un día para ver sus movimientos en la tabla</span></div>${stackCols(days7,{label:'Gasto por día',W:640,H:190,maxLab:7})}</div>
+      ${wkTot.length?`<div class="wcat">${wkTot.map(x=>`<button type="button" class="dl" data-cat="${x.k}"><i style="background:${CATC[x.k]}"></i><span><b>${esc(catName(x.k))}</b><small>${pen.format(x.v)}</small></span><em>${pct(x.v,gW)}</em></button>`).join('')}</div>`:''}</div>`);
+
+  /* ---- 4. tabla ---- */
+  const tabla=`<div class="card" id="mfil"><div class="pc ${hasCat?'pc6':''}">
       <label class="sq">Buscar<input type="search" id="mq" placeholder="Material, receptor, referencia o N° de reserva…" value="${esc(MF.q)}"></label>
       <label>Grupo<select id="mg">${opts(['Consumo','Entrada','Traslado/Otro'],MF.grupo,'Todos')}</select></label>
+      ${hasCat?`<label>Categoría<select id="mc">${opts(CATS.map(c=>[c[0],catName(c[0])]),MF.cat,'Todas')}</select></label>`:''}
       <label>Movimiento<select id="mt">${opts(tipos,MF.tipo,'Todos')}</select></label>
       <label>Clase de OT<select id="mo" ${hasOT?'':'disabled'}>${opts([['OM01','Solo correctivo OM01'],['OM03','Solo preventivo OM03']],MF.ot,hasOT?'Todas (con o sin OT)':'Falta columna Orden en MB51')}</select></label>
       <label>Vista<select id="mvw">${opts([['mat','Resumen por material'],['det','Detalle de movimientos'],['sem','Solo la semana seleccionada']],MF.vista,null)}</select></label></div>
-      <div class="mut" style="margin-top:8px">Movimientos MB51 desde el ${fdate(D.meta.inicio_temporada)} (temporada actual). El costo es el importe en moneda local de cada movimiento.${hasOT?'':' Para separar el gasto en OM01 y OM03 agrega la columna «Orden» al layout de MB51.'}</div></div>
+      <div class="mut" style="margin-top:8px">${MF.day?`<span class="dchip">Día ${fdate(MF.day)} <button type="button" id="mdx" aria-label="Quitar día">×</button></span> `:''}Movimientos MB51 desde el ${fdate(D.meta.inicio_temporada)}. El costo es el importe en moneda local de cada movimiento.${hasOT?'':' Para separar el gasto en OM01 y OM03 agrega la columna «Orden» al layout de MB51.'}</div></div>
     <div id="mtbl"></div>`;
-  v.querySelectorAll('[data-wk]').forEach(b=>b.onclick=()=>{const n=WK+ +b.dataset.wk;if(n>=0&&n<ws.length){WK=n;vMov();}});
-  v.querySelectorAll('svg.col g[data-key]').forEach(g=>g.onclick=()=>{WK=+g.dataset.key;vMov();});
-  const almSet=new Set(byAlm.map(([n])=>n));
-  v.querySelectorAll('.hb .r[data-key]').forEach(rr=>rr.onclick=()=>{if(rr.dataset.key.startsWith('Z:')){const n=rr.dataset.key.slice(2);const zz=n==='Sin área asignada'?NOZ:n;GF.zona=GF.zona===zz?'':zz;remember('gfZona',GF.zona);header();vMov();return;}if(almSet.has(rr.dataset.key)&&rr.closest('.half')&&rr.closest('.card').querySelector('h2').textContent==='Gasto por almacén'){GF.area=GF.area===rr.dataset.key?'':rr.dataset.key;SF.alm=GF.area;remember('gfArea',GF.area);header();vMov();return;}MF.q=rr.dataset.key;$('#mq').value=MF.q;mvTable();$('#mtbl').scrollIntoView({behavior:'smooth',block:'start'});});
+
+  v.innerHTML=pano+zone+weekly+tabla;
+
+  /* ---- eventos ---- */
+  const goTbl=()=>$('#mfil').scrollIntoView({behavior:'smooth',block:'start'});
+  v.querySelectorAll('[data-wk]').forEach(b=>b.onclick=()=>{const n=WK+ +b.dataset.wk;if(n>=0&&n<ws.length){WK=n;MF.day='';vMov();}});
+  v.querySelectorAll('svg.stk g[data-key]').forEach(g=>g.onclick=()=>{const k=g.dataset.key;
+    if(/^\d+$/.test(k)){WK=+k;MF.day='';vMov();$('.ksec.wkk').scrollIntoView({behavior:'smooth',block:'start'});}
+    else{MF.day=MF.day===k?'':k;if(MF.day&&MF.vista==='mat')MF.vista='det';vMov();if(MF.day)goTbl();}});
+  const setCat=k=>{MF.cat=MF.cat===k?'':k;vMov();};
+  v.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>setCat(b.dataset.cat));
+  v.querySelectorAll('[data-cf]').forEach(b=>b.onclick=()=>{MF.cat=b.dataset.cf;vMov();});
+  v.querySelectorAll('[data-z]').forEach(b=>b.onclick=()=>{const n=b.dataset.z;GF.zona=n==='Sin área asignada'?NOZ:n;remember('gfZona',GF.zona);header();vMov();});
+  if($('#zx'))$('#zx').onclick=()=>{GF.zona='';MF.cat='';remember('gfZona','');header();vMov();};
+  v.querySelectorAll('.hb .r[data-key]').forEach(rr=>rr.onclick=()=>{const k=rr.dataset.key,t=k.slice(0,2),n=k.slice(2);
+    if(t==='Z:'){const zz=n==='Sin área asignada'?NOZ:n;GF.zona=GF.zona===zz?'':zz;MF.cat='';remember('gfZona',GF.zona);header();vMov();return;}
+    if(t==='A:'){GF.area=GF.area===n?'':n;SF.alm=GF.area;remember('gfArea',GF.area);header();vMov();return;}
+    MF.q=n;$('#mq').value=n;mvTable();goTbl();});
   $('#mg').onchange=e=>{MF.grupo=e.target.value;mvTable();};$('#mt').onchange=e=>{MF.tipo=e.target.value;mvTable();};$('#mo').onchange=e=>{MF.ot=e.target.value;mvTable();};
+  if($('#mc'))$('#mc').onchange=e=>{MF.cat=e.target.value;vMov();};if($('#mdx'))$('#mdx').onclick=()=>{MF.day='';vMov();};
   $('#mq').oninput=e=>{MF.q=e.target.value;mvTable();};$('#mvw').onchange=e=>{MF.vista=e.target.value;mvTable();};mvTable();}
 function mvTable(){const MV=mvScope();const q=MF.q.trim().toLowerCase();const r=weekRange(WK);
   const rows=MV.filter(m=>(!MF.grupo||m.Grupo===MF.grupo)&&(!MF.tipo||m.Tipo_movimiento===MF.tipo)&&(!MF.ot||m.Clase_OT===MF.ot)&&(MF.vista!=='sem'||(m['Fe.contabilización']>=r.ia&&m['Fe.contabilización']<=r.ib))
+    &&(!MF.cat||(m.Grupo==='Consumo'&&catOf(m)===MF.cat))&&(!MF.day||m['Fe.contabilización']===MF.day)
     &&(!q||[m.Material,m['Texto breve de material'],m['Dest.mercancía'],m.Referencia,m['Nombre del usuario']].some(x=>String(x??'').toLowerCase().includes(q))));
   const TRF=new Set([311,312,301,302,309,310]);const isTr=m=>TRF.has(+m['Clase de movimiento']);
   const rutas={};MV.forEach(m=>{if(!isTr(m))return;const k=m['Documento material']+'|'+m.Material;const o=rutas[k]||(rutas[k]={});if(z(m['Ctd.en UM entrada'])<0)o.de=almName(m['Almacén']);else o.a=almName(m['Almacén']);});
   const ruta=m=>{const o=rutas[m['Documento material']+'|'+m.Material]||{};return (o.de||'?')+' → '+(o.a||'?');};
-  if(MF.vista==='mat'){const g={};rows.forEach(m=>{const k=m.Material;const o=g[k]||(g[k]={Material:k,Descripcion:m['Texto breve de material'],UM:m['Un.medida de entrada'],Movs:0,Consumo:0,Gasto:0,Tr:0,VTr:0,Rutas:new Set(),Receptores:new Set(),Ultimo:''});
-      o.Movs++;o.Consumo+=z(m.Consumo_neto);o.Gasto+=z(m.Costo_consumo);if(isTr(m)&&z(m['Ctd.en UM entrada'])>0){o.Tr+=z(m['Ctd.en UM entrada']);o.VTr+=z(m['Ctd.en UM entrada'])*D.price(m.Material);o.Rutas.add(ruta(m));}if(m['Dest.mercancía'])o.Receptores.add(m['Dest.mercancía']);if(m['Fe.contabilización']>o.Ultimo)o.Ultimo=m['Fe.contabilización'];});
-    const arr=Object.values(g).map(o=>Object.assign(o,{Receptores:[...o.Receptores].slice(0,4).join(', ')+(o.Receptores.size>4?' …':''),Rutas:[...o.Rutas].slice(0,3).join(', ')+(o.Rutas.size>3?' …':''),Stock:D.byMat[o.Material]?.Stock??null}));
+  const hasCat=MV.some(m=>m.Grupo==='Consumo'&&catOf(m)!=='otro');
+  const catCol=hasCat?[{k:'_cat',h:'Categoría',v:o=>o._cats!==undefined?o._cats:(o.Grupo==='Consumo'?catName(catOf(o)):''),f:o=>o._catSet?[...o._catSet].map(catPill).join(' '):(o.Grupo==='Consumo'?catPill(catOf(o)):'')}]:[];
+  if(MF.vista==='mat'){const g={};rows.forEach(m=>{const k=m.Material;const o=g[k]||(g[k]={Material:k,Descripcion:m['Texto breve de material'],UM:m['Un.medida de entrada'],Movs:0,Consumo:0,Gasto:0,Tr:0,VTr:0,Rutas:new Set(),Receptores:new Set(),Ultimo:'',_catSet:new Set()});
+      o.Movs++;o.Consumo+=z(m.Consumo_neto);o.Gasto+=z(m.Costo_consumo);if(m.Grupo==='Consumo')o._catSet.add(catOf(m));if(isTr(m)&&z(m['Ctd.en UM entrada'])>0){o.Tr+=z(m['Ctd.en UM entrada']);o.VTr+=z(m['Ctd.en UM entrada'])*D.price(m.Material);o.Rutas.add(ruta(m));}if(m['Dest.mercancía'])o.Receptores.add(m['Dest.mercancía']);if(m['Fe.contabilización']>o.Ultimo)o.Ultimo=m['Fe.contabilización'];});
+    const arr=Object.values(g).map(o=>Object.assign(o,{_cats:[...o._catSet].map(catName).join(', '),Receptores:[...o.Receptores].slice(0,4).join(', ')+(o.Receptores.size>4?' …':''),Rutas:[...o.Rutas].slice(0,3).join(', ')+(o.Rutas.size>3?' …':''),Stock:D.byMat[o.Material]?.Stock??null}));
     const showTr=MF.grupo!=='Consumo';
-    makeTable($('#mtbl'),[{k:'Material',h:'Material',cls:'code'},{k:'Descripcion',h:'Descripción',cls:'w'},{k:'UM',h:'UM'},{k:'Movs',h:'Movs.',num:1},
+    makeTable($('#mtbl'),[{k:'Material',h:'Material',cls:'code'},{k:'Descripcion',h:'Descripción',cls:'w'},...catCol,{k:'UM',h:'UM'},{k:'Movs',h:'Movs.',num:1},
       {k:'Consumo',h:'Consumo neto',num:1,f:o=>num(o.Consumo||null)},{k:'Gasto',h:'Gasto (S/)',num:1,f:o=>money(o.Gasto)},
       ...(showTr?[{k:'Tr',h:'Trasladado',num:1,tip:'Cantidad recibida por traslados (311/301…) en el período',f:o=>num(o.Tr||null)},{k:'VTr',h:'Valor traslado (S/)',num:1,tip:'Estimado: cantidad trasladada × precio unitario (SAP registra los traslados con importe 0)',f:o=>o.VTr?'≈ '+money(o.VTr):''},{k:'Rutas',h:'Ruta (de → a)',cls:'w'}]:[]),
       {k:'Stock',h:'Stock hoy',num:1,f:o=>num(o.Stock)},{k:'Ultimo',h:'Último',f:o=>fdate(o.Ultimo)},{k:'Receptores',h:'Receptores',cls:'w'}],arr,{sort:{k:MF.grupo==='Consumo'?'Gasto':MF.grupo==='Traslado/Otro'?'VTr':'Movs',d:'desc'},onRow:o=>D.byMat[o.Material]&&openSheet(o.Material),unit:'materiales',fix:2});}
-  else makeTable($('#mtbl'),[{k:'Fe.contabilización',h:'Fecha',f:o=>fdate(o['Fe.contabilización'])},{k:'Material',h:'Material',cls:'code'},{k:'Clase de movimiento',h:'Mov.',cls:'code'},{k:'Tipo_movimiento',h:'Tipo'},
+  else makeTable($('#mtbl'),[{k:'Fe.contabilización',h:'Fecha',f:o=>fdate(o['Fe.contabilización'])},{k:'Material',h:'Material',cls:'code'},{k:'Clase de movimiento',h:'Mov.',cls:'code'},{k:'Tipo_movimiento',h:'Tipo'},...catCol,
       {k:'Texto breve de material',h:'Descripción',cls:'w'},{k:'Ctd.en UM entrada',h:'Cantidad',num:1,f:o=>num(o['Ctd.en UM entrada'])+' '+esc(o['Un.medida de entrada']||'')},
       {k:'Impte.mon.local',h:'Importe (S/)',num:1,tip:'En traslados SAP registra importe 0; se muestra un valor estimado (≈) con el precio unitario',v:o=>z(o['Impte.mon.local'])||(isTr(o)?Math.abs(z(o['Ctd.en UM entrada']))*D.price(o.Material):0),f:o=>z(o['Impte.mon.local'])?money(o['Impte.mon.local']):(isTr(o)&&D.price(o.Material)?`<span class="mut">≈ ${money(Math.abs(z(o['Ctd.en UM entrada']))*D.price(o.Material))}</span>`:'')},
       {k:'Almacén',h:'Almacén',v:o=>almName(o['Almacén']),f:o=>esc(almName(o['Almacén'])||'')+`<span class="mut"> ${esc(o['Almacén']??'')}</span>`},{k:'ruta',h:'Ruta',v:o=>isTr(o)?ruta(o):'',f:o=>isTr(o)?esc(ruta(o)):''},{k:'Dest.mercancía',h:'Receptor'},{k:'Referencia',h:'Referencia'},{k:'Pedido',h:'Pedido',cls:'code'},{k:'Clase_OT',h:'Clase OT',f:o=>o.Clase_OT?clsPill(o.Clase_OT):''}],rows,{sort:{k:'Fe.contabilización',d:'desc'},onRow:o=>D.byMat[o.Material]&&openSheet(o.Material),unit:'movimientos',fix:2});}
