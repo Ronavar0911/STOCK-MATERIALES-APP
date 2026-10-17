@@ -478,7 +478,7 @@ $('#app').appendChild(SHELL.content.cloneNode(true));
 let RAW=JSON.parse(document.getElementById('data').textContent);
 function decode(T){if(!T)return [];const d=T.dict||{};return T.rows.map(r=>{const o={};T.cols.forEach((c,j)=>{let v=r[j];if(d[j]!==undefined&&v!==null&&v!==undefined)v=d[j][v];o[c]=v===undefined?null:v;});return o;});}
 let D={};
-function load(raw){D={meta:raw.meta,tab:decode(raw.tab),sp:decode(raw.sp),mv:decode(raw.mv),res:decode(raw.res),alm:decode(raw.alm),eq:decode(raw.eq)};
+function load(raw){D={meta:raw.meta,tab:decode(raw.tab),sp:decode(raw.sp),mv:decode(raw.mv),res:decode(raw.res),alm:decode(raw.alm),eq:decode(raw.eq),areas:decode(raw.areas)};
   D.byMat={};D.tab.forEach(t=>D.byMat[t.Material]=t);
   D.price=m=>{const t=D.byMat[m];return t&&t.Precio_unit>0?t.Precio_unit:0;};}
 load(RAW);
@@ -582,7 +582,18 @@ const clearBtn='<div class="act"><button class="btn2 pri" type="button" data-cle
 
 
 /* ================= FILTRO GLOBAL: área y período ================= */
-const GF={area:store.gfArea||'',per:store.gfPer||'temp',d1:store.gfD1||'',d2:store.gfD2||''};
+const GF={area:store.gfArea||'',zona:store.gfZona||'',per:store.gfPer||'temp',d1:store.gfD1||'',d2:store.gfD2||''};
+let ZX=null;const NOZ='_sin';
+const usr=v=>v==null?'':String(v).split('/')[0].trim().toUpperCase();
+function zIndex(){if(ZX&&ZX.src===D)return ZX;const u2a={};(D.areas||[]).forEach(r=>{u2a[usr(r['G.SOLICITANTE'])]=String(r.AREA).trim();});
+  const has=Object.keys(u2a).length>0;const aMv=m=>u2a[usr(m['Dest.mercancía'])]||null;const aSp=s=>u2a[usr(s.Solicitante)]||u2a[usr(s['Creado por'])]||null;
+  const mats={};const add=(a,m)=>{if(a&&m)(mats[a]||(mats[a]=new Set())).add(m);};
+  D.mv.forEach(m=>{if(m.Grupo==='Consumo')add(aMv(m),m.Material);});D.sp.forEach(s=>add(aSp(s),s.Material));
+  const sinU={};D.mv.forEach(m=>{if(m.Grupo==='Consumo'&&!aMv(m)&&m['Dest.mercancía']){const k=usr(m['Dest.mercancía']);sinU[k]=(sinU[k]||0)+z(m.Costo_consumo);}});
+  ZX={src:D,u2a,has,aMv,aSp,mats,names:[...new Set(Object.values(u2a))].sort(),sinU};return ZX;}
+const zMv=m=>{if(!GF.zona)return true;const a=zIndex().aMv(m);return GF.zona===NOZ?!a:a===GF.zona;};
+const zSp=s=>{if(!GF.zona)return true;const a=zIndex().aSp(s);return GF.zona===NOZ?!a:a===GF.zona;};
+const zMat=mat=>!GF.zona||GF.zona===NOZ||(zIndex().mats[GF.zona]||new Set()).has(mat);
 const tISO=()=>isoD(new Date());
 function seasonStartOf(y){const j=new Date(y,0,4);const d=(j.getDay()+6)%7;return isoD(new Date(y,0,4-d+182));}
 function gRange(){const ini=D.meta.inicio_temporada;const y=+ini.slice(0,4);
@@ -594,21 +605,23 @@ function gRange(){const ini=D.meta.inicio_temporada;const y=+ini.slice(0,4);
 const inPer=d=>{if(!d)return GF.per==='all';const [a,b]=gRange();return d>=a&&d<=b;};
 const PERL={temp:'Temporada actual',prev:'Temporada anterior','12m':'Últimos 12 meses',all:'Todo lo exportado',cus:'Rango personalizado'};
 function almName(code){if(code==null)return null;const A=almIndex();return A.code2n[String(code)]||String(code);}
-const mvScope=()=>D.mv.filter(m=>(!GF.area||almName(m['Almacén'])===GF.area)&&inPer(m['Fe.contabilización']));
-function spArea(s){if(!GF.area)return true;if(s['Almacén']!=null&&s['Almacén']!=='')return almName(s['Almacén'])===GF.area;return !!s.Material&&(almIndex().mats[GF.area]||new Set()).has(s.Material);}
+const mvScope=()=>D.mv.filter(m=>(!GF.area||almName(m['Almacén'])===GF.area)&&zMv(m)&&inPer(m['Fe.contabilización']));
+function spArea(s){if(!zSp(s))return false;if(!GF.area)return true;if(s['Almacén']!=null&&s['Almacén']!=='')return almName(s['Almacén'])===GF.area;return !!s.Material&&(almIndex().mats[GF.area]||new Set()).has(s.Material);}
 function gBar(){const A=almIndex();const rng=k=>{const ds=k.map(x=>x).filter(Boolean).sort();return ds.length?fdate(ds[0])+' – '+fdate(ds[ds.length-1]):'—';};
   const spD=D.sp.map(s=>s['Fecha de solicitud']),mvD=D.mv.map(m=>m['Fe.contabilización']);const [a,b]=gRange();
   const spHasAlm=D.sp.some(s=>s['Almacén']!=null&&s['Almacén']!=='');
-  $('#gbar').innerHTML=`<label>Área / almacén<select id="garea">${opts(A.names,GF.area,'Todas las áreas (salvo 1030)')}</select></label>
+  const Z=zIndex();
+  $('#gbar').innerHTML=`<label>Área<select id="gzona" ${Z.has?'':'disabled'}>${Z.has?opts([...Z.names.map(n=>[n,n]),[NOZ,'Sin área asignada']],GF.zona,'Todas las áreas'):'<option>Falta la hoja AREAS</option>'}</select></label>
+    <label>Almacén<select id="garea">${opts(A.names,GF.area,'Todos los almacenes (salvo 1030)')}</select></label>
     <label>Período<select id="gper">${opts(Object.entries(PERL),GF.per,null)}</select></label>
     <label class="gd" ${GF.per==='cus'?'':'hidden'}>Desde<input type="date" id="gd1" value="${esc(GF.d1)}"></label>
     <label class="gd" ${GF.per==='cus'?'':'hidden'}>Hasta<input type="date" id="gd2" value="${esc(GF.d2)}"></label>
-    <div class="gnote"><b>${GF.per==='all'?'Sin límite de fechas':fdate(a)+' – '+(b>'9000'?'hoy':fdate(b))}</b><span>Datos disponibles · SOLPED ${rng(spD)} · movimientos ${rng(mvD)}${GF.area&&!spHasAlm?' · SOLPED por área: según el almacén del material':''}</span></div>
-    ${GF.area||GF.per!=='temp'?'<button type="button" class="btn2" id="gclr">Restablecer</button>':''}`;
-  const go=()=>{remember('gfArea',GF.area);remember('gfPer',GF.per);remember('gfD1',GF.d1);remember('gfD2',GF.d2);SF.alm=GF.area;header();show(CURTAB);};
-  $('#garea').onchange=e=>{GF.area=e.target.value;go();};$('#gper').onchange=e=>{GF.per=e.target.value;go();};
+    <div class="gnote"><b>${GF.per==='all'?'Sin límite de fechas':fdate(a)+' – '+(b>'9000'?'hoy':fdate(b))}</b><span>Datos disponibles · SOLPED ${rng(spD)} · movimientos ${rng(mvD)}${GF.area&&!spHasAlm?' · SOLPED por almacén: según el almacén del material':''}${GF.zona?' · Área: consumo por receptor, SOLPED por solicitante/creador, stock por materiales que usa el área':''}</span></div>
+    ${GF.area||GF.zona||GF.per!=='temp'?'<button type="button" class="btn2" id="gclr">Restablecer</button>':''}`;
+  const go=()=>{remember('gfArea',GF.area);remember('gfZona',GF.zona);remember('gfPer',GF.per);remember('gfD1',GF.d1);remember('gfD2',GF.d2);SF.alm=GF.area;header();show(CURTAB);};
+  $('#garea').onchange=e=>{GF.area=e.target.value;go();};if($('#gzona'))$('#gzona').onchange=e=>{GF.zona=e.target.value;go();};$('#gper').onchange=e=>{GF.per=e.target.value;go();};
   if($('#gd1'))$('#gd1').onchange=e=>{GF.d1=e.target.value;go();};if($('#gd2'))$('#gd2').onchange=e=>{GF.d2=e.target.value;go();};
-  if($('#gclr'))$('#gclr').onclick=()=>{Object.assign(GF,{area:'',per:'temp',d1:'',d2:''});go();};}
+  if($('#gclr'))$('#gclr').onclick=()=>{Object.assign(GF,{area:'',zona:'',per:'temp',d1:'',d2:''});go();};}
 
 /* ================= STOCK ================= */
 const SF={estado:store.estado??'_atencion',tipo:'',q:'',ot:'',alm:store.gfArea||''};
@@ -621,7 +634,7 @@ function almIndex(){if(ALM&&ALM.src===D)return ALM;const code2n={},val={},mats={
   D.tab.forEach(t=>(t.Almacenes_con_stock||'').split(' / ').filter(Boolean).forEach(n=>(mats[n]||(mats[n]=new Set())).add(t.Material)));
   D.mv.forEach(m=>{if(m.Grupo!=='Consumo'||m['Almacén']==null)return;const n=code2n[String(m['Almacén'])]||String(m['Almacén']);(mats[n]||(mats[n]=new Set())).add(m.Material);});
   ALM={src:D,code2n,val,mats,hasVal:!!(D.alm&&D.alm.length),names:Object.keys(mats).sort()};return ALM;}
-const inAlm=t=>!SF.alm||(almIndex().mats[SF.alm]||new Set()).has(t.Material);
+const inAlm=t=>zMat(t.Material)&&(!SF.alm||(almIndex().mats[SF.alm]||new Set()).has(t.Material));
 function vStock(){const v=$('#v-stock');const A=almIndex();if(SF.alm&&!A.mats[SF.alm])SF.alm='';
   const T=D.tab.filter(inAlm);
   const cnt={},dc={};T.forEach(t=>{cnt[t.Estado]=(cnt[t.Estado]||0)+1;dc[t.Tipo_demanda]=(dc[t.Tipo_demanda]||0)+1;});
@@ -636,7 +649,7 @@ function vStock(){const v=$('#v-stock');const A=almIndex();if(SF.alm&&!A.mats[SF
     <div class="card"><h2>Valor del stock por almacén <small>${A.hasVal?'MB52 · toca un almacén para filtrar':'falta la consulta STOCK_ALMACEN'}</small></h2>
       ${A.hasVal?hbars(valRows.map(([n,x])=>({n,v:x,key:n,tip:`${esc(n)}<br>${pen.format(x)} · ${nf0.format((A.mats[n]||new Set()).size)} materiales`})),{click:1,fmt:x=>pen.format(x)}):'<div class="mut">Agrega la consulta STOCK_ALMACEN al maestro para ver el valor por almacén.</div>'}
       ${SF.alm?`<div class="mut" style="margin-top:10px">Filtrando por <b>${esc(SF.alm)}</b>: materiales con stock en ese almacén o consumidos desde él esta temporada (${nf0.format(T.length)}). Un material puede estar en más de un almacén. <button type="button" class="lnk" id="almx">Quitar filtro</button></div>`:''}</div>
-    <div class="ksec wkk"><div class="kh"><b>ESTADO ACTUAL DEL STOCK</b><span>${SF.alm?esc(SF.alm):'todas las áreas'} · foto del día (MB52)</span></div>
+    <div class="ksec wkk"><div class="kh"><b>ESTADO ACTUAL DEL STOCK</b><span>${[GF.zona?(GF.zona===NOZ?'sin área':'área '+esc(GF.zona)):'',SF.alm?'almacén '+esc(SF.alm):''].filter(Boolean).join(' · ')||'todas las áreas y almacenes'} · foto del día (MB52)</span></div>
       <div class="kcol">
       ${K('Valor del stock libre',pen.format(val),SF.alm?(A.hasVal?`almacén ${SF.alm} (MB52)`:'materiales del almacén'):'todos los almacenes salvo 1030 (MB52)','--ac')}
       ${K('Requieren pedido',nf0.format(need),`${nf0.format(cnt.Quiebre||0)} en quiebre · ${nf0.format(cnt.Pedir||0)} por pedir`,'--bad','data-e="_atencion"')}
@@ -806,6 +819,7 @@ function vMov(){const v=$('#v-mov');const MV=mvScope();const tipos=[...new Set(M
   const cur=curIdx();const gw=new Array(ws.length).fill(0);cons.forEach(m=>{const d=new Date(m['Fe.contabilización']+'T00:00:00');const k=Math.floor((d-ws[0].ini)/6048e5);if(k>=0&&k<ws.length)gw[k]+=z(m.Costo_consumo);});
   const nW=Math.min(cur+1,ws.length);const prom=nW?gasto/nW:0;const typ=median(gw.slice(0,Math.max(1,cur)).filter(x=>x>0))||prom;const ratio=typ?gW/typ:null;
   const byAlm=sumBy(MV.filter(m=>m.Grupo==='Consumo'),m=>almName(m['Almacén']),m=>z(m.Costo_consumo)).filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]);
+  const ZI=zIndex();const byZona=ZI.has?sumBy(MV.filter(m=>m.Grupo==='Consumo'),m=>ZI.aMv(m)||'Sin área asignada',m=>z(m.Costo_consumo)).filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]):[];
   const top1=sumBy(cw,m=>m.Material,m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1])[0];
   const byTipo=sumBy(cons,m=>({201:'Consumo a centro de costo (201)',202:'Consumo a centro de costo (201)',261:'Consumo a OT (261)',262:'Consumo a OT (261)',221:'Consumo a proyecto (221)',222:'Consumo a proyecto (221)'})[m['Clase de movimiento']]||m.Tipo_movimiento,m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1]);
   const topMat=sumBy(cons,m=>m.Material,m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1]).slice(0,10);
@@ -827,34 +841,40 @@ function vMov(){const v=$('#v-mov');const MV=mvScope();const tipos=[...new Set(M
     <div class="half"><div class="card"><h2>Materiales con mayor gasto <small>temporada · top 10</small></h2>${hbars(topMat.map(([m,c])=>({n:descOf(m),v:c,key:m,tip:`${esc(m)} · ${esc(descOf(m))}<br>${pen.format(c)}`})),{click:1,fmt:v=>pen.format(v)})}</div>
     <div class="card"><h2>Receptores con mayor gasto <small>destinatario de la mercancía · top 10</small></h2>${hbars(topRec.map(([n,c])=>({n,v:c,key:n})),{click:1,fmt:v=>pen.format(v)})}</div></div>
     <div class="half"><div class="card"><div class="h2s"><h2>Gasto por almacén</h2><span>${GF.area?'filtrado: '+esc(GF.area)+' · toca de nuevo para ver todas':'consumo valorizado del período · toca un almacén para filtrar toda la app'}</span></div>${hbars(byAlm.map(([n,c])=>({n,v:c,key:n,tip:`${esc(n)}<br>${pen.format(c)}`})),{click:1,fmt:v=>pen.format(v)})}</div>
-    <div class="card"><div class="h2s"><h2>Gasto por tipo de salida</h2><span>a centro de costo, a OT o a proyecto</span></div>${hbars(byTipo.map(([n,c])=>({n,v:c})),{fmt:v=>pen.format(v)})}</div></div>
+    <div class="card"><div class="h2s"><h2>Gasto por área</h2><span>${ZI.has?'según el receptor de cada salida (tabla AREAS) · toca un área para filtrar toda la app':'agrega la hoja AREAS al maestro para ver el gasto por área'}</span></div>${ZI.has?hbars(byZona.map(([n,c])=>({n,v:c,key:'Z:'+n,tip:`${esc(n)}<br>${pen.format(c)}`})),{click:1,fmt:v=>pen.format(v)})+(Object.keys(ZI.sinU).length?`<div class="mut" style="margin-top:8px;font-size:12px">Receptores sin área (agrégalos a la tabla de áreas): ${Object.entries(ZI.sinU).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([u,c])=>`<b>${esc(u)}</b> ${pen.format(c).replace(/\.\d\d$/,'')}`).join(' · ')}</div>`:''):''}</div></div>
+    <div class="card"><div class="h2s"><h2>Gasto por tipo de salida</h2><span>a centro de costo, a OT o a proyecto</span></div>${hbars(byTipo.map(([n,c])=>({n,v:c})),{fmt:v=>pen.format(v)})}</div>
     <div class="card"><div class="pc">
-      <label class="sq">Buscar<input type="search" id="mq" placeholder="Material, receptor o referencia…" value="${esc(MF.q)}"></label>
+      <label class="sq">Buscar<input type="search" id="mq" placeholder="Material, receptor, referencia o N° de reserva…" value="${esc(MF.q)}"></label>
       <label>Grupo<select id="mg">${opts(['Consumo','Entrada','Traslado/Otro'],MF.grupo,'Todos')}</select></label>
       <label>Movimiento<select id="mt">${opts(tipos,MF.tipo,'Todos')}</select></label>
-      <label>Clase de OT<select id="mo" ${hasOT?'':'disabled'}>${opts([['OM01','Correctivo OM01'],['OM03','Preventivo OM03']],MF.ot,hasOT?'OM01 y OM03':'Falta columna Orden en MB51')}</select></label>
+      <label>Clase de OT<select id="mo" ${hasOT?'':'disabled'}>${opts([['OM01','Solo correctivo OM01'],['OM03','Solo preventivo OM03']],MF.ot,hasOT?'Todas (con o sin OT)':'Falta columna Orden en MB51')}</select></label>
       <label>Vista<select id="mvw">${opts([['mat','Resumen por material'],['det','Detalle de movimientos'],['sem','Solo la semana seleccionada']],MF.vista,null)}</select></label></div>
       <div class="mut" style="margin-top:8px">Movimientos MB51 desde el ${fdate(D.meta.inicio_temporada)} (temporada actual). El costo es el importe en moneda local de cada movimiento.${hasOT?'':' Para separar el gasto en OM01 y OM03 agrega la columna «Orden» al layout de MB51.'}</div></div>
     <div id="mtbl"></div>`;
   v.querySelectorAll('[data-wk]').forEach(b=>b.onclick=()=>{const n=WK+ +b.dataset.wk;if(n>=0&&n<ws.length){WK=n;vMov();}});
   v.querySelectorAll('svg.col g[data-key]').forEach(g=>g.onclick=()=>{WK=+g.dataset.key;vMov();});
   const almSet=new Set(byAlm.map(([n])=>n));
-  v.querySelectorAll('.hb .r[data-key]').forEach(rr=>rr.onclick=()=>{if(almSet.has(rr.dataset.key)&&rr.closest('.half')&&rr.closest('.card').querySelector('h2').textContent==='Gasto por almacén'){GF.area=GF.area===rr.dataset.key?'':rr.dataset.key;SF.alm=GF.area;remember('gfArea',GF.area);header();vMov();return;}MF.q=rr.dataset.key;$('#mq').value=MF.q;mvTable();$('#mtbl').scrollIntoView({behavior:'smooth',block:'start'});});
+  v.querySelectorAll('.hb .r[data-key]').forEach(rr=>rr.onclick=()=>{if(rr.dataset.key.startsWith('Z:')){const n=rr.dataset.key.slice(2);const zz=n==='Sin área asignada'?NOZ:n;GF.zona=GF.zona===zz?'':zz;remember('gfZona',GF.zona);header();vMov();return;}if(almSet.has(rr.dataset.key)&&rr.closest('.half')&&rr.closest('.card').querySelector('h2').textContent==='Gasto por almacén'){GF.area=GF.area===rr.dataset.key?'':rr.dataset.key;SF.alm=GF.area;remember('gfArea',GF.area);header();vMov();return;}MF.q=rr.dataset.key;$('#mq').value=MF.q;mvTable();$('#mtbl').scrollIntoView({behavior:'smooth',block:'start'});});
   $('#mg').onchange=e=>{MF.grupo=e.target.value;mvTable();};$('#mt').onchange=e=>{MF.tipo=e.target.value;mvTable();};$('#mo').onchange=e=>{MF.ot=e.target.value;mvTable();};
   $('#mq').oninput=e=>{MF.q=e.target.value;mvTable();};$('#mvw').onchange=e=>{MF.vista=e.target.value;mvTable();};mvTable();}
 function mvTable(){const MV=mvScope();const q=MF.q.trim().toLowerCase();const r=weekRange(WK);
   const rows=MV.filter(m=>(!MF.grupo||m.Grupo===MF.grupo)&&(!MF.tipo||m.Tipo_movimiento===MF.tipo)&&(!MF.ot||m.Clase_OT===MF.ot)&&(MF.vista!=='sem'||(m['Fe.contabilización']>=r.ia&&m['Fe.contabilización']<=r.ib))
     &&(!q||[m.Material,m['Texto breve de material'],m['Dest.mercancía'],m.Referencia,m['Nombre del usuario']].some(x=>String(x??'').toLowerCase().includes(q))));
-  if(MF.vista==='mat'){const g={};rows.forEach(m=>{const k=m.Material;const o=g[k]||(g[k]={Material:k,Descripcion:m['Texto breve de material'],UM:m['Un.medida de entrada'],Movs:0,Consumo:0,Gasto:0,Receptores:new Set(),Ultimo:''});
-      o.Movs++;o.Consumo+=z(m.Consumo_neto);o.Gasto+=z(m.Costo_consumo);if(m['Dest.mercancía'])o.Receptores.add(m['Dest.mercancía']);if(m['Fe.contabilización']>o.Ultimo)o.Ultimo=m['Fe.contabilización'];});
-    const arr=Object.values(g).map(o=>Object.assign(o,{Receptores:[...o.Receptores].slice(0,4).join(', ')+(o.Receptores.size>4?' …':''),Stock:D.byMat[o.Material]?.Stock??null}));
+  const TRF=new Set([311,312,301,302,309,310]);const isTr=m=>TRF.has(+m['Clase de movimiento']);
+  const rutas={};MV.forEach(m=>{if(!isTr(m))return;const k=m['Documento material']+'|'+m.Material;const o=rutas[k]||(rutas[k]={});if(z(m['Ctd.en UM entrada'])<0)o.de=almName(m['Almacén']);else o.a=almName(m['Almacén']);});
+  const ruta=m=>{const o=rutas[m['Documento material']+'|'+m.Material]||{};return (o.de||'?')+' → '+(o.a||'?');};
+  if(MF.vista==='mat'){const g={};rows.forEach(m=>{const k=m.Material;const o=g[k]||(g[k]={Material:k,Descripcion:m['Texto breve de material'],UM:m['Un.medida de entrada'],Movs:0,Consumo:0,Gasto:0,Tr:0,VTr:0,Rutas:new Set(),Receptores:new Set(),Ultimo:''});
+      o.Movs++;o.Consumo+=z(m.Consumo_neto);o.Gasto+=z(m.Costo_consumo);if(isTr(m)&&z(m['Ctd.en UM entrada'])>0){o.Tr+=z(m['Ctd.en UM entrada']);o.VTr+=z(m['Ctd.en UM entrada'])*D.price(m.Material);o.Rutas.add(ruta(m));}if(m['Dest.mercancía'])o.Receptores.add(m['Dest.mercancía']);if(m['Fe.contabilización']>o.Ultimo)o.Ultimo=m['Fe.contabilización'];});
+    const arr=Object.values(g).map(o=>Object.assign(o,{Receptores:[...o.Receptores].slice(0,4).join(', ')+(o.Receptores.size>4?' …':''),Rutas:[...o.Rutas].slice(0,3).join(', ')+(o.Rutas.size>3?' …':''),Stock:D.byMat[o.Material]?.Stock??null}));
+    const showTr=MF.grupo!=='Consumo';
     makeTable($('#mtbl'),[{k:'Material',h:'Material',cls:'code'},{k:'Descripcion',h:'Descripción',cls:'w'},{k:'UM',h:'UM'},{k:'Movs',h:'Movs.',num:1},
       {k:'Consumo',h:'Consumo neto',num:1,f:o=>num(o.Consumo||null)},{k:'Gasto',h:'Gasto (S/)',num:1,f:o=>money(o.Gasto)},
-      {k:'Stock',h:'Stock hoy',num:1,f:o=>num(o.Stock)},{k:'Ultimo',h:'Último',f:o=>fdate(o.Ultimo)},{k:'Receptores',h:'Receptores',cls:'w'}],arr,{sort:{k:MF.grupo==='Consumo'?'Gasto':'Movs',d:'desc'},onRow:o=>D.byMat[o.Material]&&openSheet(o.Material),unit:'materiales',fix:2});}
+      ...(showTr?[{k:'Tr',h:'Trasladado',num:1,tip:'Cantidad recibida por traslados (311/301…) en el período',f:o=>num(o.Tr||null)},{k:'VTr',h:'Valor traslado (S/)',num:1,tip:'Estimado: cantidad trasladada × precio unitario (SAP registra los traslados con importe 0)',f:o=>o.VTr?'≈ '+money(o.VTr):''},{k:'Rutas',h:'Ruta (de → a)',cls:'w'}]:[]),
+      {k:'Stock',h:'Stock hoy',num:1,f:o=>num(o.Stock)},{k:'Ultimo',h:'Último',f:o=>fdate(o.Ultimo)},{k:'Receptores',h:'Receptores',cls:'w'}],arr,{sort:{k:MF.grupo==='Consumo'?'Gasto':MF.grupo==='Traslado/Otro'?'VTr':'Movs',d:'desc'},onRow:o=>D.byMat[o.Material]&&openSheet(o.Material),unit:'materiales',fix:2});}
   else makeTable($('#mtbl'),[{k:'Fe.contabilización',h:'Fecha',f:o=>fdate(o['Fe.contabilización'])},{k:'Material',h:'Material',cls:'code'},{k:'Clase de movimiento',h:'Mov.',cls:'code'},{k:'Tipo_movimiento',h:'Tipo'},
       {k:'Texto breve de material',h:'Descripción',cls:'w'},{k:'Ctd.en UM entrada',h:'Cantidad',num:1,f:o=>num(o['Ctd.en UM entrada'])+' '+esc(o['Un.medida de entrada']||'')},
-      {k:'Impte.mon.local',h:'Importe (S/)',num:1,f:o=>money(o['Impte.mon.local'])},
-      {k:'Almacén',h:'Alm.',cls:'code'},{k:'Dest.mercancía',h:'Receptor'},{k:'Referencia',h:'Referencia'},{k:'Pedido',h:'Pedido',cls:'code'},{k:'Clase_OT',h:'Clase OT',f:o=>o.Clase_OT?clsPill(o.Clase_OT):''}],rows,{sort:{k:'Fe.contabilización',d:'desc'},onRow:o=>D.byMat[o.Material]&&openSheet(o.Material),unit:'movimientos',fix:2});}
+      {k:'Impte.mon.local',h:'Importe (S/)',num:1,tip:'En traslados SAP registra importe 0; se muestra un valor estimado (≈) con el precio unitario',v:o=>z(o['Impte.mon.local'])||(isTr(o)?Math.abs(z(o['Ctd.en UM entrada']))*D.price(o.Material):0),f:o=>z(o['Impte.mon.local'])?money(o['Impte.mon.local']):(isTr(o)&&D.price(o.Material)?`<span class="mut">≈ ${money(Math.abs(z(o['Ctd.en UM entrada']))*D.price(o.Material))}</span>`:'')},
+      {k:'Almacén',h:'Almacén',v:o=>almName(o['Almacén']),f:o=>esc(almName(o['Almacén'])||'')+`<span class="mut"> ${esc(o['Almacén']??'')}</span>`},{k:'ruta',h:'Ruta',v:o=>isTr(o)?ruta(o):'',f:o=>isTr(o)?esc(ruta(o)):''},{k:'Dest.mercancía',h:'Receptor'},{k:'Referencia',h:'Referencia'},{k:'Pedido',h:'Pedido',cls:'code'},{k:'Clase_OT',h:'Clase OT',f:o=>o.Clase_OT?clsPill(o.Clase_OT):''}],rows,{sort:{k:'Fe.contabilización',d:'desc'},onRow:o=>D.byMat[o.Material]&&openSheet(o.Material),unit:'movimientos',fix:2});}
 
 /* ================= ficha de material ================= */
 function openSheet(mat){const t=D.byMat[mat];if(!t)return;const sh=$('#sheet');
@@ -976,7 +996,7 @@ function vOld(){const v=$('#v-old');const X=oldIndex();const L=X.list;
     const ws=XLSX.utils.aoa_to_sheet([['Código antiguo','Descripción antigua','UM antigua','Código actual','Descripción actual','UM actual','Factor','Stock antiguo (UM actual)','Almacenes','Valor (S/)','SOLPED abiertas','Reservas abiertas','Último movimiento','Acción'],...rows]);ws['!cols']=[14,40,8,14,40,8,7,12,30,12,10,10,12,22].map(w=>({wch:w}));
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Codigos antiguos');XLSX.writeFile(wb,`Codigos_antiguos_${isoD(new Date())}.xlsx`);};
   sync();oTable();}
-function oRows(){const q=OF.q.trim().toLowerCase();return oldIndex().list.filter(o=>(!OF.act||o.act===OF.act)&&(!GF.area||z(o.alm[GF.area])>0)&&(!q||[o.old,o.neu,o.desc,(D.byMat[o.neu]||{}).Descripcion].some(x=>String(x||'').toLowerCase().includes(q))));}
+function oRows(){const q=OF.q.trim().toLowerCase();return oldIndex().list.filter(o=>(!OF.act||o.act===OF.act)&&(!GF.area||z(o.alm[GF.area])>0)&&zMat(o.neu)&&(!q||[o.old,o.neu,o.desc,(D.byMat[o.neu]||{}).Descripcion].some(x=>String(x||'').toLowerCase().includes(q))));}
 function oTable(){makeTable($('#otbl'),[
     {k:'old',h:'Código antiguo',cls:'code'},{k:'desc',h:'Descripción antigua',cls:'w'},
     {k:'neu',h:'Código actual',cls:'code',f:o=>`<b>${esc(o.neu)}</b>`},{k:'nd',h:'Descripción actual',cls:'w',v:o=>(D.byMat[o.neu]||{}).Descripcion||'',f:o=>esc((D.byMat[o.neu]||{}).Descripcion||'')},
@@ -996,8 +1016,8 @@ $('#btnCart').onclick=openCart;
 renderAll();
 
 /* ================= upload ================= */
-const NEED={tab:['Material','Estado','Minimo','Cant_sugerida_pedir'],sp:['Solicitud de pedido','Pendiente_llegar','Estado'],mv:['Tipo_movimiento','Consumo_neto'],res:['Pendiente_retirar','Clase_OT','Orden'],alm:['Material','Almacén','Stock','Valor_stock'],eq:['Codigo_antiguo','Codigo_nuevo','Factor']};
-const SHEETN={tab:'TABLERO',sp:'SOLPED_SEGUIMIENTO',mv:'MOV_TEMPORADA',res:'RESERVAS_OT',alm:'STOCK_ALMACEN',eq:'EQUIVALENCIAS'};
+const NEED={tab:['Material','Estado','Minimo','Cant_sugerida_pedir'],sp:['Solicitud de pedido','Pendiente_llegar','Estado'],mv:['Tipo_movimiento','Consumo_neto'],res:['Pendiente_retirar','Clase_OT','Orden'],alm:['Material','Almacén','Stock','Valor_stock'],eq:['Codigo_antiguo','Codigo_nuevo','Factor'],areas:['AREA','G.SOLICITANTE']};
+const SHEETN={tab:'TABLERO',sp:'SOLPED_SEGUIMIENTO',mv:'MOV_TEMPORADA',res:'RESERVAS_OT',alm:'STOCK_ALMACEN',eq:'EQUIVALENCIAS',areas:'AREAS'};
 const iso=v=>v instanceof Date?new Date(v.getTime()-v.getTimezoneOffset()*6e4).toISOString().slice(0,10):v;
 function encode(cols,objs){const rows=objs.map(o=>cols.map(c=>{let v=o[c];if(v===undefined||v==='')v=null;v=iso(v);if(typeof v==='number')v=Math.round(v*1000)/1000;return v;}));const dict={};
   cols.forEach((c,j)=>{const nn=rows.map(r=>r[j]).filter(v=>v!==null);if(!nn.length||!nn.every(v=>typeof v==='string'))return;const u=[...new Set(nn)];if(u.length<0.6*rows.length){const ix=new Map(u.map((v,i)=>[v,i]));dict[j]=u;rows.forEach(r=>{if(r[j]!==null)r[j]=ix.get(r[j]);});}});
@@ -1017,7 +1037,7 @@ async function ingest(buf,label){
   const mvDates=found.mv.map(m=>iso(m['Fe.contabilización'])).filter(Boolean).sort();
   const ini=(()=>{const n=new Date(),y=n.getFullYear();const s=y=>{const j=new Date(y,0,4);const d=(j.getDay()+6)%7;return new Date(y,0,4-d+182);};const a=n>=s(y)?y:y-1;return {d:iso(s(a)),t:a+'/'+(a+1)};})();
   const raw={meta:{generado:iso(new Date()),inicio_temporada:ini.d,temporada:ini.t,fuente:label+(mvDates.length?' · MB51 hasta '+fdate(mvDates[mvDates.length-1]):''),params:D.meta.params},
-    tab:encode(cu(RAW.tab.cols,t),t),sp:encode(cu(RAW.sp.cols,found.sp),found.sp),mv:encode(cu(RAW.mv.cols,found.mv),found.mv),res:encode(cu(RAW.res.cols,found.res),found.res),alm:found.alm?encode(cu([],found.alm),found.alm):(RAW.alm||null),eq:found.eq?encode(cu([],found.eq),found.eq.filter(r=>r.Codigo_antiguo&&r.Codigo_nuevo)):(RAW.eq||null)};
+    tab:encode(cu(RAW.tab.cols,t),t),sp:encode(cu(RAW.sp.cols,found.sp),found.sp),mv:encode(cu(RAW.mv.cols,found.mv),found.mv),res:encode(cu(RAW.res.cols,found.res),found.res),alm:found.alm?encode(cu([],found.alm),found.alm):(RAW.alm||null),eq:found.eq?encode(cu([],found.eq),found.eq.filter(r=>r.Codigo_antiguo&&r.Codigo_nuevo)):(RAW.eq||null),areas:found.areas?encode(cu([],found.areas),found.areas.filter(r=>r.AREA&&r['G.SOLICITANTE'])):(RAW.areas||null)};
   RAW=raw;load(raw);renderAll();return {raw,found};}
 $('#fileIn').onchange=async e=>{const f=e.target.files[0];if(!f)return;status('Leyendo '+f.name+' …');
   try{const {raw,found}=await ingest(await f.arrayBuffer(),'Excel cargado el '+fdate(iso(new Date())));pendingRaw=raw;
