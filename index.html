@@ -470,6 +470,87 @@ svg.stk g:hover rect.sg{opacity:.85}
 @media(max-width:600px){.pc.pc6{grid-template-columns:repeat(2,1fr)}}
 .hbleg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--mut);margin-top:8px}.hbleg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px}
 .dl:disabled{cursor:default}.dl:disabled:hover{border-color:var(--bd)}
+/* v0.22 Consumo y gasto: panorama, bloque de área, categorías */
+.fs12{font-size:12px;margin-top:8px}
+.ksec.pano{border-top:3px solid var(--hfe-navy);margin-bottom:12px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;align-items:stretch}
+.g3>.card,.g2e>.card{margin:0}
+.g2e{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;align-items:stretch}
+@media(max-width:1000px){.g3,.g2e{grid-template-columns:1fr}}
+.zone{border-radius:var(--r-lg);padding:14px;margin:4px 0 18px;background:color-mix(in srgb,#0e8a7d 7%,#fff);border:1px solid color-mix(in srgb,#0e8a7d 28%,var(--bd));box-shadow:var(--sh-panel)}
+.zone:not(.on){background:#f4f7fc;border-color:var(--bd)}
+.zone>.card:last-child{margin-bottom:0}
+.zone .kp{margin-bottom:12px}
+.zh{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:0 2px 12px}
+.zh>div small{display:block;font-size:11px;letter-spacing:.06em;color:var(--mut);font-weight:700}
+.zh>div b{font-size:22px;color:#0b5f56;line-height:1.15}
+.zone:not(.on) .zh>div b{color:var(--fg)}
+.zsub{color:var(--mut);font-size:13px;flex:1;min-width:200px}
+.zchips{display:flex;flex-wrap:wrap;gap:6px;width:100%}
+.zbtn{cursor:pointer;border:1px solid color-mix(in srgb,#0e8a7d 45%,var(--bd));background:#fff;color:#0b5f56;border-radius:8px;padding:6px 12px;font:inherit;font-size:13px;font-weight:600}
+.zbtn:hover{background:color-mix(in srgb,#0e8a7d 10%,#fff)}
+.dn{display:grid;grid-template-columns:minmax(150px,190px) 1fr;gap:18px;align-items:center}
+@media(max-width:520px){.dn{grid-template-columns:1fr}}
+.dnut{width:100%;max-width:190px;height:auto;display:block;margin:auto}
+.dnut path{cursor:pointer;stroke:#fff;stroke-width:1.5;transition:opacity .15s}
+.dnut path.dim{opacity:.25}
+.dnut path:hover{opacity:.85}
+.dnut .d1{font:700 17px var(--font);fill:var(--fg)}
+.dnut .d2{font:12px var(--font);fill:var(--mut)}
+.dlg,.wcat{display:flex;flex-direction:column;gap:6px}
+.dl{display:grid;grid-template-columns:12px 1fr auto;gap:10px;align-items:center;text-align:left;cursor:pointer;background:#fff;border:1px solid var(--bd);border-radius:8px;padding:7px 10px;font:inherit;color:var(--fg)}
+.dl:hover{border-color:var(--ac)}
+.dl[aria-pressed="true"]{border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
+.dl>i{width:12px;height:12px;border-radius:3px}
+.dl b{display:block;font-size:13px}
+.dl small{color:var(--mut);font-size:12px}
+.dl em{font-style:normal;font-weight:700;font-size:13px;color:var(--fg)}
+.s100{display:flex;height:22px;border-radius:6px;overflow:hidden;gap:2px;background:var(--bg)}
+.s100 i{display:block;min-width:3px}
+.s100l{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+@media(max-width:700px){.s100l{grid-template-columns:1fr}}
+.s100l>div{display:flex;gap:8px;align-items:flex-start}
+.s100l>div>i{width:12px;height:12px;border-radius:3px;margin-top:3px;flex:none}
+.s100l b{display:block;font-size:13px;font-weight:600}
+.s100l small{color:var(--mut);font-size:12px}
+.cchips{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 8px}
+.cc2{display:inline-flex;align-items:center;gap:6px;cursor:pointer;background:#fff;border:1px solid var(--bd);border-radius:99px;padding:4px 12px;font:inherit;font-size:12.5px;color:var(--fg)}
+.cc2 i{width:10px;height:10px;border-radius:3px}
+.cc2:hover{border-color:var(--ac)}
+.cc2[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:#fff}
+svg.stk rect.sel{fill:color-mix(in srgb,var(--pen) 22%,transparent)}
+svg.stk text.cl{fill:var(--fg);font-weight:700}
+svg.stk g:hover rect.sg{opacity:.85}
+.wday{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:12px;background:#fff;border:1px solid var(--bd);border-radius:var(--r);padding:12px}
+@media(max-width:900px){.wday{grid-template-columns:1fr}}
+.wdh{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;margin-bottom:6px}
+.wdh b{font-size:14px}.wdh span{color:var(--mut);font-size:12px}
+.wcat{justify-content:center}
+.catp{display:inline-block;font-size:11px;padding:1px 8px;border-radius:99px;white-space:nowrap;background:color-mix(in srgb,var(--cc) 16%,#fff);color:color-mix(in srgb,var(--cc) 75%,#000);border:1px solid color-mix(in srgb,var(--cc) 40%,#fff)}
+.dchip{display:inline-flex;align-items:center;gap:4px;background:var(--fg);color:#fff;border-radius:99px;padding:1px 4px 1px 10px;font-size:12px;font-weight:600}
+.dchip button{cursor:pointer;border:0;background:transparent;color:#fff;font-size:15px;line-height:1;padding:0 4px}
+.pc.pc6{grid-template-columns:1.6fr repeat(5,1fr)}
+@media(max-width:1100px){.pc.pc6{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.pc.pc6{grid-template-columns:repeat(2,1fr)}}
+.hbleg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--mut);margin-top:8px}.hbleg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px}
+.dl:disabled{cursor:default}.dl:disabled:hover{border-color:var(--bd)}
+/* v0.23 liberación de OC, llegadas y novedades */
+.og.lib{background:var(--ad)}
+.flow.f5{grid-template-columns:1fr 92px 1fr 40px 1fr 92px 1fr 40px 1fr}
+@media(max-width:1000px){.flow.f5{grid-template-columns:1fr}}
+.dots{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.dots i{width:9px;height:9px;border-radius:50%;background:color-mix(in srgb,var(--ad) 15%,#fff);border:1px solid color-mix(in srgb,var(--ad) 45%,#fff)}
+.dots i.on{background:var(--ad);border-color:var(--ad)}
+.dots em{font-style:normal;color:var(--mut);font-size:11.5px;margin-left:4px}
+.nov{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;background:#fff;border:1px solid var(--bd);border-left:4px solid var(--ad);border-radius:var(--r);padding:10px 14px;margin:12px 0;box-shadow:var(--sh-panel)}
+.nov>div b{display:block;font-size:14px}
+.nov>div span{color:var(--mut);font-size:12px}
+.nov ul{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0;padding:0;list-style:none;flex:1}
+.nov li{font-size:13.5px}
+.nov li b{color:var(--ad);font-size:15px}
+.nov .btn2,.lact .btn2{flex:none;width:auto}
+.lact{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px}
+#v-solped>.card,#v-solped>.g2e{margin-top:12px}
 .sheet{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);z-index:41;border-left:1px solid var(--bd);overflow-y:auto;padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(20px + env(safe-area-inset-bottom,0px))}
 .sheet .card{margin-bottom:10px}
 .sheet .top{display:grid;grid-template-columns:1fr auto;gap:10px;border-top:3px solid var(--ac)}
@@ -542,7 +623,7 @@ $('#app').appendChild(SHELL.content.cloneNode(true));
 let RAW=JSON.parse(document.getElementById('data').textContent);
 function decode(T){if(!T)return [];const d=T.dict||{};return T.rows.map(r=>{const o={};T.cols.forEach((c,j)=>{let v=r[j];if(d[j]!==undefined&&v!==null&&v!==undefined)v=d[j][v];o[c]=v===undefined?null:v;});return o;});}
 let D={};
-function load(raw){D={meta:raw.meta,tab:decode(raw.tab),sp:decode(raw.sp),mv:decode(raw.mv),res:decode(raw.res),alm:decode(raw.alm),eq:decode(raw.eq),areas:decode(raw.areas)};
+function load(raw){D={meta:raw.meta,tab:decode(raw.tab),sp:decode(raw.sp),mv:decode(raw.mv),res:decode(raw.res),alm:decode(raw.alm),eq:decode(raw.eq),areas:decode(raw.areas),ped:decode(raw.ped)};
   D.byMat={};D.tab.forEach(t=>D.byMat[t.Material]=t);
   D.price=m=>{const t=D.byMat[m];return t&&t.Precio_unit>0?t.Precio_unit:0;};}
 load(RAW);
@@ -764,6 +845,90 @@ function stockTable(){const q=SF.q.trim().toLowerCase();
   ],rows,{sort:{k:'Estado',d:'asc'},onRow:o=>openSheet(o.Material),unit:'materiales',fix:3});
   const h=$('#stbl');if(!h.dataset.cart){h.dataset.cart=1;h.addEventListener('click',e=>{const b=e.target.closest('[data-add]');if(!b)return;e.stopPropagation();cartToggle(b.dataset.add);},true);}}
 
+/* ================= PEDIDOS (ME2N): liberación de OC, llegadas y atrasos — v0.23 ================= */
+const ocK=v=>v==null?'':String(v).replace(/\.0+$/,'').trim();
+const TCX={USD:3.75,EUR:4.05};
+const hasPed=()=>!!(D.ped&&D.ped.length);
+let PX=null;
+function spByOC(){const o={};D.sp.forEach(s=>{const k=ocK(s.Pedido);if(k)(o[k]||(o[k]=[])).push(s);});return o;}
+function pedIndex(){if(PX&&PX.src===D)return PX;const by={};const hoy=isoD(new Date());
+  (D.ped||[]).forEach(p=>{const k=ocK(p.OC);if(!k)return;
+    const o=by[k]||(by[k]={oc:k,fecha:p.Fecha_OC,dias:p.Dias_OC!=null?z(p.Dias_OC):(p.Fecha_OC?days(p.Fecha_OC,hoy):null),prov:p.Proveedor||'',est:p.Estado_lib||'',
+      aprob:z(p.Aprob),req:z(p.Aprob_req)||null,estr:p.Estrategia||'',cre:p['Creado por']||'',gc:p['Grupo de compras']||'',mon:p.Moneda||'PEN',
+      plazo:p.Plazo_normal!=null&&p.Plazo_normal!==''?z(p.Plazo_normal):null,val:0,pendMat:0,pendVal:0,items:[]});
+    const tc=TCX[p.Moneda]||1;o.val+=z(p.Valor_neto)*tc;
+    if(p.Material&&z(p.Por_entregar)>0){o.pendMat+=z(p.Por_entregar);o.pendVal+=z(p.Por_entregar_valor)*tc;}
+    o.items.push(p);if(p.Estado_lib==='Por liberar')o.est='Por liberar';});
+  const sb=spByOC();
+  Object.values(by).forEach(o=>{o.sp=sb[o.oc]||[];o.sol=[...new Set(o.sp.map(s=>s.Solicitante).filter(Boolean))];o.solped=[...new Set(o.sp.map(s=>s['Solicitud de pedido']).filter(Boolean))];
+    o.txt=(o.items[0]&&o.items[0].Texto)||'';});
+  PX={src:D,by,list:Object.values(by),porLib:new Set(Object.values(by).filter(o=>o.est==='Por liberar').map(o=>o.oc)),sb};return PX;}
+const isPorLib=s=>hasPed()&&pedIndex().porLib.has(ocK(s.Pedido));
+/* una OC entra en el filtro global si alguna de sus SOLPED entra; sin SOLPED, solo sin filtro de área/almacén (o «Sin área») */
+const ocIn=o=>o.sp.length?o.sp.some(s=>spArea(s)):(!GF.area&&(!GF.zona||GF.zona===NOZ));
+const libDots=o=>{const r=o.req||Math.max(o.aprob+1,2);return `<span class="dots" title="${o.aprob} de ${r} aprobaciones (estrategia ${esc(o.estr)})">${Array.from({length:r},(_,i)=>`<i class="${i<o.aprob?'on':''}"></i>`).join('')}<em>${o.aprob} de ${r}</em></span>`;};
+const libAge=d=>d>15?'a3':d>7?'a2':'a1';
+/* entradas 101 de los últimos 7 días del export MB51, con su SOLPED */
+function arrivals(){const ent=D.mv.filter(m=>+m['Clase de movimiento']===101&&m['Fe.contabilización']);if(!ent.length)return {list:[],from:null,to:null};
+  const to=ent.reduce((a,m)=>m['Fe.contabilización']>a?m['Fe.contabilización']:a,'');const from=isoD(new Date(new Date(to+'T00:00:00').getTime()-6*864e5));
+  const sb=hasPed()?pedIndex().sb:spByOC();
+  const list=ent.filter(m=>m['Fe.contabilización']>=from).map(m=>{const l=sb[ocK(m.Pedido)]||[];return {m,sp:l.find(s=>s.Material===m.Material)||l[0]||null};})
+    .filter(x=>x.sp?spArea(x.sp):(zMv(x.m)&&(!GF.area||almName(x.m['Almacén'])===GF.area)))
+    .sort((a,b)=>String(b.m['Fe.contabilización']).localeCompare(String(a.m['Fe.contabilización'])));
+  return {list,from,to};}
+/* OC liberadas con saldo de materiales que superan el plazo normal de su proveedor */
+function lateOC(){if(!hasPed())return [];return pedIndex().list.filter(o=>o.est!=='Por liberar'&&o.pendMat>0&&o.plazo!=null&&o.dias!=null&&o.dias>Math.max(o.plazo*1.5,o.plazo+7)&&ocIn(o))
+  .map(o=>Object.assign(o,{exc:o.dias-o.plazo})).sort((a,b)=>b.exc-a.exc);}
+/* novedades desde la última revisión (guardadas en este navegador) */
+const NOVK='stockapp_nov';
+function novedades(){if(!hasPed())return null;let snap=null;try{snap=JSON.parse(localStorage.getItem(NOVK)||'null');}catch(e){}
+  const P=pedIndex();const ent=D.mv.filter(m=>+m['Clase de movimiento']===101&&m['Fe.contabilización']);
+  const maxD=ent.reduce((a,m)=>m['Fe.contabilización']>a?m['Fe.contabilización']:a,'');
+  const cur={t:isoD(new Date()),d:maxD,lib:[...P.porLib]};
+  if(!snap||!snap.d){try{localStorage.setItem(NOVK,JSON.stringify(cur));}catch(e){}return null;}
+  const sb=P.sb;const inRec=m=>{const l=sb[ocK(m.Pedido)]||[];const s=l.find(x=>x.Material===m.Material)||l[0];return s?spArea(s):zMv(m);};
+  const rec=ent.filter(m=>m['Fe.contabilización']>snap.d&&inRec(m));
+  const was=new Set(snap.lib||[]);
+  const lib=(snap.lib||[]).filter(k=>!P.porLib.has(k)&&P.by[k]&&ocIn(P.by[k]));
+  const nue=[...P.porLib].filter(k=>!was.has(k)&&ocIn(P.by[k]));
+  return {snap,cur,rec,lib,nue,recVal:rec.reduce((a,m)=>a+z(m['Impte.mon.local']),0)};}
+function novMark(){const P=pedIndex();const ent=D.mv.filter(m=>+m['Clase de movimiento']===101&&m['Fe.contabilización']);
+  const maxD=ent.reduce((a,m)=>m['Fe.contabilización']>a?m['Fe.contabilización']:a,'');try{localStorage.setItem(NOVK,JSON.stringify({t:isoD(new Date()),d:maxD,lib:[...P.porLib]}));}catch(e){}}
+/* aviso de llegadas para copiar (agrupado por solicitante) */
+function arrivalsText(list){const g={};list.forEach(({m,sp})=>{const k=(sp&&sp.Solicitante)||usr(m['Dest.mercancía'])||'Sin solicitante';(g[k]||(g[k]=[])).push({m,sp});});
+  return Object.entries(g).map(([k,l])=>k+':\n'+l.map(({m,sp})=>`  - ${fdate(m['Fe.contabilización'])} · ${m['Texto breve de material']||m.Material} · ${num(m['Ctd.en UM entrada'])} ${m['Un.medida de entrada']||''} · OC ${ocK(m.Pedido)}${sp?' · SOLPED '+sp['Solicitud de pedido']:''}`).join('\n')).join('\n\n');}
+
+/* ---- bloque de liberación, llegadas y atrasos en «Seguimiento SOLPED» (v0.23) ---- */
+function pedBlock(){const A=arrivals();const N=novedades();const P=hasPed()?pedIndex():null;let h='';
+  if(N&&(N.rec.length||N.lib.length||N.nue.length))h+=`<div class="nov"><div><b>Novedades desde tu última revisión</b><span>revisado el ${fdate(N.snap.t)} · datos hasta ${fdate(N.cur.d)}${GF.zona?' · '+esc(GF.zona===NOZ?'sin área':GF.zona):''}</span></div>
+    <ul>${N.rec.length?`<li><b>${nf0.format(N.rec.length)}</b> ${N.rec.length===1?'posición llegó':'posiciones llegaron'} (${pen.format(N.recVal)})</li>`:''}${N.lib.length?`<li><b>${nf0.format(N.lib.length)}</b> OC ${N.lib.length===1?'se liberó':'se liberaron'}</li>`:''}${N.nue.length?`<li><b>${nf0.format(N.nue.length)}</b> OC ${N.nue.length===1?'nueva espera':'nuevas esperan'} liberación</li>`:''}</ul>
+    <button type="button" class="btn2" id="novok">Marcar como revisado</button></div>`;
+  if(P){const L=P.list.filter(o=>o.est==='Por liberar'&&ocIn(o)).sort((a,b)=>z(b.dias)-z(a.dias));const tot=L.reduce((a,o)=>a+o.val,0);const old=L[0];
+    h+=`<div class="card"><div class="h2s"><h2>OC esperando liberación</h2><span>${nf0.format(L.length)} OC · ${pen.format(tot)}${old?` · la más antigua lleva ${nf0.format(z(old.dias))} días`:''} · toca una OC para ver sus SOLPED</span></div>${L.length?'<div id="oclt"></div>':'<div class="mut">No hay OC pendientes de liberar con estos filtros.</div>'}</div>`;}
+  const late=lateOC();
+  h+=`<div class="g2e"><div class="card"><div class="h2s"><h2>Llegaron</h2><span>${A.from?`entradas 101 del ${fdate(A.from)} al ${fdate(A.to)} · ${nf0.format(A.list.length)} posiciones · toca una para ver su SOLPED`:'sin entradas en el export'}</span></div>
+      ${A.list.length?`<div class="flist">${A.list.slice(0,8).map(({m,sp})=>`<button type="button" class="fi" data-oc="${esc(ocK(m.Pedido))}"><span class="age a1">${fdate(m['Fe.contabilización']).slice(0,5)}</span><span class="fx"><b>${esc(m['Texto breve de material']||m.Material)}</b><small>${num(m['Ctd.en UM entrada'])} ${esc(m['Un.medida de entrada']||'')} · OC ${esc(ocK(m.Pedido))}${sp?' · SOLPED '+esc(sp['Solicitud de pedido'])+(sp.Solicitante?' · '+esc(sp.Solicitante):''):''}</small></span></button>`).join('')}</div>
+      <div class="lact"><span class="mut">${A.list.length>8?'y '+nf0.format(A.list.length-8)+' más':''}</span><button type="button" class="btn2" id="arrcp">Copiar aviso por solicitante</button></div>`:'<div class="mut">No hubo entradas en los últimos 7 días del export.</div>'}</div>
+    <div class="card"><div class="h2s"><h2>Atrasadas</h2><span>${hasPed()?`OC liberadas con saldo que superan el plazo normal de su proveedor · ${nf0.format(late.length)} OC`:'agrega la consulta PEDIDOS (ME2N) para ver los atrasos'}</span></div>
+      ${late.length?`<div class="flist">${late.slice(0,8).map(o=>`<button type="button" class="fi" data-oc="${esc(o.oc)}"><span class="age a3">+${nf0.format(o.exc)} d</span><span class="fx"><b>${esc(o.prov||'Sin proveedor')} · OC ${esc(o.oc)}</b><small>${nf0.format(o.dias)} días desde la OC · lo normal ${nf0.format(o.plazo)} · falta ${pen.format(o.pendVal)} · ${esc(o.txt)}${o.items.length>1?' (+'+(o.items.length-1)+')':''}${o.sol.length?' · '+esc(o.sol.join(', ')):''}</small></span></button>`).join('')}</div>${late.length>8?`<div class="lact"><span class="mut">y ${nf0.format(late.length-8)} más</span></div>`:''}`:hasPed()?'<div class="mut">Ninguna OC liberada supera su plazo normal.</div>':''}</div></div>`;
+  return h;}
+function pedEvents(v){
+  const go=oc=>{Object.assign(PF,{q:oc,estado:'',tipo:'',dias:'',sol:'',cmp:'',cre:''});vSolped();setTimeout(()=>{const t=$('#ptbl');if(t)t.scrollIntoView({behavior:'smooth',block:'start'});},30);};
+  v.querySelectorAll('[data-oc]').forEach(b=>b.onclick=()=>go(b.dataset.oc));
+  if($('#novok'))$('#novok').onclick=()=>{novMark();vSolped();};
+  if($('#arrcp'))$('#arrcp').onclick=async()=>{const t=arrivalsText(arrivals().list);try{await navigator.clipboard.writeText(t);status('Aviso copiado: pégalo en un correo o mensaje para cada solicitante.');}catch(e){status('No se pudo copiar.',true);}};
+  if($('#oclt')){const L=pedIndex().list.filter(o=>o.est==='Por liberar'&&ocIn(o));
+    makeTable($('#oclt'),[
+      {k:'oc',h:'OC',cls:'code'},{k:'fecha',h:'Fecha OC',f:o=>fdate(o.fecha)},
+      {k:'dias',h:'Esperando',num:1,tip:'Días desde la fecha de la OC',v:o=>z(o.dias),f:o=>`<span class="age ${libAge(z(o.dias))}">${nf0.format(z(o.dias))} d</span>`},
+      {k:'aprob',h:'Aprobaciones',tip:'Aprobaciones dadas de las que pide la estrategia de liberación',v:o=>o.aprob/(o.req||1),f:libDots},
+      {k:'prov',h:'Proveedor',cls:'w'},
+      {k:'txt',h:'Detalle',cls:'w',f:o=>esc(o.txt)+(o.items.length>1?` <span class="mut">+${o.items.length-1} pos.</span>`:'')},
+      {k:'val',h:'Valor (S/)',num:1,f:o=>money(o.val)},
+      {k:'cre',h:'Creado por'},
+      {k:'sol',h:'Solicitante',v:o=>o.sol.join(', '),f:o=>o.sol.length?esc(o.sol.join(', ')):'<span class="mut">sin SOLPED</span>'}],
+      L,{sort:{k:'dias',d:'desc'},limit:8,unit:'OC por liberar',onRow:o=>go(o.oc),fix:1});}}
+
 /* ================= SOLPED ================= */
 const PF={estado:'_abiertas',q:'',sol:'',dias:'',tipo:'mat',cmp:'',cre:'',per:'cre'};
 const BORR='0 Borrada';
@@ -773,6 +938,7 @@ const spScope=()=>spBase().filter(s=>PF.estado===BORR?s.Estado===BORR:s.Estado!=
 const median=a=>{if(!a.length)return null;const b=a.slice().sort((x,y)=>x-y),m=b.length>>1;return b.length%2?b[m]:(b[m-1]+b[m])/2;};
 const dOC=s=>s.Dias_hasta_OC!=null?z(s.Dias_hasta_OC):(s['Fecha orden compra']&&s['Fecha de solicitud']?days(s['Fecha de solicitud'],s['Fecha orden compra']):null);
 const isOpen=s=>/^[123]/.test(s.Estado);
+const estOk=(s,e)=>e==='_abiertas'?isOpen(s):e==='2L'?(s.Estado[0]==='2'&&isPorLib(s)):e==='2 OC en tránsito'?(s.Estado===e&&!isPorLib(s)):s.Estado===e;
 const ageCls=d=>d>60?'a3':d>30?'a2':'a1';
 function vSolped(){const v=$('#v-solped');const SP=spScope();const cnt={};SP.forEach(s=>cnt[s.Estado]=(cnt[s.Estado]||0)+1);
   const open=SP.filter(isOpen);const valOpen=open.reduce((a,s)=>a+z(s['Valor total']),0);
@@ -793,7 +959,8 @@ function vSolped(){const v=$('#v-solped');const SP=spScope();const cnt={};SP.for
   const cgl=Object.values(cg).map(o=>({...o,med:median(o.d)})).sort((a,b)=>b.n-a.n);
   const tl=PF.tipo==='mat'?'solo materiales':PF.tipo==='srv'?'solo servicios':'materiales y servicios';
   const TC={USD:3.75,EUR:4.05};const vPEN=s=>z(s['Valor total'])*(TC[s.Moneda]||1);
-  const st=k=>SP.filter(s=>s.Estado[0]===k);const S1=st('1'),S2=st('2'),S3=st('3'),S4=st('4');
+  const st=k=>SP.filter(s=>s.Estado[0]===k);const S1=st('1'),S2a=st('2'),S3=st('3'),S4=st('4');
+  const S2L=hasPed()?S2a.filter(isPorLib):[];const S2=S2L.length?S2a.filter(s=>!isPorLib(s)):S2a;const HP=hasPed();
   const sumV=l=>l.reduce((a,s)=>a+vPEN(s),0);
   const dRec=median(S4.filter(s=>s['Fecha orden compra']&&s.Fecha_recepcion).map(s=>days(s['Fecha orden compra'],s.Fecha_recepcion)).filter(d=>d>=0));
   const nSrv=D.sp.filter(x=>x.Estado==='5 Servicio con OC'&&spArea(x)&&inPer(x['Fecha de solicitud'])).length;const nSin=SP.filter(s=>s.Estado===SINR).length;
@@ -806,15 +973,17 @@ function vSolped(){const v=$('#v-solped');const SP=spScope();const cnt={};SP.for
   const people=sumBy(SP,s=>s[perK],()=>1).sort((a,b)=>b[1]-a[1]).slice(0,12);
   const selP=perK==='Creado por'?PF.cre:PF.sol;
   v.innerHTML=`<div class="ksec wkk"><div class="kh2"><div><b>FLUJO DE LAS SOLPED</b><span>${tl} · de la solicitud a la llegada al almacén · toca un paso para filtrar la lista</span></div></div>
-      <div class="flow">${step('1','1 Solicitado sin OC','Solicitado sin OC',S1,'--bad','falta orden de compra')}${arrow(medOC,'hasta la OC')}
-        ${step('2','2 OC en tránsito','OC en tránsito',S2,'--pen','con OC, aún no llega')}${arrow(dRec,'OC → llegada')}
-        ${step('3','3 Recibido parcial','Recibido parcial',S3,'--fp','llegó una parte')}<div class="fa sm"><i></i></div>
-        ${step('4','4 Recibido','Recibido',S4,'--ok','entrada 101 completa')}</div>
+      <div class="flow ${HP?'f5':''}">${step('1','1 Solicitado sin OC','Solicitado sin OC',S1,'--bad','falta orden de compra')}${arrow(medOC,'hasta la OC')}
+        ${HP?step('2','2L','OC por liberar',S2L,'--ad','esperando aprobación')+'<div class="fa sm"><i></i></div>':''}
+        ${step(HP?'3':'2','2 OC en tránsito','OC en tránsito',S2,'--pen','liberada, aún no llega')}${arrow(dRec,'OC → llegada')}
+        ${step(HP?'4':'3','3 Recibido parcial','Recibido parcial',S3,'--fp','llegó una parte')}<div class="fa sm"><i></i></div>
+        ${step(HP?'5':'4','4 Recibido','Recibido',S4,'--ok','entrada 101 completa')}</div>
       <div class="fchips"><button type="button" data-e="_abiertas" class="chip"><b>${nf0.format(open.length)}</b> abiertas · ${pen.format(sumV(open))}</button>
         <button type="button" data-e="5 Servicio con OC" class="chip"><b>${nf0.format(nSrv)}</b> servicios con OC</button>
         ${nSin?`<button type="button" data-e="${SINR}" class="chip"><b>${nf0.format(nSin)}</b> sin dato de recepción</button>`:''}
         <button type="button" data-e="0 Borrada" class="chip"><b>${nf0.format(nBorr)}</b> borradas en SAP</button>
         <span class="chipn">Montos en S/ · USD × ${TC.USD} y EUR × ${TC.EUR} (tipo de cambio referencial)</span></div></div>
+    ${pedBlock()}
     <div class="g2">
     <div class="card"><div class="h2s"><h2>Requieren seguimiento</h2><span>abiertas hace más de 30 días · ${nf0.format(follow.length)} posiciones</span></div>
       ${follow.length?`<div class="flist">${follow.slice(0,8).map(s=>`<button type="button" class="fi" data-sp="${esc(s['Solicitud de pedido'])}"><span class="age ${ageCls(z(s.Dias_desde_solicitud))}">${s.Dias_desde_solicitud} d</span><span class="fx"><b>${esc(s['Texto breve']||'')}</b><small>SOLPED ${esc(s['Solicitud de pedido'])}/${esc(s['Pos.solicitud pedido'])} · ${esc(String(s.Estado).slice(2))}${s.Comprador||s['Grupo de compras']?' · '+esc(s.Comprador||s['Grupo de compras']):''}</small></span></button>`).join('')}</div>
@@ -849,14 +1018,15 @@ function vSolped(){const v=$('#v-solped');const SP=spScope();const cnt={};SP.for
   if($('#pcmp'))$('#pcmp').onchange=e=>{PF.cmp=e.target.value;vSolped();};if($('#pcre'))$('#pcre').onchange=e=>{PF.cre=e.target.value;spTable();};
   $('#ptipo').onchange=e=>{PF.tipo=e.target.value;vSolped();};$('#pq').oninput=e=>{PF.q=e.target.value;spTable();};$('#psol').onchange=e=>{PF.sol=e.target.value;spTable();};$('#pdias').onchange=e=>{PF.dias=e.target.value;spTable();};
   v.querySelector('[data-clear]').onclick=()=>{Object.assign(PF,{estado:'',q:'',sol:'',dias:'',tipo:'',cmp:'',cre:''});vSolped();};
+  pedEvents(v);
   sync();spTable();}
 function spTable(){const q=PF.q.trim().toLowerCase();
-  const rows=spScope().filter(s=>(!PF.estado||(PF.estado==='_abiertas'?isOpen(s):s.Estado===PF.estado))&&(!PF.sol||s.Solicitante===PF.sol)&&(!PF.cmp||(s.Comprador||s['Grupo de compras'])===PF.cmp)&&(!PF.cre||s['Creado por']===PF.cre)&&(!PF.dias||(isOpen(s)&&z(s.Dias_desde_solicitud)>+PF.dias))
+  const rows=spScope().filter(s=>(!PF.estado||estOk(s,PF.estado))&&(!PF.sol||s.Solicitante===PF.sol)&&(!PF.cmp||(s.Comprador||s['Grupo de compras'])===PF.cmp)&&(!PF.cre||s['Creado por']===PF.cre)&&(!PF.dias||(isOpen(s)&&z(s.Dias_desde_solicitud)>+PF.dias))
     &&(!q||[s.Material,s['Texto breve'],s['Solicitud de pedido'],s.Pedido].some(x=>String(x??'').toLowerCase().includes(q))));
   makeTable($('#ptbl'),[
     {k:'Solicitud de pedido',h:'SOLPED',cls:'code',f:o=>esc(o['Solicitud de pedido'])+'<span class="mut">/'+esc(o['Pos.solicitud pedido'])+'</span>'},
     {k:'Texto breve',h:'Texto',cls:'w',f:o=>`<span title="${esc(o['Texto breve'])}">${esc(o['Texto breve'])}</span>`},
-    {k:'Estado',h:'Estado',f:o=>spill(o.Estado)},
+    {k:'Estado',h:'Estado',v:o=>o.Estado[0]==='2'&&isPorLib(o)?'1z':o.Estado,f:o=>o.Estado[0]==='2'&&isPorLib(o)?'<span class="og lib">OC por liberar</span>':spill(o.Estado)},
     {k:'Fecha de solicitud',h:'Fecha SOLPED',f:o=>fdate(o['Fecha de solicitud'])},
     {k:'Dias_abierta',h:'Días abierta',num:1,tip:'Días desde la SOLPED hasta hoy (solo lo pendiente)',v:o=>isOpen(o)?z(o.Dias_desde_solicitud):null,f:o=>isOpen(o)?`<span class="age ${ageCls(z(o.Dias_desde_solicitud))}">${o.Dias_desde_solicitud}</span>`:''},
     {k:'Dias_rec',h:'Días a recepción',num:1,tip:'Días entre la SOLPED y la entrada 101',v:o=>o.Fecha_recepcion&&o['Fecha de solicitud']?days(o['Fecha de solicitud'],o.Fecha_recepcion):null,f:o=>o.Fecha_recepcion&&o['Fecha de solicitud']?days(o['Fecha de solicitud'],o.Fecha_recepcion):''},
@@ -1203,8 +1373,8 @@ $('#btnCart').onclick=openCart;
 renderAll();
 
 /* ================= upload ================= */
-const NEED={tab:['Material','Estado','Minimo','Cant_sugerida_pedir'],sp:['Solicitud de pedido','Pendiente_llegar','Estado'],mv:['Tipo_movimiento','Consumo_neto'],res:['Pendiente_retirar','Clase_OT','Orden'],alm:['Material','Almacén','Stock','Valor_stock'],eq:['Codigo_antiguo','Codigo_nuevo','Factor'],areas:['AREA','G.SOLICITANTE']};
-const SHEETN={tab:'TABLERO',sp:'SOLPED_SEGUIMIENTO',mv:'MOV_TEMPORADA',res:'RESERVAS_OT',alm:'STOCK_ALMACEN',eq:'EQUIVALENCIAS',areas:'AREAS'};
+const NEED={ped:['OC','Estado_lib','Por_entregar'],tab:['Material','Estado','Minimo','Cant_sugerida_pedir'],sp:['Solicitud de pedido','Pendiente_llegar','Estado'],mv:['Tipo_movimiento','Consumo_neto'],res:['Pendiente_retirar','Clase_OT','Orden'],alm:['Material','Almacén','Stock','Valor_stock'],eq:['Codigo_antiguo','Codigo_nuevo','Factor'],areas:['AREA','G.SOLICITANTE']};
+const SHEETN={ped:'PEDIDOS',tab:'TABLERO',sp:'SOLPED_SEGUIMIENTO',mv:'MOV_TEMPORADA',res:'RESERVAS_OT',alm:'STOCK_ALMACEN',eq:'EQUIVALENCIAS',areas:'AREAS'};
 const iso=v=>v instanceof Date?new Date(v.getTime()-v.getTimezoneOffset()*6e4).toISOString().slice(0,10):v;
 function encode(cols,objs){const rows=objs.map(o=>cols.map(c=>{let v=o[c];if(v===undefined||v==='')v=null;v=iso(v);if(typeof v==='number')v=Math.round(v*1000)/1000;return v;}));const dict={};
   cols.forEach((c,j)=>{const nn=rows.map(r=>r[j]).filter(v=>v!==null);if(!nn.length||!nn.every(v=>typeof v==='string'))return;const u=[...new Set(nn)];if(u.length<0.6*rows.length){const ix=new Map(u.map((v,i)=>[v,i]));dict[j]=u;rows.forEach(r=>{if(r[j]!==null)r[j]=ix.get(r[j]);});}});
@@ -1224,7 +1394,7 @@ async function ingest(buf,label){
   const mvDates=found.mv.map(m=>iso(m['Fe.contabilización'])).filter(Boolean).sort();
   const ini=(()=>{const n=new Date(),y=n.getFullYear();const s=y=>{const j=new Date(y,0,4);const d=(j.getDay()+6)%7;return new Date(y,0,4-d+182);};const a=n>=s(y)?y:y-1;return {d:iso(s(a)),t:a+'/'+(a+1)};})();
   const raw={meta:{generado:iso(new Date()),inicio_temporada:ini.d,temporada:ini.t,fuente:label+(mvDates.length?' · MB51 hasta '+fdate(mvDates[mvDates.length-1]):''),params:D.meta.params},
-    tab:encode(cu(RAW.tab.cols,t),t),sp:encode(cu(RAW.sp.cols,found.sp),found.sp),mv:encode(cu(RAW.mv.cols,found.mv),found.mv),res:encode(cu(RAW.res.cols,found.res),found.res),alm:found.alm?encode(cu([],found.alm),found.alm):(RAW.alm||null),eq:found.eq?encode(cu([],found.eq),found.eq.filter(r=>r.Codigo_antiguo&&r.Codigo_nuevo)):(RAW.eq||null),areas:found.areas?encode(cu([],found.areas),found.areas.filter(r=>r.AREA&&r['G.SOLICITANTE'])):(RAW.areas||null)};
+    tab:encode(cu(RAW.tab.cols,t),t),sp:encode(cu(RAW.sp.cols,found.sp),found.sp),mv:encode(cu(RAW.mv.cols,found.mv),found.mv),res:encode(cu(RAW.res.cols,found.res),found.res),alm:found.alm?encode(cu([],found.alm),found.alm):(RAW.alm||null),eq:found.eq?encode(cu([],found.eq),found.eq.filter(r=>r.Codigo_antiguo&&r.Codigo_nuevo)):(RAW.eq||null),areas:found.areas?encode(cu([],found.areas),found.areas.filter(r=>r.AREA&&r['G.SOLICITANTE'])):(RAW.areas||null),ped:found.ped?encode(cu([],found.ped),found.ped.filter(r=>r.OC)):(RAW.ped||null)};
   RAW=raw;load(raw);renderAll();return {raw,found};}
 $('#fileIn').onchange=async e=>{const f=e.target.files[0];if(!f)return;status('Leyendo '+f.name+' …');
   try{const {raw,found}=await ingest(await f.arrayBuffer(),'Excel cargado el '+fdate(iso(new Date())));pendingRaw=raw;
