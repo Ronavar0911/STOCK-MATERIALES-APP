@@ -984,7 +984,7 @@ function vSolped(){const v=$('#v-solped');const SP=spScope();const cnt={};SP.for
         <button type="button" data-e="0 Borrada" class="chip"><b>${nf0.format(nBorr)}</b> borradas en SAP</button>
         <span class="chipn">Montos en S/ · USD × ${TC.USD} y EUR × ${TC.EUR} (tipo de cambio referencial)</span></div></div>
     ${pedBlock()}
-    <div class="g2">
+    <div class="g2e">
     <div class="card"><div class="h2s"><h2>Requieren seguimiento</h2><span>abiertas hace más de 30 días · ${nf0.format(follow.length)} posiciones</span></div>
       ${follow.length?`<div class="flist">${follow.slice(0,8).map(s=>`<button type="button" class="fi" data-sp="${esc(s['Solicitud de pedido'])}"><span class="age ${ageCls(z(s.Dias_desde_solicitud))}">${s.Dias_desde_solicitud} d</span><span class="fx"><b>${esc(s['Texto breve']||'')}</b><small>SOLPED ${esc(s['Solicitud de pedido'])}/${esc(s['Pos.solicitud pedido'])} · ${esc(String(s.Estado).slice(2))}${s.Comprador||s['Grupo de compras']?' · '+esc(s.Comprador||s['Grupo de compras']):''}</small></span></button>`).join('')}</div>
       ${follow.length>8?`<button type="button" class="lnk" id="pall" style="margin-top:8px">Ver las ${nf0.format(follow.length)} en la lista</button>`:''}`:'<div class="mut">No hay SOLPED abiertas con más de 30 días.</div>'}</div>
@@ -1384,9 +1384,11 @@ const cu=(cols,objs)=>{const s=new Set(cols);objs.slice(0,50).forEach(o=>Object.
 $('#btnLoad').onclick=()=>$('#fileIn').click();
 async function ingest(buf,label){
   if(!window.XLSX)throw new Error('No cargó el lector de Excel. Revisa tu conexión y vuelve a intentar.');
-  const wb=XLSX.read(buf,{type:'array',cellDates:true});const found={};
-  for(const name of wb.SheetNames){let ok=false;for(const hr of [0,1,2,3]){const rows=XLSX.utils.sheet_to_json(wb.Sheets[name],{defval:null,raw:true,range:hr});if(!rows.length)continue;const keys=Object.keys(rows[0]);
-    for(const k in NEED)if(!found[k]&&NEED[k].every(c=>keys.includes(c))){found[k]=rows;ok=true;break;}if(ok)break;}}
+  const wb=XLSX.read(buf,{type:'array',cellDates:true,dense:true});const found={};
+  for(const name of wb.SheetNames){const ws=wb.Sheets[name];if(!ws||!ws['!ref'])continue;const R=XLSX.utils.decode_range(ws['!ref']);
+    const top=XLSX.utils.sheet_to_json(ws,{header:1,defval:null,raw:true,range:{s:{r:0,c:0},e:{r:Math.min(R.e.r,3),c:R.e.c}}});
+    let hit=null;for(let hr=0;hr<top.length&&!hit;hr++){const keys=(top[hr]||[]).map(v=>v==null?'':String(v).trim());for(const k in NEED)if(!found[k]&&NEED[k].every(c=>keys.includes(c))){hit=[k,hr];break;}}
+    if(hit)found[hit[0]]=XLSX.utils.sheet_to_json(ws,{defval:null,raw:true,range:hit[1]});}
   const miss=['tab','sp','mv','res'].filter(k=>!found[k]);
   if(miss.length)throw new Error('No encontré las hojas '+miss.map(k=>SHEETN[k]).join(', ')+'. Usa el libro APP_STOCK_MATERIALES después de «Actualizar todo».');
   found.mv.forEach(m=>{if(m.Costo_consumo==null&&m.Grupo==='Consumo')m.Costo_consumo=-z(m['Impte.mon.local']);});
@@ -1401,28 +1403,50 @@ $('#fileIn').onchange=async e=>{const f=e.target.files[0];if(!f)return;status('L
     const art=await window.claude?.use?.('artifact');$('#btnSave').hidden=!art;
     status(`Datos cargados: ${nf0.format(D.tab.length)} materiales, ${nf0.format(D.sp.length)} posiciones SOLPED. ${art?'Pulsa «Guardar para el equipo» para que todos vean esta versión.':'Solo los ves tú en esta sesión; los datos publicados se actualizan con ACTUALIZAR_APP.'}`);
   }catch(err){status(err.message||String(err),true);}finally{e.target.value='';}};
+/* caché local de los datos ya procesados (IndexedDB): la app abre al instante y solo vuelve a leer el Excel cuando cambia */
+const CACHE_V='v0.23b';
+const IDB={open(){return new Promise((res,rej)=>{try{const r=indexedDB.open('stockapp',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);}catch(e){rej(e);}});},
+  async get(k){try{const db=await IDB.open();return await new Promise(res=>{const q=db.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null);});}catch(e){return null;}},
+  async set(k,v){try{const db=await IDB.open();await new Promise(res=>{const tx=db.transaction('kv','readwrite');tx.objectStore('kv').put(v,k);tx.oncomplete=res;tx.onerror=res;tx.onabort=res;});}catch(e){}}};
+const fmtWhen=w=>w?' el '+w.toLocaleDateString('es-PE')+' '+w.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}):'';
 /* datos publicados: window.FUENTE_DATOS (app/fuente.js) o data-remote (data/APP_STOCK_MATERIALES.xlsx) */
 (async()=>{
+  const C=await IDB.get('datos');const okC=C&&C.v===CACHE_V&&C.raw&&C.key;let shown=false;
+  const useCache=()=>{RAW=C.raw;load(C.raw);renderAll();shown=true;};
+  const save=key=>IDB.set('datos',{v:CACHE_V,key,raw:RAW});
   if(window.DATOS_XLSX_B64){ /* datos.js generado por ACTUALIZAR_APP junto a index.html (SharePoint / carpeta local) */
+    const key='b64:'+(window.DATOS_FECHA||'')+':'+window.DATOS_XLSX_B64.length;
+    if(okC&&C.key===key){useCache();status('');return;}
     status('Cargando los datos…');
     try{const bin=atob(window.DATOS_XLSX_B64);const buf=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);
       const when=window.DATOS_FECHA?new Date(window.DATOS_FECHA):null;
-      await ingest(buf,'Datos actualizados'+(when?' el '+when.toLocaleDateString('es-PE')+' '+when.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}):''));status('');}
+      await ingest(buf,'Datos actualizados'+fmtWhen(when));save(key);status('');}
     catch(err){status('No pude leer datos.js: '+(err.message||err),true);}
     return;}
   const src=(window.FUENTE_DATOS||'').trim()||((location.pathname.includes('/app/')?'../':'')+'data/APP_STOCK_MATERIALES.xlsx');if(!src||!/^https?:/.test(location.protocol))return;
-  status('Cargando los datos publicados…');
-  try{const url=src+(src.includes('?')?'&':'?')+'v='+Date.now();
-    const r=await fetch(url,{cache:'no-store',redirect:'follow'});if(!r.ok)throw new Error('No pude leer la fuente de datos (código '+r.status+').');
-    let buf,when=null;
+  if(okC){useCache();status('Revisando si hay datos nuevos…');}else status('Cargando los datos publicados (la primera vez puede tardar)…');
+  try{const gs=/script\.google/.test(src);
+    /* Excel en el mismo sitio: el navegador revalida con el servidor (ETag) y no lo vuelve a descargar si no cambió */
+    const url=gs?src+(src.includes('?')?'&':'?')+'v='+Date.now():src;
+    const r=await fetch(url,{cache:gs?'no-store':'no-cache',redirect:'follow'});if(!r.ok)throw new Error('No pude leer la fuente de datos (código '+r.status+').');
+    let buf,when=null,key='';
     if(/script\.google(usercontent)?\.com/.test(r.url)||/json/.test(r.headers.get('Content-Type')||'')){
       const j=await r.json();if(j.error)throw new Error(j.error);
+      key='gs:'+(j.actualizado||'')+':'+String(j.b64||'').length;
+      if(okC&&C.key===key){status('');return;}
       const bin=atob(j.b64);buf=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);
       when=j.actualizado?new Date(j.actualizado):null;}
-    else{buf=await r.arrayBuffer();const lm=r.headers.get('Last-Modified');when=lm?new Date(lm):null;}
-    await ingest(buf,'Datos publicados'+(when?' el '+when.toLocaleDateString('es-PE')+' '+when.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}):''));
-    status('');}
-  catch(err){status((err.message||String(err))+' Puedes cargar el Excel a mano con «Cargar Excel actualizado».',true);}})();
+    else{const et=r.headers.get('ETag')||'',lm=r.headers.get('Last-Modified')||'',cl=r.headers.get('Content-Length')||'';
+      key=(et||lm)?'h:'+et+'|'+lm+'|'+cl:'';
+      if(okC&&key&&C.key===key){try{r.body&&r.body.cancel();}catch(e){}status('');return;}
+      buf=await r.arrayBuffer();if(!key)key='len:'+buf.byteLength+'|'+lm;
+      if(okC&&C.key===key){status('');return;}
+      when=lm?new Date(lm):null;}
+    if(shown)status('Hay datos nuevos: actualizando…');
+    await ingest(buf,'Datos publicados'+fmtWhen(when));save(key);
+    status(shown?'Datos actualizados.':'');if(shown)setTimeout(()=>status(''),4000);}
+  catch(err){if(shown)status('Mostrando la última copia guardada en este navegador (no se pudo revisar si hay datos nuevos).',true);
+    else status((err.message||String(err))+' Puedes cargar el Excel a mano con «Cargar Excel actualizado».',true);}})();
 $('#btnSave').onclick=async()=>{if(!pendingRaw)return;const art=await window.claude?.use?.('artifact');if(!art){status('No tienes permiso para guardar esta página.',true);return;}
   status('Guardando…');const json=JSON.stringify(pendingRaw).replace(/<\//g,'<\\/');
   const html='<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+RESET_CSS+'</style></head><body>'+
