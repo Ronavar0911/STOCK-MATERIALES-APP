@@ -860,6 +860,12 @@ function pedIndex(){if(PX&&PX.src===D)return PX;const by={};const hoy=isoD(new D
     if(p.Material&&z(p.Por_entregar)>0){o.pendMat+=z(p.Por_entregar);o.pendVal+=z(p.Por_entregar_valor)*tc;}
     o.items.push(p);if(p.Estado_lib==='Por liberar')o.est='Por liberar';});
   const sb=spByOC();
+  /* plazo normal por proveedor (días OC → entrada 101), calculado con las SOLPED ya recibidas; se usa si la consulta no lo trae */
+  const pk=n=>String(n||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,18);const lt={},allD=[];
+  Object.entries(sb).forEach(([k,l])=>{const s=l.find(x=>x.Fecha_recepcion&&x['Fecha orden compra']);if(!s)return;const d=days(s['Fecha orden compra'],s.Fecha_recepcion);if(d<0)return;
+    allD.push(d);const p=pk((by[k]&&by[k].prov)||s['Nombre de proveedor']);if(p)(lt[p]||(lt[p]=[])).push(d);});
+  const gen=median(allD);
+  Object.values(by).forEach(o=>{if(o.plazo==null){const l=lt[pk(o.prov)];o.plazo=l&&l.length>=3?median(l):gen;}});
   Object.values(by).forEach(o=>{o.sp=sb[o.oc]||[];o.sol=[...new Set(o.sp.map(s=>s.Solicitante).filter(Boolean))];o.solped=[...new Set(o.sp.map(s=>s['Solicitud de pedido']).filter(Boolean))];
     o.txt=(o.items[0]&&o.items[0].Texto)||'';});
   PX={src:D,by,list:Object.values(by),porLib:new Set(Object.values(by).filter(o=>o.est==='Por liberar').map(o=>o.oc)),sb};return PX;}
