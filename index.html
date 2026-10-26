@@ -551,6 +551,14 @@ svg.stk g:hover rect.sg{opacity:.85}
 .nov .btn2,.lact .btn2{flex:none;width:auto}
 .lact{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px}
 #v-solped>.card,#v-solped>.g2e{margin-top:12px}
+/* v0.23d buscador de liberación/llegadas/atrasos y semana */
+.pfil{margin-top:12px}
+.pfr{display:grid;grid-template-columns:2fr 1fr auto;gap:10px 12px;align-items:end}
+@media(max-width:700px){.pfr{grid-template-columns:1fr}}
+.pfr .act .btn2{width:auto}
+.flist.scr{max-height:560px;overflow:auto;padding-right:4px}
+.wtop{display:flex;flex-direction:column;gap:8px;min-width:0}
+.wtop .hb .r{grid-template-columns:minmax(0,45%) minmax(0,1fr) 92px}
 .sheet{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);z-index:41;border-left:1px solid var(--bd);overflow-y:auto;padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(20px + env(safe-area-inset-bottom,0px))}
 .sheet .card{margin-bottom:10px}
 .sheet .top{display:grid;grid-template-columns:1fr auto;gap:10px;border-top:3px solid var(--ac)}
@@ -905,26 +913,41 @@ function arrivalsText(list){const g={};list.forEach(({m,sp})=>{const k=(sp&&sp.S
   return Object.entries(g).map(([k,l])=>k+':\n'+l.map(({m,sp})=>`  - ${fdate(m['Fe.contabilización'])} · ${m['Texto breve de material']||m.Material} · ${num(m['Ctd.en UM entrada'])} ${m['Un.medida de entrada']||''} · OC ${ocK(m.Pedido)}${sp?' · SOLPED '+sp['Solicitud de pedido']:''}`).join('\n')).join('\n\n');}
 
 /* ---- bloque de liberación, llegadas y atrasos en «Seguimiento SOLPED» (v0.23) ---- */
-function pedBlock(){const A=arrivals();const N=novedades();const P=hasPed()?pedIndex():null;let h='';
+const LF={q:'',sol:'',allA:false,allL:false};
+const lfq=()=>LF.q.trim().toLowerCase();
+const has=(arr,q)=>arr.some(x=>String(x??'').toLowerCase().includes(q));
+const okOC=o=>{const q=lfq();return (!LF.sol||o.sol.includes(LF.sol))&&(!q||has([o.oc,o.prov,o.txt,o.cre,...o.solped,...o.items.map(p=>p.Material),...o.items.map(p=>p.Texto)],q));};
+const okArr=({m,sp})=>{const q=lfq();const so=(sp&&sp.Solicitante)||'';return (!LF.sol||so===LF.sol)&&(!q||has([ocK(m.Pedido),m.Material,m['Texto breve de material'],sp&&sp['Solicitud de pedido'],so],q));};
+function pedLists(){const P=hasPed()?pedIndex():null;
+  const L0=P?P.list.filter(o=>o.est==='Por liberar'&&ocIn(o)).sort((a,b)=>z(b.dias)-z(a.dias)):[];const A0=arrivals();const T0=lateOC();
+  const sols=[...new Set([...L0.flatMap(o=>o.sol),...T0.flatMap(o=>o.sol),...A0.list.map(x=>x.sp&&x.sp.Solicitante)].filter(Boolean))].sort();
+  return {P,sols,A0,L:L0.filter(okOC),A:A0.list.filter(okArr),T:T0.filter(okOC),nL:L0.length,nA:A0.list.length,nT:T0.length};}
+const fcnt=(n,t)=>LF.q||LF.sol?`${nf0.format(n)} de ${nf0.format(t)}`:nf0.format(t);
+function pedPanels(X){const {P,A0,L,A,T}=X;let h='';
+  if(P){const tot=L.reduce((a,o)=>a+o.val,0);const old=L[0];
+    h+=`<div class="card"><div class="h2s"><h2>OC esperando liberación</h2><span>${fcnt(L.length,X.nL)} OC · ${pen.format(tot)}${old?` · la más antigua lleva ${nf0.format(z(old.dias))} días`:''} · toca una OC para ver sus SOLPED</span></div>${L.length?'<div id="oclt"></div>':'<div class="mut">Ninguna OC por liberar con esta búsqueda o filtros.</div>'}</div>`;}
+  const nA=LF.allA?A.length:8,nT=LF.allL?T.length:8;
+  h+=`<div class="g2e"><div class="card"><div class="h2s"><h2>Llegaron</h2><span>${A0.from?`entradas 101 del ${fdate(A0.from)} al ${fdate(A0.to)} · ${fcnt(A.length,X.nA)} posiciones · toca una para ver su SOLPED`:'sin entradas en el export'}</span></div>
+      ${A.length?`<div class="flist ${LF.allA&&A.length>8?'scr':''}">${A.slice(0,nA).map(({m,sp})=>`<button type="button" class="fi" data-oc="${esc(ocK(m.Pedido))}"><span class="age a1">${fdate(m['Fe.contabilización']).slice(0,5)}</span><span class="fx"><b>${esc(m['Texto breve de material']||m.Material)}</b><small>${num(m['Ctd.en UM entrada'])} ${esc(m['Un.medida de entrada']||'')} · OC ${esc(ocK(m.Pedido))}${sp?' · SOLPED '+esc(sp['Solicitud de pedido'])+(sp.Solicitante?' · '+esc(sp.Solicitante):''):''}</small></span></button>`).join('')}</div>
+      <div class="lact">${A.length>8?`<button type="button" class="lnk" data-more="A">${LF.allA?'Ver menos':'Ver las '+nf0.format(A.length)}</button>`:'<span></span>'}<button type="button" class="btn2" id="arrcp">Copiar aviso por solicitante</button></div>`:`<div class="mut">${A0.list.length?'Ninguna entrada con esta búsqueda o filtros.':'No hubo entradas en los últimos 7 días del export.'}</div>`}</div>
+    <div class="card"><div class="h2s"><h2>Atrasadas</h2><span>${hasPed()?`OC liberadas con saldo que superan el plazo normal de su proveedor · ${fcnt(T.length,X.nT)} OC`:'agrega la consulta PEDIDOS (ME2N) para ver los atrasos'}</span></div>
+      ${T.length?`<div class="flist ${LF.allL&&T.length>8?'scr':''}">${T.slice(0,nT).map(o=>`<button type="button" class="fi" data-oc="${esc(o.oc)}"><span class="age a3">+${nf0.format(o.exc)} d</span><span class="fx"><b>${esc(o.prov||'Sin proveedor')} · OC ${esc(o.oc)}</b><small>${nf0.format(o.dias)} días desde la OC · lo normal ${nf0.format(o.plazo)} · falta ${pen.format(o.pendVal)} · ${esc(o.txt)}${o.items.length>1?' (+'+(o.items.length-1)+')':''}${o.sol.length?' · '+esc(o.sol.join(', ')):''}</small></span></button>`).join('')}</div>${T.length>8?`<div class="lact"><button type="button" class="lnk" data-more="L">${LF.allL?'Ver menos':'Ver las '+nf0.format(T.length)}</button><span></span></div>`:''}`:hasPed()?`<div class="mut">${X.nT?'Ninguna OC atrasada con esta búsqueda o filtros.':'Ninguna OC liberada supera su plazo normal.'}</div>`:''}</div></div>`;
+  return h;}
+function pedBlock(){const N=novedades();const X=pedLists();let h='';
   if(N&&(N.rec.length||N.lib.length||N.nue.length))h+=`<div class="nov"><div><b>Novedades desde tu última revisión</b><span>revisado el ${fdate(N.snap.t)} · datos hasta ${fdate(N.cur.d)}${GF.zona?' · '+esc(GF.zona===NOZ?'sin área':GF.zona):''}</span></div>
     <ul>${N.rec.length?`<li><b>${nf0.format(N.rec.length)}</b> ${N.rec.length===1?'posición llegó':'posiciones llegaron'} (${pen.format(N.recVal)})</li>`:''}${N.lib.length?`<li><b>${nf0.format(N.lib.length)}</b> OC ${N.lib.length===1?'se liberó':'se liberaron'}</li>`:''}${N.nue.length?`<li><b>${nf0.format(N.nue.length)}</b> OC ${N.nue.length===1?'nueva espera':'nuevas esperan'} liberación</li>`:''}</ul>
     <button type="button" class="btn2" id="novok">Marcar como revisado</button></div>`;
-  if(P){const L=P.list.filter(o=>o.est==='Por liberar'&&ocIn(o)).sort((a,b)=>z(b.dias)-z(a.dias));const tot=L.reduce((a,o)=>a+o.val,0);const old=L[0];
-    h+=`<div class="card"><div class="h2s"><h2>OC esperando liberación</h2><span>${nf0.format(L.length)} OC · ${pen.format(tot)}${old?` · la más antigua lleva ${nf0.format(z(old.dias))} días`:''} · toca una OC para ver sus SOLPED</span></div>${L.length?'<div id="oclt"></div>':'<div class="mut">No hay OC pendientes de liberar con estos filtros.</div>'}</div>`;}
-  const late=lateOC();
-  h+=`<div class="g2e"><div class="card"><div class="h2s"><h2>Llegaron</h2><span>${A.from?`entradas 101 del ${fdate(A.from)} al ${fdate(A.to)} · ${nf0.format(A.list.length)} posiciones · toca una para ver su SOLPED`:'sin entradas en el export'}</span></div>
-      ${A.list.length?`<div class="flist">${A.list.slice(0,8).map(({m,sp})=>`<button type="button" class="fi" data-oc="${esc(ocK(m.Pedido))}"><span class="age a1">${fdate(m['Fe.contabilización']).slice(0,5)}</span><span class="fx"><b>${esc(m['Texto breve de material']||m.Material)}</b><small>${num(m['Ctd.en UM entrada'])} ${esc(m['Un.medida de entrada']||'')} · OC ${esc(ocK(m.Pedido))}${sp?' · SOLPED '+esc(sp['Solicitud de pedido'])+(sp.Solicitante?' · '+esc(sp.Solicitante):''):''}</small></span></button>`).join('')}</div>
-      <div class="lact"><span class="mut">${A.list.length>8?'y '+nf0.format(A.list.length-8)+' más':''}</span><button type="button" class="btn2" id="arrcp">Copiar aviso por solicitante</button></div>`:'<div class="mut">No hubo entradas en los últimos 7 días del export.</div>'}</div>
-    <div class="card"><div class="h2s"><h2>Atrasadas</h2><span>${hasPed()?`OC liberadas con saldo que superan el plazo normal de su proveedor · ${nf0.format(late.length)} OC`:'agrega la consulta PEDIDOS (ME2N) para ver los atrasos'}</span></div>
-      ${late.length?`<div class="flist">${late.slice(0,8).map(o=>`<button type="button" class="fi" data-oc="${esc(o.oc)}"><span class="age a3">+${nf0.format(o.exc)} d</span><span class="fx"><b>${esc(o.prov||'Sin proveedor')} · OC ${esc(o.oc)}</b><small>${nf0.format(o.dias)} días desde la OC · lo normal ${nf0.format(o.plazo)} · falta ${pen.format(o.pendVal)} · ${esc(o.txt)}${o.items.length>1?' (+'+(o.items.length-1)+')':''}${o.sol.length?' · '+esc(o.sol.join(', ')):''}</small></span></button>`).join('')}</div>${late.length>8?`<div class="lact"><span class="mut">y ${nf0.format(late.length-8)} más</span></div>`:''}`:hasPed()?'<div class="mut">Ninguna OC liberada supera su plazo normal.</div>':''}</div></div>`;
-  return h;}
-function pedEvents(v){
+  if(X.P||X.nA)h+=`<div class="card pfil"><div class="pfr">
+      <label class="sq">Buscar en liberación, llegadas y atrasos<input type="search" id="lfq" placeholder="N° de OC o SOLPED, material, texto o proveedor…" value="${esc(LF.q)}"></label>
+      <label>Solicitante<select id="lfs">${opts(X.sols,LF.sol,'Todos')}</select></label>
+      <div class="act"><button class="btn2" type="button" id="lfx">Limpiar</button></div></div></div>`;
+  return h+`<div id="pedp">${pedPanels(X)}</div>`;}
+function pedWire(){const v=$('#v-solped');const X=pedLists();
   const go=oc=>{Object.assign(PF,{q:oc,estado:'',tipo:'',dias:'',sol:'',cmp:'',cre:''});vSolped();setTimeout(()=>{const t=$('#ptbl');if(t)t.scrollIntoView({behavior:'smooth',block:'start'});},30);};
-  v.querySelectorAll('[data-oc]').forEach(b=>b.onclick=()=>go(b.dataset.oc));
-  if($('#novok'))$('#novok').onclick=()=>{novMark();vSolped();};
-  if($('#arrcp'))$('#arrcp').onclick=async()=>{const t=arrivalsText(arrivals().list);try{await navigator.clipboard.writeText(t);status('Aviso copiado: pégalo en un correo o mensaje para cada solicitante.');}catch(e){status('No se pudo copiar.',true);}};
-  if($('#oclt')){const L=pedIndex().list.filter(o=>o.est==='Por liberar'&&ocIn(o));
-    makeTable($('#oclt'),[
+  $('#pedp').querySelectorAll('[data-oc]').forEach(b=>b.onclick=()=>go(b.dataset.oc));
+  $('#pedp').querySelectorAll('[data-more]').forEach(b=>b.onclick=()=>{if(b.dataset.more==='A')LF.allA=!LF.allA;else LF.allL=!LF.allL;pedRefresh();});
+  if($('#arrcp'))$('#arrcp').onclick=async()=>{const t=arrivalsText(X.A);try{await navigator.clipboard.writeText(t);status('Aviso copiado: pégalo en un correo o mensaje para cada solicitante.');}catch(e){status('No se pudo copiar.',true);}};
+  if($('#oclt'))makeTable($('#oclt'),[
       {k:'oc',h:'OC',cls:'code'},{k:'fecha',h:'Fecha OC',f:o=>fdate(o.fecha)},
       {k:'dias',h:'Esperando',num:1,tip:'Días desde la fecha de la OC',v:o=>z(o.dias),f:o=>`<span class="age ${libAge(z(o.dias))}">${nf0.format(z(o.dias))} d</span>`},
       {k:'aprob',h:'Aprobaciones',tip:'Aprobaciones dadas de las que pide la estrategia de liberación',v:o=>o.aprob/(o.req||1),f:libDots},
@@ -932,8 +955,16 @@ function pedEvents(v){
       {k:'txt',h:'Detalle',cls:'w',f:o=>esc(o.txt)+(o.items.length>1?` <span class="mut">+${o.items.length-1} pos.</span>`:'')},
       {k:'val',h:'Valor (S/)',num:1,f:o=>money(o.val)},
       {k:'cre',h:'Creado por'},
+      {k:'solped',h:'SOLPED',cls:'code',v:o=>o.solped.join(', '),f:o=>o.solped.length?esc(o.solped.slice(0,2).join(', '))+(o.solped.length>2?' …':''):''},
       {k:'sol',h:'Solicitante',v:o=>o.sol.join(', '),f:o=>o.sol.length?esc(o.sol.join(', ')):'<span class="mut">sin SOLPED</span>'}],
-      L,{sort:{k:'dias',d:'desc'},limit:8,unit:'OC por liberar',onRow:o=>go(o.oc),fix:1});}}
+      X.L,{sort:{k:'dias',d:'desc'},limit:LF.q||LF.sol?50:8,unit:'OC por liberar',onRow:o=>go(o.oc),fix:1});}
+function pedRefresh(){const p=$('#pedp');if(!p)return;p.innerHTML=pedPanels(pedLists());pedWire();}
+function pedEvents(v){
+  if($('#novok'))$('#novok').onclick=()=>{novMark();vSolped();};
+  let t=null;if($('#lfq'))$('#lfq').oninput=e=>{LF.q=e.target.value;LF.allA=LF.allL=false;clearTimeout(t);t=setTimeout(pedRefresh,200);};
+  if($('#lfs'))$('#lfs').onchange=e=>{LF.sol=e.target.value;LF.allA=LF.allL=false;pedRefresh();};
+  if($('#lfx'))$('#lfx').onclick=()=>{Object.assign(LF,{q:'',sol:'',allA:false,allL:false});$('#lfq').value='';$('#lfs').value='';pedRefresh();};
+  pedWire();}
 
 /* ================= SOLPED ================= */
 const PF={estado:'_abiertas',q:'',sol:'',dias:'',tipo:'mat',cmp:'',cre:'',per:'cre'};
@@ -1183,7 +1214,9 @@ function vMov(){const v=$('#v-mov');const ALL=mvAll();const MV=mvScope();const t
       ${K('Entradas valorizadas',pen.format(eW),'mov. 101 − 102 en la semana','--fp')}
       ${K('Mayor gasto',top1?pen.format(top1[1]):'—',top1?descOf(top1[0]):'sin consumos','--ad')}</div>
       <div class="wday"><div><div class="wdh"><b>Gasto por día</b><span>toca un día para ver sus movimientos en la tabla</span></div>${stackCols(days7,{label:'Gasto por día',W:640,H:190,maxLab:7})}</div>
-      ${wkTot.length?`<div class="wcat">${wkTot.map(x=>`<button type="button" class="dl" data-cat="${x.k}"><i style="background:${CATC[x.k]}"></i><span><b>${esc(catName(x.k))}</b><small>${pen.format(x.v)}</small></span><em>${pct(x.v,gW)}</em></button>`).join('')}</div>`:''}</div>`);
+      ${wkTot.length?`<div class="wcat">${wkTot.map(x=>`<button type="button" class="dl" data-cat="${x.k}"><i style="background:${CATC[x.k]}"></i><span><b>${esc(catName(x.k))}</b><small>${pen.format(x.v)}</small></span><em>${pct(x.v,gW)}</em></button>`).join('')}</div>`
+        :(()=>{const tw5=sumBy(cw,m=>m.Material,m=>z(m.Costo_consumo)).filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]).slice(0,6);
+          return `<div class="wtop"><div class="wdh"><b>Mayor gasto de la semana</b><span>toca uno para verlo en la tabla</span></div>${tw5.length?hbars(tw5.map(([m,c])=>({n:descOf(m),v:c,key:'Q:'+m,tip:`${esc(m)} · ${esc(descOf(m))}<br>${pen.format(c)} · ${pct(c,gW)} de la semana`})),{click:1,fmt:x=>pen.format(x)}):'<div class="mut">Sin consumos esta semana.</div>'}</div>`;})()}</div>`);
 
   /* ---- 4. tabla ---- */
   const tabla=`<div class="card" id="mfil"><div class="pc ${hasCat?'pc6':''}">
