@@ -559,6 +559,37 @@ svg.stk g:hover rect.sg{opacity:.85}
 .flist.scr{max-height:560px;overflow:auto;padding-right:4px}
 .wtop{display:flex;flex-direction:column;gap:8px;min-width:0}
 .wtop .hb .r{grid-template-columns:minmax(0,45%) minmax(0,1fr) 92px}
+/* v0.24 consultas y reportes */
+.rtop{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.rgrid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px;align-items:stretch}
+.rta{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:var(--mut)}
+.rta textarea,.rta input{font:13px/1.45 ui-monospace,Consolas,monospace;color:var(--fg);border:1px solid var(--bd);border-radius:8px;padding:9px 11px;background:var(--card);resize:vertical;width:100%;box-sizing:border-box}
+.rta input{font-family:var(--font);height:36px}
+.rta textarea:focus,.rta input:focus{outline:2px solid color-mix(in srgb,var(--ac) 35%,transparent);border-color:var(--ac)}
+.rside{display:flex;flex-direction:column;justify-content:space-between;gap:12px;font-size:12.5px;line-height:1.5}
+.ract{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.rside .ract{margin-top:0}.ract .btn2{flex:0 0 auto;width:auto}
+.rno{margin-top:10px;font-size:12.5px;line-height:1.9}.rno .code{background:var(--dng-bg);color:var(--dng-tx);border-radius:6px;padding:1px 7px;margin-right:2px}
+.rpeps{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;font-size:12px;color:var(--mut)}
+.rpep0{font-size:13px;line-height:1.6;background:var(--warn-bg);color:var(--warn-tx);border-radius:8px;padding:12px 14px}.rpep0 ol{margin:6px 0 0 18px;padding:0}
+#v-rep .neg{color:var(--bad);font-weight:600}
+#v-rep>.card,#v-rep .g2e,#v-rep .g3{margin-bottom:12px}
+.ptitle{display:none}
+@media(max-width:900px){.rgrid{grid-template-columns:1fr}}
+@media print{
+  @page{size:A4 landscape;margin:10mm}
+  body{background:#fff!important}
+  header.hd,.tabs,#gbar,#status,#wkcard,#scrim,.noprint,.ract,.sheet,#tip,.more button{display:none!important}
+  .view:not(#v-rep){display:none!important}
+  .ptitle{display:block;margin:0 0 8px;border-bottom:2px solid var(--hfe-navy);padding-bottom:6px}
+  .ptitle b{font-size:17px;color:var(--hfe-navy);display:block}.ptitle span{font-size:11px;color:var(--mut)}
+  .card,.ksec{box-shadow:none!important;break-inside:avoid;border-color:#ccd}
+  .gw{max-height:none!important;overflow:visible!important}
+  th.sl,td.sl{position:static!important}
+  table{font-size:10px}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
 .sheet{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);z-index:41;border-left:1px solid var(--bd);overflow-y:auto;padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(20px + env(safe-area-inset-bottom,0px))}
 .sheet .card{margin-bottom:10px}
 .sheet .top{display:grid;grid-template-columns:1fr auto;gap:10px;border-top:3px solid var(--ac)}
@@ -599,7 +630,8 @@ svg.stk g:hover rect.sg{opacity:.85}
     <button role="tab" data-tab="stock" id="tab-stock">Almacenes<span class="n" id="n-stock"></span></button>
     <button role="tab" data-tab="solped" id="tab-solped">Seguimiento SOLPED<span class="n" id="n-solped"></span></button>
     <button role="tab" data-tab="mov" id="tab-mov">Consumo y gasto<span class="n" id="n-mov"></span></button>
-    <button role="tab" data-tab="old" id="tab-old" hidden>Códigos antiguos<span class="n" id="n-old"></span></button>
+    <button role="tab" data-tab="rep" id="tab-rep">Consultas y reportes</button>
+  <button role="tab" data-tab="old" id="tab-old" hidden>Códigos antiguos<span class="n" id="n-old"></span></button>
   </nav>
   <div class="gbar" id="gbar"></div>
   <div class="status" id="status" role="status"></div>
@@ -607,7 +639,8 @@ svg.stk g:hover rect.sg{opacity:.85}
   <section class="view" id="v-stock"></section>
   <section class="view" id="v-solped" hidden></section>
   <section class="view" id="v-mov" hidden></section>
-  <section class="view" id="v-old" hidden></section>
+  <section class="view" id="v-rep" hidden></section>
+<section class="view" id="v-old" hidden></section>
 </main>
 <div id="tip" hidden></div>
 <div class="scrim" id="scrim" hidden></div>
@@ -1403,7 +1436,158 @@ function oTable(){makeTable($('#otbl'),[
     oRows(),{sort:{k:'act',d:'asc'},onRow:o=>D.byMat[o.neu]&&openSheet(o.neu),unit:'códigos antiguos',fix:1});}
 
 /* ================= pestañas ================= */
-const VIEWS={stock:vStock,solped:vSolped,mov:vMov,old:vOld};let CURTAB='stock';
+/* ================= CONSULTAS Y REPORTES (v0.24) ================= */
+const RF={modo:store.repModo||'lista',txt:'',pep:'',run:false,pepRun:false};
+const cleanCode=s=>String(s??'').replace(/[ ​  ﻿]/g,' ').trim().toUpperCase();
+const isNum=s=>/^-?[\d.,]+$/.test(s)&&/\d/.test(s);
+const toNum=s=>{s=String(s).trim();if(/,\d{1,2}$/.test(s)&&s.includes('.'))s=s.replace(/\./g,'').replace(',','.');else s=s.replace(/,/g,'');return +s||0;};
+const monOf=d=>{const t=new Date(d+'T00:00:00');t.setDate(t.getDate()-((t.getDay()+6)%7));return isoD(t);};
+/* lista pegada: un código por línea (o varios separados por coma/espacio); una cifra en la misma línea = presupuesto */
+function parseLista(txt){const eq={};(D.eq||[]).forEach(e=>{if(e.Codigo_antiguo&&e.Codigo_nuevo)eq[cleanCode(e.Codigo_antiguo)]=cleanCode(e.Codigo_nuevo);});
+  const by=new Map();
+  String(txt||'').split(/\r?\n/).forEach(line=>{const tk=cleanCode(line).split(/[\t;,\s]+/).filter(Boolean);
+    const codes=tk.filter(x=>!isNum(x)&&/^[A-Z0-9][A-Z0-9\-_.\/]{2,}$/.test(x));const nums=tk.filter(isNum);
+    const pres=codes.length===1&&nums.length?toNum(nums[0]):null;
+    codes.forEach(c=>{const cur=eq[c]||c;const o=by.get(cur)||{cod:cur,ins:new Set(),pres:null};o.ins.add(c);if(pres!=null)o.pres=(o.pres||0)+pres;by.set(cur,o);});});
+  return [...by.values()].map(o=>({cod:o.cod,ins:[...o.ins],pres:o.pres}));}
+function repData(list){const set=new Set(list.map(x=>x.cod));const [a,b]=gRange();
+  const alm={};(D.alm||[]).forEach(r=>{if(!set.has(r.Material))return;const n=r['Denominación-almacén']||String(r['Almacén']);(alm[r.Material]||(alm[r.Material]={}))[n]=((alm[r.Material]||{})[n]||0)+z(r.Stock);});
+  const cons={},ult={},rows=[];D.mv.forEach(m=>{if(!set.has(m.Material)||m.Grupo!=='Consumo')return;const d=m['Fe.contabilización'];if(d&&(!ult[m.Material]||d>ult[m.Material]))ult[m.Material]=d;
+    if(!inPer(d))return;rows.push(m);const o=cons[m.Material]||(cons[m.Material]={q:0,s:0});o.q+=z(m.Consumo_neto);o.s+=z(m.Costo_consumo);});
+  const spq={};D.sp.forEach(s=>{if(set.has(s.Material)&&String(s.Estado)[0]==='1')spq[s.Material]=(spq[s.Material]||0)+z(s.Pendiente_llegar);});
+  const ped=[];(D.ped||[]).forEach(p=>{if(set.has(p.Material)&&(z(p.Por_entregar)>0||p.Estado_lib==='Por liberar'))ped.push(p);});
+  const pq={};ped.forEach(p=>{const o=pq[p.Material]||(pq[p.Material]={q:0,v:0,lib:0});if(p.Estado_lib==='Por liberar')o.lib+=z(p.Cantidad);else{o.q+=z(p.Por_entregar);o.v+=z(p.Por_entregar_valor)*(TCX[p.Moneda]||1);}});
+  const items=list.map(x=>{const t=D.byMat[x.cod];const al=alm[x.cod]||{};const known=!!(t||alm[x.cod]||cons[x.cod]||ult[x.cod]);
+    const desc=(t&&t.Descripcion)||((D.mv.find(m=>m.Material===x.cod)||{})['Texto breve de material'])||'';
+    const stock=t?z(t.Stock):Object.values(al).reduce((s,v)=>s+v,0);const c=cons[x.cod]||{q:0,s:0};const p=pq[x.cod]||{q:0,v:0,lib:0};
+    return {cod:x.cod,ins:x.ins.filter(i=>i!==x.cod),pres:x.pres,known,desc,um:(t&&t.UM)||'',estado:t?t.Estado:'',stock,valor:t?z(t.Valor_stock):0,
+      alm:Object.entries(al).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]),cons:c.q,gasto:c.s,sinOC:spq[x.cod]||0,porLlegar:p.q,porLlegarV:p.v,porLib:p.lib,
+      ult:ult[x.cod]||'',dif:x.pres!=null?stock-x.pres:null,saldo:x.pres!=null?x.pres-c.q:null};});
+  return {items,rows,ped,a,b};}
+const dlXlsx=(name,sheets)=>{if(!window.XLSX){status('No cargó el lector de Excel. Revisa tu conexión.',true);return;}const wb=XLSX.utils.book_new();
+  sheets.forEach(([n,aoa,w])=>{const ws=XLSX.utils.aoa_to_sheet(aoa);if(w)ws['!cols']=w.map(x=>({wch:x}));if(aoa.length>1)ws['!autofilter']={ref:ws['!ref']};XLSX.utils.book_append_sheet(wb,ws,n.slice(0,31));});
+  XLSX.writeFile(wb,name);};
+const perTxt=()=>{const [a,b]=gRange();return GF.per==='all'?'todo lo exportado':fdate(a)+' – '+(b>'9000'?'hoy':fdate(b));};
+function weekCols(rows){const g={};rows.forEach(m=>{const k=monOf(m['Fe.contabilización']);g[k]=(g[k]||0)+z(m.Costo_consumo);});
+  return Object.keys(g).sort().map(k=>({lab:'S'+isoWeek(new Date(k+'T00:00:00')),v:Math.max(0,g[k]),tip:`Semana ${isoWeek(new Date(k+'T00:00:00'))} (desde ${fdate(k)})<br>${pen.format(g[k])}`}));}
+
+function vRep(){const v=$('#v-rep');
+  v.innerHTML=`<div class="ptitle"><b>${RF.modo==='pep'?'Reporte de proyecto (PEP)':'Consulta de materiales'}</b><span>Hortifrut · PB03 · período ${esc(perTxt())} · ${esc(D.meta.fuente||'')} · impreso el ${fdate(isoD(new Date()))}</span></div>
+    <div class="card noprint"><div class="rtop"><span class="seg"><button type="button" data-rm="lista" class="${RF.modo==='lista'?'on':''}">Lista de materiales</button><button type="button" data-rm="pep" class="${RF.modo==='pep'?'on':''}">Proyecto (PEP)</button></span>
+      <span class="mut">Usa el período del filtro de arriba (${esc(perTxt())}).</span></div><div id="rbody"></div></div><div id="rres"></div>`;
+  v.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{RF.modo=b.dataset.rm;remember('repModo',RF.modo);vRep();});
+  if(RF.modo==='pep')repPep();else repLista();}
+
+/* ---------- consulta por lista de materiales ---------- */
+function repLista(){$('#rbody').innerHTML=`<div class="rgrid"><label class="rta">Códigos de material<textarea id="rtxt" rows="7" spellcheck="false" placeholder="Pega aquí los códigos, uno por línea (puedes copiar una columna de Excel).&#10;Opcional: una segunda columna con el presupuesto de cada material.&#10;&#10;FERT-0561&#9;1200&#10;SANI-0033&#9;25000&#10;ADDI-0052">${esc(RF.txt)}</textarea></label>
+    <div class="rside"><div class="mut">Los códigos antiguos se cambian solos por el código actual (tabla de equivalencias) y se limpian los espacios invisibles al pegar. Consumo = 201 + 261 + 221 menos anulaciones, en el período elegido arriba.</div>
+      <div class="ract"><button type="button" class="btn2 pri" id="rgo">Consultar</button><button type="button" class="btn2" id="rclr">Limpiar</button></div></div></div>`;
+  $('#rgo').onclick=()=>{RF.txt=$('#rtxt').value;RF.run=true;listaRes();};
+  $('#rclr').onclick=()=>{RF.txt='';RF.run=false;$('#rtxt').value='';$('#rres').innerHTML='';};
+  $('#rtxt').onkeydown=e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();$('#rgo').click();}};
+  if(RF.run)listaRes();}
+function listaRes(){const host=$('#rres');const list=parseLista(RF.txt);if(!list.length){host.innerHTML='<div class="card"><div class="mut">No encontré códigos en lo que pegaste.</div></div>';return;}
+  const R=repData(list);const I=R.items;const ok=I.filter(i=>i.known),no=I.filter(i=>!i.known);const hasP=I.some(i=>i.pres!=null);
+  const sum=k=>ok.reduce((s,i)=>s+z(i[k]),0);
+  const top=ok.filter(i=>i.gasto>0).sort((a,b)=>b.gasto-a.gasto).slice(0,12);const wk=weekCols(R.rows);
+  const pedL=R.ped.map(p=>({...p,_desc:(D.byMat[p.Material]||{}).Descripcion||p.Texto}));
+  host.innerHTML=SEC('RESUMEN DE LA CONSULTA',`${nf0.format(ok.length)} de ${nf0.format(I.length)} materiales encontrados · período ${esc(perTxt())}`,'wkk',`<div class="kp">
+      ${K('Valor del stock',pen.format(sum('valor')),`${nf0.format(ok.filter(i=>i.stock>0).length)} con stock · ${nf0.format(ok.filter(i=>i.stock<=0).length)} sin stock`,'--ac')}
+      ${K('Gasto en consumo',pen.format(sum('gasto')),`${nf0.format(ok.filter(i=>i.gasto>0).length)} materiales con consumo en el período`,'--te')}
+      ${K('Por llegar (OC liberadas)',pen.format(sum('porLlegarV')),`${nf0.format(ok.filter(i=>i.porLlegar>0).length)} materiales · ${nf0.format(new Set(R.ped.filter(p=>p.Estado_lib!=='Por liberar').map(p=>ocK(p.OC))).size)} OC`,'--pen')}
+      ${hasP?K('Presupuesto consumido',pct(ok.filter(i=>i.pres!=null).reduce((s,i)=>s+z(i.cons),0),ok.reduce((s,i)=>s+z(i.pres),0)),`en cantidad · ${nf0.format(ok.filter(i=>i.saldo!=null&&i.saldo<0).length)} materiales ya pasaron su presupuesto`,'--ad'):K('SOLPED sin OC',nf0.format(ok.filter(i=>i.sinOC>0).length),'materiales con SOLPED pendiente de OC','--ad')}</div>
+      ${no.length?`<div class="rno"><b>No encontrados (${no.length}):</b> ${no.map(i=>`<span class="code">${esc(i.cod)}</span>`).join(' ')} <span class="mut">· revisa el código; puede no tener stock, consumo ni pedidos en los datos.</span></div>`:''}
+      <div class="ract noprint"><button type="button" class="btn2" id="rxl">Descargar Excel</button><button type="button" class="btn2" id="rpr">Imprimir / PDF</button></div>`)+
+    `<div class="card"><div class="h2s"><h2>Materiales consultados</h2><span>toca un material para ver su ficha</span></div><div id="rtbl"></div></div>
+    <div class="g2e"><div class="card"><div class="h2s"><h2>Gasto semanal del grupo</h2><span>S/ por semana · ${esc(perTxt())}</span></div>${wk.length?columns(wk,{label:'Gasto semanal',W:640,H:220}):'<div class="mut">Sin consumos en el período.</div>'}</div>
+      <div class="card"><div class="h2s"><h2>Gasto por material</h2><span>top ${top.length} del período</span></div>${top.length?hbars(top.map(i=>({n:i.desc||i.cod,v:i.gasto,key:i.cod,tip:`${esc(i.cod)} · ${esc(i.desc)}<br>${pen.format(i.gasto)} · ${pct(i.gasto,sum('gasto'))}`})),{click:1,fmt:x=>pen.format(x)}):'<div class="mut">Sin consumos en el período.</div>'}</div></div>
+    <div class="card"><div class="h2s"><h2>Pedidos de estos materiales</h2><span>OC con saldo por llegar o pendientes de liberar (ME2N)</span></div>${hasPed()?(pedL.length?'<div id="rped"></div>':'<div class="mut">Ninguna OC abierta para estos materiales.</div>'):'<div class="mut">Agrega la consulta PEDIDOS (ME2N) para ver los pedidos.</div>'}</div>`;
+  const cols=[{k:'cod',h:'Material',cls:'code',f:o=>esc(o.cod)+(o.ins.length?`<div class="antes">pegado: ${esc(o.ins.join(', '))}</div>`:'')},
+    {k:'desc',h:'Descripción',cls:'w'},{k:'um',h:'UM'},
+    {k:'stock',h:'Stock',num:1,f:o=>num(o.stock)||'0'},
+    {k:'alm',h:'Stock por almacén',cls:'w',v:o=>o.alm.map(x=>x[0]).join(),f:o=>esc(o.alm.map(([n,q])=>`${n} ${num(q)}`).join(' · '))},
+    {k:'valor',h:'Valor stock (S/)',num:1,f:o=>money(o.valor)},
+    {k:'cons',h:'Consumo',num:1,f:o=>num(o.cons||null)},{k:'gasto',h:'Gasto (S/)',num:1,f:o=>money(o.gasto)},
+    ...(hasP?[{k:'pres',h:'Presupuesto',num:1,f:o=>o.pres==null?'':num(o.pres)},{k:'saldo',h:'Saldo presup.',num:1,tip:'Presupuesto − consumo del período',f:o=>o.saldo==null?'':`<span class="${o.saldo<0?'neg':''}">${num(o.saldo)}</span>`},{k:'dif',h:'Stock − presup.',num:1,f:o=>o.dif==null?'':`<span class="${o.dif<0?'neg':''}">${num(o.dif)}</span>`}]:[]),
+    {k:'sinOC',h:'SOLPED sin OC',num:1,f:o=>num(o.sinOC||null)},{k:'porLlegar',h:'Por llegar',num:1,f:o=>num(o.porLlegar||null)+(o.porLib?` <span class="og lib" title="Cantidad en OC por liberar">+${num(o.porLib)} por liberar</span>`:'')},
+    {k:'ult',h:'Último consumo',f:o=>fdate(o.ult)},{k:'estado',h:'Estado',v:o=>RANK[o.estado]??9,f:o=>o.known?(o.estado?pill(o.estado):''):'<span class="og fal">no encontrado</span>'}];
+  makeTable($('#rtbl'),cols,I,{sort:{k:'gasto',d:'desc'},limit:500,unit:'materiales',fix:2,onRow:o=>D.byMat[o.cod]&&openSheet(o.cod)});
+  if($('#rped'))makeTable($('#rped'),[{k:'OC',h:'OC',cls:'code',v:o=>ocK(o.OC),f:o=>esc(ocK(o.OC))},{k:'Fecha_OC',h:'Fecha OC',f:o=>fdate(o.Fecha_OC)},{k:'Material',h:'Material',cls:'code'},{k:'_desc',h:'Descripción',cls:'w'},
+    {k:'Por_entregar',h:'Por llegar',num:1,f:o=>num(o.Por_entregar)+' '+esc(o.UM||'')},{k:'Por_entregar_valor',h:'Valor (S/)',num:1,v:o=>z(o.Por_entregar_valor)*(TCX[o.Moneda]||1),f:o=>money(z(o.Por_entregar_valor)*(TCX[o.Moneda]||1))},
+    {k:'Dias_OC',h:'Días',num:1,f:o=>num(o.Dias_OC)},{k:'Proveedor',h:'Proveedor',cls:'w'},{k:'Estado_lib',h:'Estado',f:o=>o.Estado_lib==='Por liberar'?'<span class="og lib">Por liberar</span>':'<span class="og ec">En tránsito</span>'}],
+    pedL,{sort:{k:'Dias_OC',d:'desc'},limit:500,unit:'posiciones de OC',fix:1});
+  host.querySelectorAll('.hb .r[data-key]').forEach(r=>r.onclick=()=>D.byMat[r.dataset.key]&&openSheet(r.dataset.key));
+  $('#rpr').onclick=()=>window.print();
+  $('#rxl').onclick=()=>{const H=['Material','Códigos pegados','Descripción','UM','Stock','Stock por almacén','Valor stock (S/)','Consumo período','Gasto período (S/)',...(hasP?['Presupuesto','Saldo presupuesto','Stock − presupuesto']:[]),'SOLPED sin OC','Por llegar (OC liberadas)','En OC por liberar','Último consumo','Estado'];
+    const rows=I.map(i=>[i.cod,i.ins.join(', '),i.desc,i.um,i.stock,i.alm.map(([n,q])=>n+' '+q).join(' · '),i.valor,i.cons,i.gasto,...(hasP?[i.pres,i.saldo,i.dif]:[]),i.sinOC,i.porLlegar,i.porLib,i.ult,i.known?i.estado:'No encontrado']);
+    const mv=[['Fecha','Material','Descripción','Mov.','Cantidad','UM','Importe (S/)','Almacén','Receptor','Referencia','Documento material'],...R.rows.map(m=>[m['Fe.contabilización'],m.Material,m['Texto breve de material'],m['Clase de movimiento'],m['Ctd.en UM entrada'],m['Un.medida de entrada'],m['Impte.mon.local'],almName(m['Almacén']),m['Dest.mercancía'],m.Referencia,m['Documento material']])];
+    const pd=[['OC','Pos.','Fecha OC','Material','Descripción','Por llegar','UM','Valor por llegar (S/)','Días','Proveedor','Estado'],...pedL.map(p=>[ocK(p.OC),p.Pos_OC,p.Fecha_OC,p.Material,p._desc,p.Por_entregar,p.UM,z(p.Por_entregar_valor)*(TCX[p.Moneda]||1),p.Dias_OC,p.Proveedor,p.Estado_lib])];
+    dlXlsx(`Consulta_materiales_${isoD(new Date())}.xlsx`,[['Consulta',[H,...rows],[14,14,40,6,10,30,14,12,14]],['Consumos del período',mv,[11,14,40,6,10,6,12,16,14,12,14]],['Pedidos',pd,[12,6,11,14,40,10,6,14,6,30,12]]]);};}
+
+/* ---------- reporte por proyecto (PEP) ---------- */
+const PEPK='Elemento PEP';
+const hasPEP=()=>D.mv.some(m=>m[PEPK]!=null&&m[PEPK]!=='');
+function repPep(){const body=$('#rbody');
+  if(!hasPEP()){body.innerHTML=`<div class="rpep0"><b>Falta el elemento PEP en los movimientos.</b> Para activar este reporte:
+      <ol><li>En la <b>MB51</b>, agrega la columna <b>«Elemento PEP»</b> al layout (Ctrl + F8) y vuelve a grabarlo.</li>
+      <li>En el maestro, abre la consulta <b>SAP</b> en el Editor avanzado y, en el bloque <b>xMB51</b>, agrega <b>"Elemento PEP"</b> después de <b>"Orden"</b> (es una sola línea).</li>
+      <li>Exporta la MB51, <b>Actualizar todo</b> y publica.</li></ol></div>`;$('#rres').innerHTML='';return;}
+  const peps=sumBy(D.mv.filter(m=>(m['Clase de movimiento']==221||m['Clase de movimiento']==222)&&m[PEPK]&&inPer(m['Fe.contabilización'])),m=>String(m[PEPK]).trim(),m=>z(m.Costo_consumo)).sort((a,b)=>b[1]-a[1]);
+  body.innerHTML=`<div class="rgrid"><label class="rta">Elemento PEP<input type="search" id="rpep" list="rpepl" placeholder="Ej.: 02-2526CPRD08-02-01-0010 (también sirve una parte)" value="${esc(RF.pep)}"><datalist id="rpepl">${peps.slice(0,300).map(([p,c])=>`<option value="${esc(p)}">${esc(pen.format(c))}</option>`).join('')}</datalist></label>
+    <div class="rside"><div class="mut">Consumos a proyecto (221 menos 222) del período elegido arriba. ${nf0.format(peps.length)} PEP con movimientos. Los servicios y compras directas al PEP no pasan por la MB51.</div>
+      <div class="ract"><button type="button" class="btn2 pri" id="rgo">Consultar</button></div></div></div>
+    ${peps.length?`<div class="rpeps">Con más gasto: ${peps.slice(0,6).map(([p,c])=>`<button type="button" class="chip" data-pep="${esc(p)}"><b>${esc(p)}</b> ${AXIS.format(c)}</button>`).join('')}</div>`:''}`;
+  const go=()=>{RF.pep=$('#rpep').value.trim();RF.pepRun=!!RF.pep;pepRes();};
+  $('#rgo').onclick=go;$('#rpep').onkeydown=e=>{if(e.key==='Enter')go();};
+  body.querySelectorAll('[data-pep]').forEach(b=>b.onclick=()=>{$('#rpep').value=b.dataset.pep;go();});
+  if(RF.pepRun)pepRes();else $('#rres').innerHTML='';}
+function pepRes(){const host=$('#rres');const q=RF.pep.toUpperCase();
+  const R=D.mv.filter(m=>(m['Clase de movimiento']==221||m['Clase de movimiento']==222)&&m[PEPK]&&String(m[PEPK]).toUpperCase().includes(q)&&inPer(m['Fe.contabilización']));
+  if(!R.length){host.innerHTML=`<div class="card"><div class="mut">Ningún consumo 221/222 para «${esc(RF.pep)}» en el período ${esc(perTxt())}.</div></div>`;return;}
+  const pepsF=[...new Set(R.map(m=>String(m[PEPK]).trim()))];
+  const neto=R.reduce((s,m)=>s+z(m.Costo_consumo),0);const dev=R.filter(m=>m['Clase de movimiento']==222).reduce((s,m)=>s-z(m.Costo_consumo),0);
+  const nSal=R.filter(m=>m['Clase de movimiento']==221).length;const nRes=new Set(R.map(m=>m.Referencia).filter(Boolean)).size;
+  const byM=sumBy(R,m=>m.Material,m=>z(m.Costo_consumo)).filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]);
+  let acc=0,k80=0;for(const [,c] of byM){acc+=c;k80++;if(acc>=neto*0.8)break;}
+  const descOf=m=>(D.byMat[m]||{}).Descripcion||(R.find(x=>x.Material===m)||{})['Texto breve de material']||m;
+  const wk=weekCols(R);let run=0;wk.forEach(w=>{run+=w.v;w.tip+=`<br>Acumulado: ${pen.format(run)}`;});
+  const hb=(arr,n)=>hbars(arr.slice(0,n).map(([k,c])=>({n:k||'—',v:c,tip:`${esc(k||'—')}<br>${pen.format(c)} · ${pct(c,neto)}`})),{fmt:x=>pen.format(x)});
+  const byDest=sumBy(R,m=>usr(m['Dest.mercancía'])||'Sin receptor',m=>z(m.Costo_consumo)).filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]);
+  const byFam=sumBy(R,m=>famOf(m.Material),m=>z(m.Costo_consumo)).filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]);
+  const byAlm=sumBy(R,m=>almName(m['Almacén']),m=>z(m.Costo_consumo)).filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]);
+  const byUsr=sumBy(R,m=>m['Nombre del usuario']||'—',m=>z(m.Costo_consumo)).filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]);
+  const mat=byM.map(([m,c])=>{const l=R.filter(x=>x.Material===m);return {Material:m,Descripcion:descOf(m),UM:(l[0]||{})['Un.medida de entrada']||'',Cant:l.reduce((s,x)=>s+z(x.Consumo_neto),0),Gasto:c,Pct:neto?c/neto:0,Movs:l.length,Ult:l.reduce((a,x)=>x['Fe.contabilización']>a?x['Fe.contabilización']:a,'')};});
+  host.innerHTML=SEC(`PROYECTO ${esc(pepsF.length===1?pepsF[0]:RF.pep)}`,`${pepsF.length>1?nf0.format(pepsF.length)+' PEP que contienen «'+esc(RF.pep)+'» · ':''}consumos 221 − 222 · ${esc(perTxt())}`,'wkk',`<div class="kp">
+      ${K('Gasto neto',pen.format(neto),`${nf0.format(nSal)} salidas · ${nf0.format(nRes)} reservas/referencias`,'--ac')}
+      ${K('Materiales distintos',nf0.format(new Set(R.map(m=>m.Material)).size),`${nf0.format(byM.length)} con gasto positivo`,'--te')}
+      ${K('Concentración',`${nf0.format(k80)} materiales`,`suman el 80 % del gasto (${pct(k80,byM.length)} de los materiales)`,'--ad')}
+      ${K('Devoluciones / anulaciones (222)',pen.format(dev),`${pct(dev,neto+dev)} de lo retirado`,'--pen')}</div>
+      <div class="ract noprint"><button type="button" class="btn2" id="rxl">Descargar Excel</button><button type="button" class="btn2" id="rpr">Imprimir / PDF</button></div>`)+
+    `<div class="card"><div class="h2s"><h2>Gasto semanal del proyecto</h2><span>S/ por semana · pasa el mouse para ver el acumulado</span></div>${columns(wk,{label:'Gasto semanal del proyecto',W:1280,H:210})}</div>
+    <div class="g2e"><div class="card"><div class="h2s"><h2>Materiales con mayor gasto</h2><span>top 10</span></div>${hbars(byM.slice(0,10).map(([m,c])=>({n:descOf(m),v:c,key:m,tip:`${esc(m)} · ${esc(descOf(m))}<br>${pen.format(c)} · ${pct(c,neto)}`})),{click:1,fmt:x=>pen.format(x)})}</div>
+      <div class="card"><div class="h2s"><h2>Por destinatario</h2><span>receptor de la mercancía</span></div>${hb(byDest,10)}</div></div>
+    <div class="g3"><div class="card"><div class="h2s"><h2>Por familia de material</h2><span>prefijo del código</span></div>${hb(byFam,8)}</div>
+      <div class="card"><div class="h2s"><h2>Por almacén</h2><span>almacén de salida</span></div>${hb(byAlm,8)}</div>
+      <div class="card"><div class="h2s"><h2>Por usuario que registró</h2><span>Nombre del usuario (MB51)</span></div>${hb(byUsr,8)}</div></div>
+    <div class="card"><div class="h2s"><h2>Resumen por material</h2><span>${nf0.format(mat.length)} materiales · toca uno para ver su ficha</span></div><div id="rtbl"></div></div>
+    <div class="card"><div class="h2s"><h2>Movimientos</h2><span>${nf0.format(R.length)} movimientos 221/222</span></div><div id="rmov"></div></div>`;
+  makeTable($('#rtbl'),[{k:'Material',h:'Material',cls:'code'},{k:'Descripcion',h:'Descripción',cls:'w'},{k:'UM',h:'UM'},{k:'Cant',h:'Cantidad neta',num:1,f:o=>num(o.Cant)},
+    {k:'Gasto',h:'Gasto (S/)',num:1,f:o=>money(o.Gasto)},{k:'Pct',h:'% del total',num:1,f:o=>pct(o.Gasto,neto)},{k:'Movs',h:'Movs.',num:1},{k:'Ult',h:'Último',f:o=>fdate(o.Ult)}],
+    mat,{sort:{k:'Gasto',d:'desc'},limit:100,unit:'materiales',fix:2,onRow:o=>D.byMat[o.Material]&&openSheet(o.Material)});
+  makeTable($('#rmov'),[{k:'Fe.contabilización',h:'Fecha',f:o=>fdate(o['Fe.contabilización'])},{k:'Clase de movimiento',h:'Mov.',cls:'code'},{k:'Material',h:'Material',cls:'code'},
+    {k:'Texto breve de material',h:'Descripción',cls:'w'},{k:'Ctd.en UM entrada',h:'Cantidad',num:1,f:o=>num(o['Ctd.en UM entrada'])+' '+esc(o['Un.medida de entrada']||'')},
+    {k:'Impte.mon.local',h:'Importe (S/)',num:1,f:o=>money(o['Impte.mon.local'])},{k:'Almacén',h:'Almacén',v:o=>almName(o['Almacén']),f:o=>esc(almName(o['Almacén'])||'')},
+    {k:'Dest.mercancía',h:'Receptor'},{k:'Referencia',h:'Reserva / ref.'},{k:PEPK,h:'PEP',cls:'code'}],R,{sort:{k:'Fe.contabilización',d:'desc'},limit:200,unit:'movimientos',fix:2});
+  host.querySelectorAll('.hb .r[data-key]').forEach(r=>r.onclick=()=>D.byMat[r.dataset.key]&&openSheet(r.dataset.key));
+  $('#rpr').onclick=()=>window.print();
+  $('#rxl').onclick=()=>{const sm=[['Proyecto (PEP)',RF.pep],['Período',perTxt()],['Gasto neto (S/)',neto],['Devoluciones/anulaciones 222 (S/)',dev],['Materiales distintos',new Set(R.map(m=>m.Material)).size],['Materiales que suman el 80 %',k80],['Salidas 221',nSal]];
+    dlXlsx(`Proyecto_${RF.pep.replace(/[^\w-]+/g,'_').slice(0,40)}_${isoD(new Date())}.xlsx`,[['Resumen',sm,[34,30]],
+      ['Por material',[['Material','Descripción','UM','Cantidad neta','Gasto (S/)','% del total','Movs.','Último'],...mat.map(o=>[o.Material,o.Descripcion,o.UM,o.Cant,o.Gasto,o.Pct,o.Movs,o.Ult])],[14,40,6,12,14,10,6,11]],
+      ['Por destinatario',[['Destinatario','Gasto (S/)'],...byDest],[20,14]],['Por familia',[['Familia','Gasto (S/)'],...byFam],[26,14]],
+      ['Movimientos',[['Fecha','Mov.','Material','Descripción','Cantidad','UM','Importe (S/)','Almacén','Receptor','Usuario','Reserva/ref.','Documento material','PEP'],...R.map(m=>[m['Fe.contabilización'],m['Clase de movimiento'],m.Material,m['Texto breve de material'],m['Ctd.en UM entrada'],m['Un.medida de entrada'],m['Impte.mon.local'],almName(m['Almacén']),m['Dest.mercancía'],m['Nombre del usuario'],m.Referencia,m['Documento material'],m[PEPK]])],[11,6,14,40,10,6,12,16,14,14,12,14,26]]]);};}
+
+
+const VIEWS={stock:vStock,solped:vSolped,mov:vMov,rep:vRep,old:vOld};let CURTAB='stock';
 function show(tab){if(!VIEWS[tab])tab='stock';CURTAB=tab;document.querySelectorAll('.tabs button').forEach(b=>{b.classList.toggle('on',b.dataset.tab===tab);b.setAttribute('aria-selected',String(b.dataset.tab===tab));});
   Object.keys(VIEWS).forEach(k=>$('#v-'+k).hidden=k!==tab);VIEWS[tab]();remember('tab',tab);}
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.tab));
